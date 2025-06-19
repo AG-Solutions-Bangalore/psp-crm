@@ -30,8 +30,11 @@ import BASE_URL from "@/config/BaseUrl";
 import { Edit, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ButtonConfig } from "@/config/ButtonConfig";
+import usetoken from "@/api/usetoken";
 
 const EditTeam = ({ teamId }) => {
+  const token = usetoken();
+
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -48,7 +51,6 @@ const EditTeam = ({ teamId }) => {
   const fetchTeamData = async () => {
     setIsFetching(true);
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${BASE_URL}/api/panel-fetch-team-by-id/${teamId}`,
         {
@@ -107,7 +109,6 @@ const EditTeam = ({ teamId }) => {
 
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.put(
         `${BASE_URL}/api/panel-update-team/${teamId}`,
         formData,
@@ -116,10 +117,10 @@ const EditTeam = ({ teamId }) => {
         }
       );
 
-      if (response?.data.code == 200) {
+      if (response?.data.code == 201) {
         toast({
           title: "Success",
-          description: response.data.msg,
+          description: response.data.message,
         });
 
         await queryClient.invalidateQueries(["teams"]);
@@ -127,7 +128,7 @@ const EditTeam = ({ teamId }) => {
       } else {
         toast({
           title: "Error",
-          description: response.data.msg,
+          description: response.data.message,
           variant: "destructive",
         });
       }
@@ -181,7 +182,9 @@ const EditTeam = ({ teamId }) => {
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Team - <span className="text-2xl">{formData.name}</span></DialogTitle>
+          <DialogTitle>
+            Edit Team - <span className="text-2xl">{formData.name}</span>
+          </DialogTitle>
         </DialogHeader>
 
         {isFetching ? (

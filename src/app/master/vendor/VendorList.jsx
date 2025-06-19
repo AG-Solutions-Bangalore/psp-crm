@@ -46,15 +46,14 @@ import {
 } from "@/components/ui/tooltip";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import {
-  BranchCreate,
-  BranchEdit,
-} from "@/components/buttonIndex/ButtonComponents";
-import {
   ErrorComponent,
   LoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
+import usetoken from "@/api/usetoken";
 
 const VendorList = () => {
+  const token = usetoken();
+
   const {
     data: vendors,
     isLoading,
@@ -63,13 +62,9 @@ const VendorList = () => {
   } = useQuery({
     queryKey: ["vendors"],
     queryFn: async () => {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${BASE_URL}/api/vendors`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/api/vendors`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data.data;
     },
   });
@@ -111,7 +106,7 @@ const VendorList = () => {
       header: "Vendor Type",
       cell: ({ row }) => <div>{row.getValue("vendor_type")}</div>,
     },
-      {
+    {
       accessorKey: "vendor_contact_name",
       header: "Vendor Contact Name",
       cell: ({ row }) => <div>{row.getValue("vendor_contact_name")}</div>,
@@ -121,7 +116,6 @@ const VendorList = () => {
       header: "Mobile",
       cell: ({ row }) => <div>{row.getValue("vendor_contact_mobile")}</div>,
     },
-
 
     {
       accessorKey: "status",

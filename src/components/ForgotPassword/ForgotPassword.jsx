@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import BASE_URL from "@/config/BaseUrl";
-import { motion, AnimatePresence } from "framer-motion";
-import { ContextPanel } from "@/lib/ContextPanel";
+import { motion } from "framer-motion";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

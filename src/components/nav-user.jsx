@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   BadgeCheck,
   Bell,
   ChevronsUpDown,
@@ -25,33 +26,27 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, useNavigate } from "react-router-dom";
 import BASE_URL from "@/config/BaseUrl";
+import useLogout from "@/hooks/useLogout";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowUpdateDialog } from "@/redux/slices/versionSlice";
 
 export function NavUser({ user }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
-  const user_position = localStorage.getItem("user_position")
-  // const handleLogout = () => {
-  //   localStorage.clear();
-  //   navigate("/");
-  // };
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/api/panel-logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-      console.log("Logout successful:", result);
-      localStorage.clear();
-      navigate("/");
-    } catch (error) {
-      console.error("Logout failed:", error.message);
-    }
+  const localVersion = useSelector((state) => state.auth?.version);
+  const serverVersion = useSelector((state) => state?.version?.version);
+  const sidebar = useSelector((state) => state.sidebar.open);
+  const showDialog = localVersion !== serverVersion ? true : false;
+  const dispatch = useDispatch();
+  const handleOpenDialog = () => {
+    dispatch(
+      setShowUpdateDialog({
+        showUpdateDialog: true,
+        version: serverVersion,
+      })
+    );
   };
+  const handleLogout = useLogout();
 
   const splitUser = user.name;
   const intialsChar = splitUser
@@ -63,85 +58,89 @@ export function NavUser({ user }) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent/30"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                   <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  {intialsChar}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user_position}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
+        {showDialog ? (
+          <div
+            className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground px-4 py-2 animate-pulse w-full cursor-pointer h-10"
+            onClick={handleOpenDialog}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            <div className="flex justify-center items-center h-full w-full text-xs leading-tight text-center">
+              <span className="flex items-center gap-1 font-semibold">
+                New Updated : V{localVersion}
+                <ArrowRight className="w-4 h-4" />V{serverVersion}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent/30"
+              >
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                     {intialsChar}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  {/* <span className="truncate text-xs">{user_position}</span> */}
+                </div>
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <SidebarMenuButton
+              size="lg"
+              className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground p-0 cursor-text data-[state=open]: ${
+                sidebar ? "text-red-950" : "hidden"
+              }`}
+            >
+              <div className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground px-4 py-2 w-full  h-10 ">
+                <div className="flex justify-between items-center h-full w-full text-xs leading-tight text-center">
+                  <span className="flex items-center gap-1 font-semibold">
+                    <span>
+                      <span className="text-[10px]">V </span>
+                      {localVersion}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-1 font-semibold">
+                    Updated on :19/06/2025
+                  </span>
                 </div>
               </div>
-            </DropdownMenuLabel>
+            </SidebarMenuButton>
+            <DropdownMenuContent
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+              side={isMobile ? "bottom" : "right"}
+              align="end"
+              sideOffset={4}
+            >
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                      {intialsChar}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">{user.name}</span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
 
-            {/* <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut />
+
+                <span className=" cursor-pointer">Log out</span>
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator /> */}
-
-            {/* <DropdownMenuGroup> 
-
-           <DropdownMenuItem> 
-                <BadgeCheck /> 
-              Account  
-            </DropdownMenuItem> 
-
-           <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-             
-            </DropdownMenuGroup> */}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut />
-
-              <span className=" cursor-pointer">Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </SidebarMenuItem>
     </SidebarMenu>
   );
 }
-
-
-//sajid

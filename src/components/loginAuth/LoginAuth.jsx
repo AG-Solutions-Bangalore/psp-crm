@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { PANEL_LOGIN } from "@/api";
+import apiClient from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import BASE_URL from "@/config/BaseUrl";
-import { Loader } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ContextPanel } from "@/lib/ContextPanel";
+import { loginSuccess } from "@/redux/slices/AuthSlice";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginAuth() {
   const [email, setEmail] = useState("");
@@ -24,8 +24,7 @@ export default function LoginAuth() {
   const [loadingMessage, setLoadingMessage] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
-  // const { fetchPagePermission, fetchPermissions } = useContext(ContextPanel);
-
+  const dispatch = useDispatch();
   const loadingMessages = [
     "Setting things up for you...",
     "Checking your credentials...",
@@ -53,59 +52,37 @@ export default function LoginAuth() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-
     const formData = new FormData();
     formData.append("username", email);
     formData.append("password", password);
 
     try {
-      console.log("Submitting login request...");
-
-      const res = await axios.post(`${BASE_URL}/api/panel-login`, formData);
-
-      if (res.status === 200) {
-        console.log("Login Success ✅ Checking UserInfo...");
-
-        if (!res.data.UserInfo || !res.data.UserInfo.token) {
-          console.warn("⚠️ Login failed: Token missing in response");
-          toast.error("Login Failed: No token received.");
-          setIsLoading(false);
-          return;
-        }
-
-        const { UserInfo, company_detils } = res.data;
-
-        console.log("Saving user details to local storage...");
-        localStorage.setItem("token", UserInfo.token);
-
-        localStorage.setItem("id", UserInfo.user.id);
-        localStorage.setItem("name", UserInfo.user.name);
-        localStorage.setItem("userType", UserInfo.user.user_type);
-    
-  
-        localStorage.setItem("companyName", company_detils?.company_name);
- 
-        localStorage.setItem("email", UserInfo.user.email);
-        localStorage.setItem("token-expire-time", UserInfo.token_expires_at);
-
-       
-
-        console.log("✅ Login successful! Redirecting to /home...");
+      const res = await apiClient.post(PANEL_LOGIN, formData);
+      if (res.data.code == 200 && res.data.UserInfo?.token) {
+        const { UserInfo } = res.data;
+        const userData = {
+          token: UserInfo.token,
+          id: UserInfo.user.id,
+          name: UserInfo.user?.name,
+          user_type: UserInfo.user?.user_type,
+          email: UserInfo.user?.email,
+          token_expire_time: UserInfo.token_expires_at,
+          version: res?.data?.version?.version_panel,
+          companyname: res?.data?.company_detils?.company_name,
+        };
+        dispatch(loginSuccess(userData));
         navigate("/home");
       } else {
-        console.warn("⚠️ Unexpected API response:", res);
         toast.error("Login Failed: Unexpected response.");
       }
     } catch (error) {
-      console.error("❌ Login Error:", error.response?.data || error.message);
-
       toast({
         variant: "destructive",
         title: "Login Failed",
         description:
           error.response?.data?.message || "Please check your credentials.",
       });
-
+    } finally {
       setIsLoading(false);
     }
   };
@@ -127,7 +104,9 @@ export default function LoginAuth() {
       >
         <Card className="w-80 max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Login(PSP-Dev)</CardTitle>
+            <CardTitle className="text-2xl text-center">
+              Login(PSP-Dev)
+            </CardTitle>
             <CardDescription className="text-center">
               Enter your username and password to access your account
             </CardDescription>

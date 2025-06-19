@@ -14,9 +14,12 @@ import {
 } from "@/components/ui/popover";
 import { useLocation } from "react-router-dom";
 import { ButtonConfig } from "@/config/ButtonConfig";
+import usetoken from "@/api/usetoken";
 
 
 const CreateColor = () => {
+    const token = usetoken();
+
     const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,7 +40,6 @@ const CreateColor = () => {
 
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.post(
         `${BASE_URL}/api/colors`,
         formData,
@@ -46,11 +48,11 @@ const CreateColor = () => {
         }
       );
 
-      if (response?.data.code == 200) {
+      if (response?.data.code == 201) {
     
         toast({
           title: "Success",
-          description: response.data.msg
+          description: response.data.message
         });
   
         setFormData({
@@ -62,7 +64,7 @@ const CreateColor = () => {
        
         toast({
           title: "Error",
-          description: response.data.msg,
+          description: response.data.message,
           variant: "destructive",
         });
       }
