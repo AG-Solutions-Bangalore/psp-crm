@@ -1,45 +1,39 @@
-import { useToast } from "@/hooks/use-toast";
-import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import axios from "axios";
 import BASE_URL from "@/config/BaseUrl";
-import { Loader2, SquarePlus } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
 import { ButtonConfig } from "@/config/ButtonConfig";
-
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { Loader2, SquarePlus } from "lucide-react";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import usetoken from "@/api/usetoken";
 
 const CreateTeam = () => {
+  const token = usetoken();
+
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [companies, setCompanies] = useState([]);
-  const [userPositions, setUserPositions] = useState([]);
   const { toast } = useToast();
   const { pathname } = useLocation();
   const queryClient = useQueryClient();
-  const userId = localStorage.getItem("id");
-  const token = localStorage.getItem("token");
+
   const [formData, setFormData] = useState({
-  
     name: "",
     email: "",
     mobile: "",
- 
   });
-
-
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -60,16 +54,9 @@ const CreateTeam = () => {
     }));
   };
 
-  
-
   const handleSubmit = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (
-    
-      !formData.name ||
-      !formData.email ||
-      !formData.mobile 
-    ) {
+    if (!formData.name || !formData.email || !formData.mobile) {
       toast({
         title: "Error",
         description: "Please fill all fields",
@@ -96,8 +83,6 @@ const CreateTeam = () => {
     }
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("token");
-   
       const response = await axios.post(
         `${BASE_URL}/api/panel-create-team`,
         formData,
@@ -106,25 +91,23 @@ const CreateTeam = () => {
         }
       );
 
-      if (response?.data.code === 200) {
+      if (response?.data.code === 201) {
         toast({
           title: "Success",
-          description: response.data.msg,
+          description: response.data.message,
         });
 
         setFormData({
-      
           name: "",
           email: "",
           mobile: "",
-         
         });
         await queryClient.invalidateQueries(["teams"]);
         setOpen(false);
       } else {
         toast({
           title: "Error",
-          description: response.data.msg,
+          description: response.data.message,
           variant: "destructive",
         });
       }
@@ -141,10 +124,6 @@ const CreateTeam = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {/* <Button variant="default" className="ml-2 bg-yellow-500 text-black hover:bg-yellow-100">
-               <SquarePlus className="h-4 w-4" /> Customer
-             </Button> */}
-
         {pathname === "/master/team" ? (
           <Button
             variant="default"
@@ -152,12 +131,7 @@ const CreateTeam = () => {
           >
             <SquarePlus className="h-4 w-4" /> Team
           </Button>
-        ) : //  <div>
-        //    <BankCreate
-        //      className={`ml-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor}`}
-        //    ></BankCreate>
-        //  </div>
-        pathname === "/create-contract" ? (
+        ) : pathname === "/create-contract" ? (
           <p className="text-xs text-yellow-700 ml-2 mt-1 w-32 hover:text-red-800 cursor-pointer">
             Create Team
           </p>
@@ -170,8 +144,6 @@ const CreateTeam = () => {
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          
-
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -210,7 +182,6 @@ const CreateTeam = () => {
               maxLength="10"
             />
           </div>
-
         </div>
 
         <DialogFooter>

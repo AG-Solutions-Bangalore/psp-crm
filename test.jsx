@@ -1,225 +1,225 @@
-import { ChevronRight } from "lucide-react";
+import { PANEL_LOGIN } from "@/api";
+import apiClient from "@/api/axios";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import Logo from "@/json/logo";
+import { loginSuccess } from "@/redux/authSlice";
 import { motion } from "framer-motion";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
-import React from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import companyname from "../../json/company.json";
+import AnimatedBackgroundLines from "../common/AnimatedBackgroundLines";
+import StockIllustrationCycle from "../common/stock-illustration.";
+import EnquiryDrawer from "./EnquiryDrawer";
 
-const itemVariants = {
-  open: {
-    opacity: 1,
-    height: "auto",
-    transition: { duration: 0.2, ease: "easeOut" },
-  },
-  closed: {
-    opacity: 0,
-    height: 0,
-    transition: { duration: 0.2, ease: "easeIn" },
-  },
-};
+export default function LoginAuth() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
-const buttonVariants = {
-  hover: {
-    scale: 1.02,
-    transition: { duration: 0.1 },
-  },
-};
+  const { toast } = useToast();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-export function NavMain({ items }) {
-  const location = useLocation();
+  const loadingMessages = [
+    "Setting things up for you...",
+    "Checking your credentials...",
+    "Preparing your dashboard...",
+    "Almost there...",
+  ];
 
-  const handleLinkClick = () => {
-    const sidebarContent = document.querySelector(".sidebar-content");
-    if (sidebarContent) {
-      sessionStorage.setItem("sidebarScrollPosition", sidebarContent.scrollTop);
+  useEffect(() => {
+    let index = 0;
+    let intervalId;
+    if (isLoading) {
+      setLoadingMessage(loadingMessages[0]);
+      intervalId = setInterval(() => {
+        index = (index + 1) % loadingMessages.length;
+        setLoadingMessage(loadingMessages[index]);
+      }, 1000);
+    }
+    return () => intervalId && clearInterval(intervalId);
+  }, [isLoading]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("username", email);
+    formData.append("password", password);
+
+    try {
+      const res = await apiClient.post(PANEL_LOGIN, formData);
+      if (res.status === 200 && res.data.UserInfo?.token) {
+        const { UserInfo } = res.data;
+        const userData = {
+          token: UserInfo.token,
+          id: UserInfo.user.id,
+          name: UserInfo.user?.name,
+          user_type: UserInfo.user?.user_type,
+          email: UserInfo.user.email,
+          token_expire_time: UserInfo.token_expires_at,
+          company_detils: company_detils?.company_name,
+
+
+          
+        };
+        dispatch(loginSuccess(userData));
+        navigate(window.innerWidth < 768 ? "/home" : "/stock-view");
+      } else {
+        toast.error("Login Failed: Unexpected response.");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description:
+          error.response?.data?.message || "Please check your credentials.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  React.useEffect(() => {
-    const sidebarContent = document.querySelector(".sidebar-content");
-    const scrollPosition = sessionStorage.getItem("sidebarScrollPosition");
-
-    if (sidebarContent && scrollPosition) {
-      sidebarContent.scrollTop = parseInt(scrollPosition);
-    }
-  }, [location.pathname]);
-
-  if (!items || items.length === 0) {
-    return null;
-  }
-
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-sidebar-foreground/70">
-        Navigation
-      </SidebarGroupLabel>
-      <SidebarMenu className="space-y-1">
-        {items.map((item) => {
-          const hasSubItems = item.items && item.items.length > 0;
-          const isParentActive = hasSubItems
-            ? item.items.some((subItem) => subItem.url === location.pathname)
-            : location.pathname === item.url;
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-yellow-100 px-4">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <AnimatedBackgroundLines />
+      </div>
 
-          if (!hasSubItems) {
-            return (
-              <SidebarMenuItem key={item.title}>
-                <Link to={item.url} onClick={handleLinkClick}>
-                  <motion.div variants={buttonVariants} whileHover="hover">
-                    <SidebarMenuButton
-                      tooltip={item.title}
-                      className={`px-3 py-2 ${
-                        isParentActive
-                          ? "bg-sidebar-primary/10 text-sidebar-primary"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent/20"
-                      }`}
-                    >
-                      {item.icon && <item.icon className="size-4" />}
-                      <span className="ml-3">{item.title}</span>
-                    </SidebarMenuButton>
-                  </motion.div>
-                </Link>
-              </SidebarMenuItem>
-            );
-          }
+      <motion.div
+        className="flex flex-col md:flex-row shadow-2xl rounded-2xl overflow-hidden max-w-5xl w-full bg-white relative z-10"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <div className="hidden md:flex flex-col items-center justify-center p-6 w-1/2 bg-yellow-100">
+          <div className="flex justify-center items-center">
+            <StockIllustrationCycle className="w-96 h-64" />
+          </div>
+        </div>
 
-          return (
-            <Collapsible
-              key={item.title}
-              asChild
-              defaultOpen={isParentActive}
-              className="group/collapsible"
-            >
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <motion.div variants={buttonVariants} whileHover="hover">
-                    <SidebarMenuButton
-                      tooltip={item.title}
-                      className={`px-3 py-2 w-full ${
-                        isParentActive
-                          ? "bg-sidebar-primary/10 text-sidebar-primary"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent/20"
-                      }`}
-                    >
-                      {item.icon && <item.icon className="size-4" />}
-                      <span className="ml-3">{item.title}</span>
-                      <ChevronRight className="ml-auto size-4 transition-transform duration-200 text-sidebar-foreground/70 group-data-[state=open]/collapsible:rotate-90" />
-                    </SidebarMenuButton>
-                  </motion.div>
-                </CollapsibleTrigger>
-                <CollapsibleContent
-                  as={motion.div}
-                  variants={itemVariants}
-                  initial="closed"
-                  animate={isParentActive ? "open" : "closed"}
-                  className="overflow-hidden"
-                >
-                  <SidebarMenuSub className="ml-5 border-l-2 border-sidebar-primary/20 pl-3">
-                    {item.items?.map((subItem) => {
-                      const isSubItemActive = location.pathname === subItem.url;
-                      return (
-                        <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
-                            <Link
-                              to={subItem.url}
-                              onClick={handleLinkClick}
-                              className={`flex items-center rounded-md px-3 py-1.5 text-sm ${
-                                isSubItemActive
-                                  ? "bg-sidebar-primary/10 text-sidebar-primary font-medium"
-                                  : "text-sidebar-foreground/90 hover:bg-sidebar-accent/20 hover:text-sidebar-foreground"
-                              }`}
-                            >
-                              {subItem.icon && (
-                                <subItem.icon className="mr-2 size-3.5" />
-                              )}
-                              {subItem.title}
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      );
-                    })}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          );
-        })}
-      </SidebarMenu>
-    </SidebarGroup>
-  );
-}
-
-
-
-import { motion } from "framer-motion";
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
-
-const buttonVariants = {
-  hover: {
-    scale: 1.02,
-    transition: { duration: 0.1 },
-  },
-};
-
-export function NavMainUser({ projects }) {
-  const location = useLocation();
-
-  if (!projects || projects.length === 0) {
-    return null;
-  }
-
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-sidebar-foreground/70">
-        Administration
-      </SidebarGroupLabel>
-      <SidebarMenu className="space-y-1">
-        {projects.map((item) => {
-          const isActive = location.pathname === item.url;
-          return (
-            <motion.div
-              variants={buttonVariants}
-              whileHover="hover"
-              key={item.name}
-            >
-              <SidebarMenuItem key={item.name}>
-                <Link to={item.url}>
-                  <SidebarMenuButton
-                    tooltip={item.name}
-                    className={`px-3 py-2 ${
-                      isActive
-                        ? "bg-sidebar-primary/10 text-sidebar-primary"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent/20"
-                    }`}
+        <div className="w-full md:w-1/2 p-6 md:p-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="border-none shadow-none">
+              <CardHeader className="mb-4">
+                <div className="flex items-center space-x-3">
+                  <motion.div
+                    animate={{ scale: [1, 1.4, 1] }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 3,
+                      ease: "easeInOut",
+                    }}
                   >
-                    {item.icon && <item.icon className="size-4" />}
-                    <span className="ml-3">{item.name}</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            </motion.div>
-          );
-        })}
-      </SidebarMenu>
-    </SidebarGroup>
+                    <Logo />
+                  </motion.div>{" "}
+                  <span className="text-xl font-bold text-yellow-800">
+                    {companyname?.CompanyName}
+                  </span>
+                </div>
+                <CardTitle className="text-3xl text-yellow-900 mt-4">
+                  Sign In
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="email" className="text-yellow-900">
+                      Username
+                    </Label>
+                    <Input
+                      id="email"
+                      type="text"
+                      placeholder="Enter your username"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="mt-1 bg-white text-black"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password" className="text-yellow-900">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="*******"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="mt-1 bg-white text-black"
+                    />
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Button
+                      type="submit"
+                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <motion.span
+                          key={loadingMessage}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-sm"
+                        >
+                          {loadingMessage}
+                        </motion.span>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </Button>
+                  </motion.div>
+
+                  <CardDescription className="flex justify-between mt-2">
+                    <span
+                      onClick={() => setDrawerOpen(true)}
+                      className="text-yellow-800 underline cursor-pointer"
+                    >
+                      Web Enquiry
+                    </span>
+                    <span
+                      onClick={() => navigate("/forgot-password")}
+                      className="text-yellow-800 underline cursor-pointer"
+                    >
+                      Forgot Password?
+                    </span>
+                  </CardDescription>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </motion.div>
+      <EnquiryDrawer
+        isDrawerOpen={isDrawerOpen}
+        setDrawerOpen={setDrawerOpen}
+      />
+    </div>
   );
 }

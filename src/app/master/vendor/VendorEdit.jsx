@@ -19,6 +19,7 @@ import { ButtonConfig } from "@/config/ButtonConfig";
 import { Textarea } from "@/components/ui/textarea";
 import { useFetchState } from "@/hooks/useApi";
 import { z } from "zod";
+import usetoken from "@/api/usetoken";
 
 const vendorFormSchema = z.object({
   vendor_name: z.string().min(1, "Vendor name is required"),
@@ -69,18 +70,20 @@ const VendorHeader = ({ vendorDetails }) => {
   );
 };
 
-const updateVendor = async ({ id, data }) => {
-  const token = localStorage.getItem("token");
+const updateVendor = async ( data ,id,  token ) => {
   if (!token) throw new Error("No authentication token found");
 
-  const response = await fetch(`https://agsdemo.in/pspapi/public/api/vendors/${id}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    `https://agsdemo.in/pspapi/public/api/vendors/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
 
   if (!response.ok) throw new Error("Failed to update vendor");
   return response.json();
@@ -89,6 +92,8 @@ const updateVendor = async ({ id, data }) => {
 const VendorEdit = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const token = usetoken();
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     vendor_name: "",
@@ -100,10 +105,9 @@ const VendorEdit = () => {
     vendor_state_name: "",
     vendor_state_code: "",
     vendor_type: "1",
-    status: "active",
+    status: "Active",
   });
 
-  // Fetch vendor data by ID
   const {
     data: vendorDetails,
     isLoading,
@@ -112,7 +116,6 @@ const VendorEdit = () => {
   } = useQuery({
     queryKey: ["vendor", id],
     queryFn: async () => {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `https://agsdemo.in/pspapi/public/api/vendors/${id}`,
         {
@@ -147,9 +150,10 @@ const VendorEdit = () => {
 
   // Update vendor mutation
   const updateVendorMutation = useMutation({
-    mutationFn: updateVendor,
+    mutationFn: ({ data, id, token }) => updateVendor(data, id, token),
+
     onSuccess: (response) => {
-      if (response.code == 200) {
+      if (response.code == 201) {
         toast({
           title: "Success",
           description: response.msg || "Vendor updated successfully",
@@ -192,7 +196,7 @@ const VendorEdit = () => {
     e.preventDefault();
     try {
       const validatedData = vendorFormSchema.parse(formData);
-      updateVendorMutation.mutate({ id, data: validatedData });
+      updateVendorMutation.mutate({  data: validatedData,id, token });
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages = error.errors.map((err) => {
@@ -245,7 +249,11 @@ const VendorEdit = () => {
             <div className="text-destructive text-center">
               Error Fetching Vendor Data
             </div>
-            <Button onClick={() => refetch()} variant="outline" className="mt-4">
+            <Button
+              onClick={() => refetch()}
+              variant="outline"
+              className="mt-4"
+            >
               Try Again
             </Button>
           </CardContent>
@@ -263,7 +271,9 @@ const VendorEdit = () => {
           <CardContent className="p-6">
             <div className="grid grid-cols-4 gap-6">
               <div className="col-span-1 row-span-2">
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Vendor Address <span className="text-red-500">*</span>
                 </label>
                 <Textarea
@@ -276,7 +286,9 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Vendor Name <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -288,7 +300,9 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Email <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -301,7 +315,9 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   GST No
                 </label>
                 <Input
@@ -313,7 +329,9 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Contact Name <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -325,19 +343,25 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Contact Mobile <span className="text-red-500">*</span>
                 </label>
                 <Input
                   className="bg-white"
                   value={formData.vendor_contact_mobile}
-                  onChange={(e) => handleInputChange(e, "vendor_contact_mobile")}
+                  onChange={(e) =>
+                    handleInputChange(e, "vendor_contact_mobile")
+                  }
                   placeholder="Enter mobile number"
                 />
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   State <span className="text-red-500">*</span>
                 </label>
                 <Select
@@ -348,7 +372,7 @@ const VendorEdit = () => {
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {stateData?.state?.map((item) => (
+                    {stateData?.data?.map((item) => (
                       <SelectItem value={item.state_name} key={item.state_name}>
                         {item.state_name}
                       </SelectItem>
@@ -358,7 +382,9 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   State Code <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -370,12 +396,14 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Vendor Type <span className="text-red-500">*</span>
                 </label>
                 <Select
                   value={formData.vendor_type}
-                  onValueChange={(value) => 
+                  onValueChange={(value) =>
                     handleInputChange({ target: { value } }, "vendor_type")
                   }
                 >
@@ -390,7 +418,9 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Status <span className="text-red-500">*</span>
                 </label>
                 <Select

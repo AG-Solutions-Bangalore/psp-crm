@@ -38,8 +38,11 @@ import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateTeam from "./CreateTeam";
 import EditTeam from "./EditTeam";
 import Page from "@/app/dashboard/page";
+import usetoken from "@/api/usetoken";
 
 const TeamList = () => {
+    const token = usetoken();
+
   const {
     data: teams,
     isLoading,
@@ -48,7 +51,6 @@ const TeamList = () => {
   } = useQuery({
     queryKey: ["teams"],
     queryFn: async () => {
-      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${BASE_URL}/api/panel-fetch-team-list`,
         {

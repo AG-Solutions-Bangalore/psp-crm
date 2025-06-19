@@ -26,13 +26,12 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavMainUser } from "./nav-main-user";
-
+import { useSelector } from "react-redux";
 
 export function AppSidebar({ ...props }) {
-  const nameL = localStorage.getItem("name");
-  const emailL = localStorage.getItem("email");
-  const companyName = localStorage.getItem("companyName");
- 
+  const nameL = useSelector((state) => state.auth.name);
+  const emailL = useSelector((state) => state.auth.email);
+  const companyName = useSelector((state) => state.auth.companyname);
 
   const initialData = {
     user: {
@@ -86,7 +85,6 @@ export function AppSidebar({ ...props }) {
             title: "Vendor",
             url: "/master/vendor",
           },
-        
         ],
       },
       {
@@ -134,8 +132,6 @@ export function AppSidebar({ ...props }) {
       //     },
       //   ],
       // },
-      
-     
     ],
 
     // userManagement: [
@@ -155,7 +151,7 @@ export function AppSidebar({ ...props }) {
   const data = {
     ...initialData,
     navMain: initialData.navMain,
-   
+
     // userManagement: initialData.userManagement,
   };
 
@@ -176,6 +172,3 @@ export function AppSidebar({ ...props }) {
     </Sidebar>
   );
 }
-
-
-// sajid 

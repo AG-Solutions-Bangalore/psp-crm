@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useFetchProduct, useFetchState } from "@/hooks/useApi";
 import BASE_URL from "@/config/BaseUrl";
+import usetoken from "@/api/usetoken";
 
 // Validation Schema
 const branchFormSchema = z.object({
@@ -71,8 +72,7 @@ const BranchHeader = ({ progress }) => {
   );
 };
 
-const createBranch = async (data) => {
-  const token = localStorage.getItem("token");
+const createBranch = async (data, token) => {
   if (!token) throw new Error("No authentication token found");
 
   const response = await fetch("https://agsdemo.in/pspapi/public/api/vendors", {
@@ -90,6 +90,8 @@ const createBranch = async (data) => {
 
 const CreateVendor = () => {
   const { toast } = useToast();
+  const token = usetoken();
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     vendor_name: "",
@@ -105,21 +107,20 @@ const CreateVendor = () => {
   const [progress, setProgress] = useState(0);
 
   const { data: stateData } = useFetchState();
-  
   const createBranchMutation = useMutation({
-    mutationFn: createBranch,
-
+    mutationFn: ({ data, token }) => createBranch(data, token),
     onSuccess: (response) => {
-      if (response.code == 200) {
+      console.log(response)
+      if (response.code == 201) {
         toast({
           title: "Success",
-          description: response.msg || "Vendor created successfully",
+          description: response.message || "Vendor created successfully",
         });
         navigate("/master/vendor");
       } else {
         toast({
           title: "Error",
-          description: response.msg || "Failed to create vendor",
+          description: response.message || "Failed to create vendor",
           variant: "destructive",
         });
       }
@@ -159,7 +160,7 @@ const CreateVendor = () => {
 
     try {
       const validatedData = branchFormSchema.parse(formData);
-      createBranchMutation.mutate(validatedData);
+      createBranchMutation.mutate({ data: validatedData, token });
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages = error.errors.map((err) => {
@@ -199,7 +200,9 @@ const CreateVendor = () => {
           <CardContent className="p-6">
             <div className="grid grid-cols-4 gap-6">
               <div className="col-span-1 row-span-2">
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Vendor Address <span className="text-red-500">*</span>
                 </label>
                 <Textarea
@@ -212,7 +215,9 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Vendor Name <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -224,7 +229,9 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Email <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -237,7 +244,9 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   GST No
                 </label>
                 <Input
@@ -249,7 +258,9 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Contact Name <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -261,25 +272,34 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Contact Mobile <span className="text-red-500">*</span>
                 </label>
                 <Input
                   className="bg-white"
                   value={formData.vendor_contact_mobile}
-                  onChange={(e) => handleInputChange(e, "vendor_contact_mobile")}
+                  onChange={(e) =>
+                    handleInputChange(e, "vendor_contact_mobile")
+                  }
                   placeholder="Enter mobile number"
                 />
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   State <span className="text-red-500">*</span>
                 </label>
                 <Select
                   value={formData.vendor_state_name}
                   onValueChange={(value) => {
-                    handleInputChange({ target: { value } }, "vendor_state_name");
+                    handleInputChange(
+                      { target: { value } },
+                      "vendor_state_name"
+                    );
                     // You might want to set state code here based on selected state
                   }}
                 >
@@ -287,7 +307,7 @@ const CreateVendor = () => {
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {stateData?.state?.map((item) => (
+                    {stateData?.data?.map((item) => (
                       <SelectItem value={item.state_name} key={item.state_name}>
                         {item.state_name}
                       </SelectItem>
@@ -297,7 +317,9 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   State Code <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -309,12 +331,14 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}>
+                <label
+                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
+                >
                   Vendor Type <span className="text-red-500">*</span>
                 </label>
                 <Select
                   value={formData.vendor_type}
-                  onValueChange={(value) => 
+                  onValueChange={(value) =>
                     handleInputChange({ target: { value } }, "vendor_type")
                   }
                 >
