@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/tooltip";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import usetoken from "@/api/usetoken";
+import apiClient from "@/api/axios";
+import { ITEM_LIST } from "@/api";
 
 const EditItem = ({ customdescriptionId }) => {
   const token = usetoken();
@@ -46,8 +48,8 @@ const EditItem = ({ customdescriptionId }) => {
   const fetchStateData = async () => {
     setIsFetching(true);
     try {
-      const response = await axios.get(
-        `${BASE_URL}/api/items/${customdescriptionId}`,
+      const response = await apiClient.get(
+        `${ITEM_LIST}/${customdescriptionId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -92,8 +94,8 @@ const EditItem = ({ customdescriptionId }) => {
 
     setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/items/${customdescriptionId}`,
+      const response = await apiClient.put(
+        `${ITEM_LIST}/${customdescriptionId}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -153,7 +155,6 @@ const EditItem = ({ customdescriptionId }) => {
                   }`}
                 />
               </Button>
-
             </PopoverTrigger>
           </TooltipTrigger>
           <TooltipContent>

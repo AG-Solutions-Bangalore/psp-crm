@@ -88,8 +88,8 @@ export function AppSidebar({ ...props }) {
         ],
       },
       {
-        title: "Contract",
-        url: "/contract",
+        title: "Raw Material",
+        url: "/raw-material",
         icon: Blocks,
         isActive: false,
       },

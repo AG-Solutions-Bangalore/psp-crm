@@ -1,24 +1,6 @@
 import Page from "@/app/dashboard/page";
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  Loader2,
-  Edit,
-  Search,
-  SquarePlus,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -34,14 +16,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, Search } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BASE_URL from "@/config/BaseUrl";
 
-import { ButtonConfig } from "@/config/ButtonConfig";
-import EditItem from "./EditItem";
-import CreateItem from "./CreateItem";
+import { ITEM_LIST } from "@/api";
+import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
+import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import { ButtonConfig } from "@/config/ButtonConfig";
+import CreateItem from "./CreateItem";
+import EditItem from "./EditItem";
 
 const ItemList = () => {
   const token = usetoken();
@@ -54,7 +48,7 @@ const ItemList = () => {
   } = useQuery({
     queryKey: ["item"],
     queryFn: async () => {
-      const response = await axios.get(`${BASE_URL}/api/items`, {
+      const response = await apiClient.get(`${ITEM_LIST}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
@@ -150,36 +144,11 @@ const ItemList = () => {
 
   // Render loading state
   if (isLoading) {
-    return (
-      <Page>
-        <div className="flex justify-center items-center h-full">
-          <Button disabled>
-            <Loader2 className=" h-4 w-4 animate-spin" />
-            Loading Item Data
-          </Button>
-        </div>
-      </Page>
-    );
+    return <LoaderComponent name="Item Data" />;
   }
 
-  // Render error state
   if (isError) {
-    return (
-      <Page>
-        <Card className="w-full max-w-md mx-auto mt-10">
-          <CardHeader>
-            <CardTitle className="text-destructive">
-              Error Fetching ColItemor
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => refetch()} variant="outline">
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
-      </Page>
-    );
+    return <ErrorComponent message="Error Fetching Item" refetch={refetch} />;
   }
   return (
     <Page>

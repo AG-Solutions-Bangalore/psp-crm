@@ -31,6 +31,8 @@ import { Edit, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import usetoken from "@/api/usetoken";
+import { FETCH_TEAM_BY_ID, UPDATE_TEAM } from "@/api";
+import apiClient from "@/api/axios";
 
 const EditTeam = ({ teamId }) => {
   const token = usetoken();
@@ -51,12 +53,9 @@ const EditTeam = ({ teamId }) => {
   const fetchTeamData = async () => {
     setIsFetching(true);
     try {
-      const response = await axios.get(
-        `${BASE_URL}/api/panel-fetch-team-by-id/${teamId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiClient.get(`${FETCH_TEAM_BY_ID}/${teamId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const teamData = response.data.data;
       setFormData({
         mobile: teamData.mobile,
@@ -109,8 +108,8 @@ const EditTeam = ({ teamId }) => {
 
     setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/panel-update-team/${teamId}`,
+      const response = await apiClient.put(
+        `${UPDATE_TEAM}/${teamId}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

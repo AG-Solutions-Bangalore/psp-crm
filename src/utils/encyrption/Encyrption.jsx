@@ -16,9 +16,19 @@ export const encryptId = (id) => {
 
 export const decryptId = (encryptedId) => {
   try {
+    // if (!encryptedId) {
+    //   console.error("Encrypted ID is missing");
+    //   return "";
+    // }
     if (!encryptedId) {
-      console.error("Encrypted ID is missing");
-      return "";
+      console.error("Decryption failed for ID:", id);
+      toast({
+        title: "Invalid Link",
+        description:
+          "The provided ID could not be encryptedId. It may be corrupted.",
+        variant: "destructive",
+      });
+      return null;
     }
     const bytes = CryptoJS.AES.decrypt(encryptedId, secretKey);
     return bytes.toString(CryptoJS.enc.Utf8);

@@ -19,6 +19,8 @@ import { Loader2, SquarePlus } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import usetoken from "@/api/usetoken";
+import { CREATE_TEAM } from "@/api";
+import apiClient from "@/api/axios";
 
 const CreateTeam = () => {
   const token = usetoken();
@@ -83,13 +85,9 @@ const CreateTeam = () => {
     }
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/panel-create-team`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiClient.post(`${CREATE_TEAM}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response?.data.code === 201) {
         toast({
