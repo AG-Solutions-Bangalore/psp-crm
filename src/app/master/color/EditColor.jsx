@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/tooltip";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import usetoken from "@/api/usetoken";
+import { COLOR_LIST } from "@/api";
+import apiClient from "@/api/axios";
 
 const EditColor = ({ customdescriptionId }) => {
   const token = usetoken();
@@ -47,8 +49,8 @@ const EditColor = ({ customdescriptionId }) => {
   const fetchStateData = async () => {
     setIsFetching(true);
     try {
-      const response = await axios.get(
-        `${BASE_URL}/api/colors/${customdescriptionId}`,
+      const response = await apiClient.get(
+        `${COLOR_LIST}/${customdescriptionId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -93,8 +95,8 @@ const EditColor = ({ customdescriptionId }) => {
 
     setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/colors/${customdescriptionId}`,
+      const response = await apiClient.put(
+        `${COLOR_LIST}/${customdescriptionId}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -156,7 +158,6 @@ const EditColor = ({ customdescriptionId }) => {
                   }`}
                 />
               </Button>
-        
             </PopoverTrigger>
           </TooltipTrigger>
           <TooltipContent>

@@ -102,7 +102,7 @@ const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
         <div className="mx-4">
           <div className="bg-white rounded-lg shadow-xl border border-gray-300">
             <div
-              className="h-1 bg-yellow-500 rounded-tl-lg"
+              className="h-1 bg-sidebar-primary text-sidebar-primary-foreground rounded-tl-lg"
               style={{
                 width: `${(countdown / 300) * 100}%`,
                 transition: "width 1s linear",
@@ -110,13 +110,13 @@ const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
             />
             <div className="p-2">
               <div className="flex items-center gap-4">
-                <div className="bg-yellow-100 rounded-full p-2">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                <div className="bg-sidebar-primary rounded-full p-2">
+                  <AlertTriangle className="h-5 w-5 text-sidebar-primary-foreground" />
                 </div>
                 <div>
                   <div className="text-gray-800 text-sm">
                     Session timeout in{" "}
-                    <span className="text-yellow-600 font-bold font-mono">
+                    <span className="text-sidebar-primary font-bold font-mono">
                       {formatTime(countdown)}
                     </span>
                   </div>

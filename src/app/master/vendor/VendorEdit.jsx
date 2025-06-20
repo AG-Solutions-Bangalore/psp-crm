@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { VENDOR_LIST } from "@/api";
+import apiClient from "@/api/axios";
+import usetoken from "@/api/usetoken";
+import Page from "@/app/dashboard/page";
+import { ProgressBar } from "@/components/spinner/ProgressBar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,22 +13,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate, useParams } from "react-router-dom";
-import { ProgressBar } from "@/components/spinner/ProgressBar";
-import { Loader2 } from "lucide-react";
-import Page from "@/app/dashboard/page";
-import { ButtonConfig } from "@/config/ButtonConfig";
 import { Textarea } from "@/components/ui/textarea";
+import { ButtonConfig } from "@/config/ButtonConfig";
+import { useToast } from "@/hooks/use-toast";
 import { useFetchState } from "@/hooks/useApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
-import usetoken from "@/api/usetoken";
-
+import ReactSelect, { components } from "react-select";
+import { ChevronsUpDown } from "lucide-react";
+const DropdownIndicator = () => (
+  <div className="p-2 flex items-center ">
+    <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400" />
+  </div>
+);
+const vendortype = [
+  {
+    value: "1",
+    label: "Vendor",
+  },
+  {
+    value: "2",
+    label: "Customer",
+  },
+];
 const vendorFormSchema = z.object({
   vendor_name: z.string().min(1, "Vendor name is required"),
   vendor_email: z.string().email("Invalid email format"),
   vendor_address: z.string().min(1, "Address is required"),
-  vendor_gst: z.string().optional(),
+  vendor_gst: z.any().optional(),
   vendor_contact_name: z.string().min(1, "Contact name is required"),
   vendor_contact_mobile: z.string().min(10, "Mobile should be 10 digits"),
   vendor_state_name: z.string().min(1, "State is required"),
@@ -70,25 +88,22 @@ const VendorHeader = ({ vendorDetails }) => {
   );
 };
 
-const updateVendor = async ( data ,id,  token ) => {
+const updateVendor = async (data, id, token) => {
   if (!token) throw new Error("No authentication token found");
 
-  const response = await fetch(
-    `https://agsdemo.in/pspapi/public/api/vendors/${id}`,
-    {
-      method: "PUT",
+  try {
+    const response = await apiClient.put(`${VENDOR_LIST}/${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
-    }
-  );
+    });
 
-  if (!response.ok) throw new Error("Failed to update vendor");
-  return response.json();
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to update vendor");
+  }
 };
-
 const VendorEdit = () => {
   const { id } = useParams();
   const { toast } = useToast();
@@ -116,16 +131,12 @@ const VendorEdit = () => {
   } = useQuery({
     queryKey: ["vendor", id],
     queryFn: async () => {
-      const response = await fetch(
-        `https://agsdemo.in/pspapi/public/api/vendors/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch vendor");
-      return response.json();
+      const response = await apiClient.get(`${VENDOR_LIST}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
     },
   });
 
@@ -196,7 +207,7 @@ const VendorEdit = () => {
     e.preventDefault();
     try {
       const validatedData = vendorFormSchema.parse(formData);
-      updateVendorMutation.mutate({  data: validatedData,id, token });
+      updateVendorMutation.mutate({ data: validatedData, id, token });
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages = error.errors.map((err) => {
@@ -396,27 +407,76 @@ const VendorEdit = () => {
               </div>
 
               <div>
-                <label
-                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
-                >
-                  Vendor Type <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium mb-2">
+                  Vendor Type<span className="text-red-500">*</span>
                 </label>
-                <Select
-                  value={formData.vendor_type}
-                  onValueChange={(value) =>
-                    handleInputChange({ target: { value } }, "vendor_type")
-                  }
-                >
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="1">Vendor</SelectItem>
-                    <SelectItem value="2">Customer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
+                <ReactSelect
+                  isMulti
+                  closeMenuOnSelect={false}
+                  options={vendortype}
+                  value={
+                    typeof formData.vendor_type === "string"
+                      ? vendortype.filter((opt) =>
+                          formData.vendor_type.split(",").includes(opt.value)
+                        )
+                      : []
+                  }
+                  onChange={(selectedOptions) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      vendor_type: selectedOptions
+                        .map((opt) => opt.value)
+                        .join(","),
+                    }))
+                  }
+                  className="basic-multi-select text-sm ring-offset-background placeholder:text-muted-foreground"
+                  classNamePrefix="select"
+                  placeholder="Select Vendor..."
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      borderRadius: "0.7rem",
+                      borderWidth: "0.1px",
+                      cursor: "pointer",
+                      borderColor: state.isFocused
+                        ? "#1f7a57"
+                        : base.borderColor,
+                      boxShadow: state.isFocused
+                        ? "0 0 0 0.1px #1f7a57"
+                        : "none",
+                      fontSize: "0.875rem",
+                      "&:hover": {
+                        borderColor: "#1f7a57",
+                      },
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? "#1f7a57" : "white",
+                      borderRadius: "0.7rem",
+                      color: state.isFocused ? "white" : "#111827",
+                      "&:active": {
+                        backgroundColor: "#1f7a57",
+                        color: "white",
+                      },
+                    }),
+                    multiValueRemove: (base, state) => ({
+                      ...base,
+                      color: state.isFocused ? "#1f7a57" : "#6b7280",
+                      backgroundColor: state.isFocused
+                        ? "#d1fae5"
+                        : "transparent",
+                      borderRadius: "0.375rem",
+                      cursor: "pointer",
+                      ":hover": {
+                        color: "white",
+                        backgroundColor: "#1f7a57",
+                      },
+                    }),
+                  }}
+                  components={{ DropdownIndicator }}
+                />
+              </div>
               <div>
                 <label
                   className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}

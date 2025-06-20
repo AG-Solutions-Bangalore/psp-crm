@@ -1,24 +1,6 @@
 import Page from "@/app/dashboard/page";
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  Loader2,
-  Edit,
-  Search,
-  SquarePlus,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -34,14 +16,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, Search } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BASE_URL from "@/config/BaseUrl";
 
+import { COLOR_LIST } from "@/api";
+import apiClient from "@/api/axios";
+import usetoken from "@/api/usetoken";
+import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateColor from "./CreateColor";
 import EditColor from "./EditColor";
-import usetoken from "@/api/usetoken";
 
 const ColorList = () => {
   const token = usetoken();
@@ -54,7 +48,7 @@ const ColorList = () => {
   } = useQuery({
     queryKey: ["color"],
     queryFn: async () => {
-      const response = await axios.get(`${BASE_URL}/api/colors`, {
+      const response = await apiClient.get(`${COLOR_LIST}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
@@ -148,38 +142,12 @@ const ColorList = () => {
     },
   });
 
-  // Render loading state
   if (isLoading) {
-    return (
-      <Page>
-        <div className="flex justify-center items-center h-full">
-          <Button disabled>
-            <Loader2 className=" h-4 w-4 animate-spin" />
-            Loading Color Data
-          </Button>
-        </div>
-      </Page>
-    );
+    return <LoaderComponent name="Color Data" />;
   }
 
-  // Render error state
   if (isError) {
-    return (
-      <Page>
-        <Card className="w-full max-w-md mx-auto mt-10">
-          <CardHeader>
-            <CardTitle className="text-destructive">
-              Error Fetching Color
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => refetch()} variant="outline">
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
-      </Page>
-    );
+    return <ErrorComponent message="Error Fetching Color" refetch={refetch} />;
   }
   return (
     <Page>
@@ -188,16 +156,7 @@ const ColorList = () => {
           Colors List
         </div>
 
-        {/* searching and column filter  */}
         <div className="flex items-center py-4">
-          {/* <Input
-        placeholder="Search..."
-        value={table.getState().globalFilter || ""}
-        onChange={(event) => {
-          table.setGlobalFilter(event.target.value);
-        }}
-        className="max-w-sm"
-      /> */}
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input

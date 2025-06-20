@@ -15,6 +15,8 @@ import {
 import { useLocation } from "react-router-dom";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import usetoken from "@/api/usetoken";
+import { ITEM_LIST } from "@/api";
+import apiClient from "@/api/axios";
 
 const CreateItem = () => {
   const token = usetoken();
@@ -39,7 +41,7 @@ const CreateItem = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BASE_URL}/api/items`, formData, {
+      const response = await apiClient.post(`${ITEM_LIST}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

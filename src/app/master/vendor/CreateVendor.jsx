@@ -1,15 +1,11 @@
+import { VENDOR_LIST } from "@/api";
+import apiClient from "@/api/axios";
+import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
-import React, { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { z } from "zod";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import { ProgressBar } from "@/components/spinner/ProgressBar";
-import { ButtonConfig } from "@/config/ButtonConfig";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -17,10 +13,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFetchProduct, useFetchState } from "@/hooks/useApi";
-import BASE_URL from "@/config/BaseUrl";
-import usetoken from "@/api/usetoken";
-
+import ReactSelect, { components } from "react-select";
+import { Textarea } from "@/components/ui/textarea";
+import { ButtonConfig } from "@/config/ButtonConfig";
+import { useToast } from "@/hooks/use-toast";
+import { useFetchState } from "@/hooks/useApi";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { ChevronsUpDown } from "lucide-react";
+const DropdownIndicator = () => (
+  <div className="p-2 flex items-center ">
+    <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400" />
+  </div>
+);
 // Validation Schema
 const branchFormSchema = z.object({
   vendor_name: z.string().min(1, "Name is required"),
@@ -75,19 +82,29 @@ const BranchHeader = ({ progress }) => {
 const createBranch = async (data, token) => {
   if (!token) throw new Error("No authentication token found");
 
-  const response = await fetch("https://agsdemo.in/pspapi/public/api/vendors", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await apiClient.post(`${VENDOR_LIST}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!response.ok) throw new Error("Failed to create vendor");
-  return response.json();
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to create vendor");
+  }
 };
-
+const vendortype = [
+  {
+    value: "1",
+    label: "Vendor",
+  },
+  {
+    value: "2",
+    label: "Customer",
+  },
+];
 const CreateVendor = () => {
   const { toast } = useToast();
   const token = usetoken();
@@ -102,7 +119,7 @@ const CreateVendor = () => {
     vendor_contact_mobile: "",
     vendor_state_name: "",
     vendor_state_code: "",
-    vendor_type: "2", // Default to Customer (2)
+    vendor_type: "",
   });
   const [progress, setProgress] = useState(0);
 
@@ -110,7 +127,7 @@ const CreateVendor = () => {
   const createBranchMutation = useMutation({
     mutationFn: ({ data, token }) => createBranch(data, token),
     onSuccess: (response) => {
-      console.log(response)
+      console.log(response);
       if (response.code == 201) {
         toast({
           title: "Success",
@@ -191,7 +208,7 @@ const CreateVendor = () => {
       });
     }
   };
-
+  console.log(formData.vendor_roles);
   return (
     <Page>
       <form onSubmit={handleSubmit} className="w-full p-4">
@@ -300,7 +317,6 @@ const CreateVendor = () => {
                       { target: { value } },
                       "vendor_state_name"
                     );
-                    // You might want to set state code here based on selected state
                   }}
                 >
                   <SelectTrigger className="bg-white">
@@ -331,25 +347,80 @@ const CreateVendor = () => {
               </div>
 
               <div>
-                <label
-                  className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
-                >
-                  Vendor Type <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium mb-2">
+                  Vendor Type<span className="text-red-500">*</span>
                 </label>
-                <Select
-                  value={formData.vendor_type}
-                  onValueChange={(value) =>
-                    handleInputChange({ target: { value } }, "vendor_type")
+
+                <ReactSelect
+                  isMulti
+                  closeMenuOnSelect={false}
+                  options={vendortype}
+                  value={
+                    Array.isArray(formData.vendor_type)
+                      ? vendortype.filter((opt) =>
+                          formData.vendor_type.includes(opt.value)
+                        )
+                      : typeof formData.vendor_type === "string"
+                      ? vendortype.filter((opt) =>
+                          formData.vendor_type.split(",").includes(opt.value)
+                        )
+                      : []
                   }
-                >
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="1">Vendor</SelectItem>
-                    <SelectItem value="2">Customer</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={(selectedOptions) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      vendor_type: selectedOptions
+                        .map((opt) => opt.value)
+                        .join(","),
+                    }))
+                  }
+                  className="basic-multi-select text-sm ring-offset-background placeholder:text-muted-foreground"
+                  classNamePrefix="select"
+                  placeholder="Select Vendor..."
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      borderRadius: "0.7rem",
+                      borderWidth: "0.1px",
+                      cursor: "pointer",
+                      borderColor: state.isFocused
+                        ? "#1f7a57"
+                        : base.borderColor,
+                      boxShadow: state.isFocused
+                        ? "0 0 0 0.1px #1f7a57"
+                        : "none",
+                      fontSize: "0.875rem",
+                      "&:hover": {
+                        borderColor: "#1f7a57",
+                      },
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? "#1f7a57" : "white",
+                      borderRadius: "0.7rem",
+                      textTransform: "uppercase",
+                      color: state.isFocused ? "white" : "#111827",
+                      "&:active": {
+                        backgroundColor: "#1f7a57",
+                        color: "white",
+                      },
+                    }),
+                    multiValueRemove: (base, state) => ({
+                      ...base,
+                      color: state.isFocused ? "#1f7a57" : "#6b7280", 
+                      backgroundColor: state.isFocused
+                        ? "#d1fae5"
+                        : "transparent",
+                      borderRadius: "0.375rem",
+                      cursor: "pointer",
+                      ":hover": {
+                        color: "white",
+                        backgroundColor: "#1f7a57",
+                      },
+                    }),
+                  }}
+                  components={{ DropdownIndicator }}
+                />
               </div>
             </div>
           </CardContent>
