@@ -18,6 +18,10 @@ import ValidationWrapper from "./utils/ValidationWrapper";
 import VersionCheck from "./utils/VersionCheck";
 import RawMaterialList from "./app/rawmaterial/RawMaterialList";
 import RawMaterialForm from "./app/rawmaterial/RawMaterialForm";
+import GranualsList from "./app/granuals/GranualsList";
+import GranualsForm from "./app/granuals/GranualsForm";
+import YarnList from "./app/yarn/YarnList";
+import YarnForm from "./app/yarn/YarnForm";
 
 function App() {
   const time = useSelector((state) => state.auth.token_expire_time);
@@ -34,7 +38,11 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/maintenance" element={<Maintenance />} />
-          {/* Master - Team  */} <Route path="/home" element={<TeamList />} />
+
+          {/* HOME */}
+          <Route path="/home" element={<TeamList />} />
+
+          {/* Master */}
           <Route path="/master/team" element={<TeamList />} />
           <Route path="/master/color" element={<ColorList />} />
           <Route path="/master/item" element={<ItemList />} />
@@ -54,6 +62,14 @@ function App() {
             path="/raw-material-update/:id"
             element={<RawMaterialForm />}
           />
+          {/* //GRANUALS */}
+          <Route path="/granuals" element={<GranualsList />} />
+          <Route path="/granuals-create" element={<GranualsForm />} />
+          <Route path="/granuals-update/:id" element={<GranualsForm />} />
+          {/* //Yarn */}
+          <Route path="/yarn" element={<YarnList />} />
+          <Route path="/yarn-create" element={<YarnForm />} />
+          <Route path="/yarn-update/:id" element={<YarnForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ValidationWrapper>

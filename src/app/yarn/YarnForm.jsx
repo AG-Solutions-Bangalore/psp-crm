@@ -1,4 +1,4 @@
-import { RAW_MATERIAL_LIST } from "@/api";
+import { YARN_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/table";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchItem, useFetchVendor } from "@/hooks/useApi";
+import { useFetchColor, useFetchVendor } from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, MinusCircle, PlusCircle, Trash2 } from "lucide-react";
@@ -36,7 +36,7 @@ import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const fetchRawMaterialById = async (id, token) => {
-  const response = await apiClient.get(`${RAW_MATERIAL_LIST}/${id}`, {
+  const response = await apiClient.get(`${YARN_LIST}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -44,7 +44,7 @@ const fetchRawMaterialById = async (id, token) => {
   return response.data;
 };
 
-const RawMaterialForm = () => {
+const YarnForm = () => {
   const { id } = useParams();
   let decryptedId = null;
   const isEdit = Boolean(id);
@@ -70,16 +70,16 @@ const RawMaterialForm = () => {
   const token = usetoken();
 
   const [formData, setFormData] = useState({
-    raw_material_date: today,
-    raw_material_bill_ref: "",
-    raw_material_vendor_id: "",
+    yarn_sale_date: today,
+    yarn_vendor_id: "",
   });
 
   const [invoiceData, setInvoiceData] = useState([
     {
       id: editId ? "" : null,
-      raw_material_sub_item_id: "",
-      raw_material_sub_weight: "",
+      yarn_sub_color_id: "",
+      yarn_sub_thickness: "",
+      yarn_sub_weight: "",
     },
   ]);
   const { data: rawMaterialById, isFetching } = useQuery({
@@ -91,21 +91,22 @@ const RawMaterialForm = () => {
     if (decryptedId && rawMaterialById?.data) {
       const raw = rawMaterialById.data;
       setFormData({
-        raw_material_date: raw.raw_material_date || "",
-        raw_material_bill_ref: raw.raw_material_ref || "",
-        raw_material_vendor_id: raw.raw_material_vendor_id || "",
+        yarn_sale_date: raw.yarn_sale_date || "",
+        yarn_vendor_id: raw.yarn_vendor_id || "",
       });
 
       const subItems = Array.isArray(rawMaterialById?.data?.subs)
         ? rawMaterialById?.data?.subs.map((sub) => ({
             id: sub.id || "",
-            raw_material_sub_item_id: sub.raw_material_sub_item_id || "",
-            raw_material_sub_weight: sub.raw_material_sub_weight || "",
+            yarn_sub_color_id: sub.yarn_sub_color_id || "",
+            yarn_sub_thickness: sub.yarn_sub_thickness || "",
+            yarn_sub_weight: sub.yarn_sub_weight || "",
           }))
         : [
             {
-              raw_material_sub_item_id: "",
-              raw_material_sub_weight: "",
+              yarn_sub_color_id: "",
+              yarn_sub_thickness: "",
+              yarn_sub_weight: "",
             },
           ];
 
@@ -114,14 +115,15 @@ const RawMaterialForm = () => {
   }, [decryptedId, rawMaterialById]);
 
   const { data: vendorData, isLoading: loadingvendor } = useFetchVendor();
-  const { data: itemData, isLoading: loadingitem } = useFetchItem();
+  const { data: colorData, isLoading: loadingitem } = useFetchColor();
 
   const addRow = useCallback(() => {
     setInvoiceData((prev) => [
       ...prev,
       {
-        raw_material_sub_item_id: "",
-        raw_material_sub_weight: "",
+        yarn_sub_color_id: "",
+        yarn_sub_thickness: "",
+        yarn_sub_weight: "",
       },
     ]);
   }, []);
@@ -140,8 +142,13 @@ const RawMaterialForm = () => {
         ? selectedValue.target.value
         : selectedValue;
 
-    if (fieldName === "raw_material_sub_weight" && !/^\d*\.?\d*$/.test(value)) {
-      console.warn("Invalid input: Only digits are allowed for weight.");
+    if (
+      (fieldName === "yarn_sub_weight" || fieldName === "yarn_sub_thickness") &&
+      !/^\d*\.?\d*$/.test(value)
+    ) {
+      console.warn(
+        "Invalid input: Only digits and an optional decimal point are allowed for weight or bags."
+      );
       return;
     }
 
@@ -157,7 +164,6 @@ const RawMaterialForm = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target ? e.target.value : e;
-    console.log(value);
     let updatedFormData = { ...formData, [field]: value };
 
     setFormData(updatedFormData);
@@ -167,15 +173,14 @@ const RawMaterialForm = () => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.raw_material_date) missingFields.push("Date");
-    if (!formData.raw_material_bill_ref) missingFields.push("Bill Ref");
-    if (!formData.raw_material_vendor_id) missingFields.push("Vendor");
+    if (!formData.yarn_sale_date) missingFields.push("Date");
+    if (!formData.yarn_vendor_id) missingFields.push("Vendor");
 
     invoiceData.forEach((row, index) => {
-      if (!row.raw_material_sub_item_id)
-        missingFields.push(`Row ${index + 1}: Item`);
-      if (!row.raw_material_sub_weight)
-        missingFields.push(`Row ${index + 1}: Weight`);
+      if (!row.yarn_sub_color_id) missingFields.push(`Row ${index + 1}: Color`);
+      if (!row.yarn_sub_thickness)
+        missingFields.push(`Row ${index + 1}: Thickness`);
+      if (!row.yarn_sub_weight) missingFields.push(`Row ${index + 1}: Weight`);
     });
 
     if (missingFields.length > 0) {
@@ -204,9 +209,7 @@ const RawMaterialForm = () => {
         subs: invoiceData,
       };
 
-      const url = editId
-        ? `${RAW_MATERIAL_LIST}/${decryptedId}`
-        : RAW_MATERIAL_LIST;
+      const url = editId ? `${YARN_LIST}/${decryptedId}` : YARN_LIST;
       const method = editId ? "put" : "post";
 
       const response = await apiClient[method](url, payload, {
@@ -219,7 +222,7 @@ const RawMaterialForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/raw-material");
+        navigate("/yarn");
       } else {
         toast({
           title: "Error",
@@ -231,8 +234,7 @@ const RawMaterialForm = () => {
       console.log(error);
       toast({
         title: "Error",
-        description:
-          error?.response?.data?.message || "Failed to save raw material",
+        description: error?.response?.data?.message || "Failed to save granual",
         variant: "destructive",
       });
     } finally {
@@ -246,7 +248,7 @@ const RawMaterialForm = () => {
   const handleDelete = async () => {
     try {
       const response = await apiClient.delete(
-        `${RAW_MATERIAL_LIST}/sub/${deleteItemId}`,
+        `${YARN_LIST}/sub/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -291,7 +293,7 @@ const RawMaterialForm = () => {
   };
 
   if (isFetching || loadingvendor || loadingitem) {
-    return <LoaderComponent name="Raw Data" />;
+    return <LoaderComponent name="Yarn" />;
   }
   return (
     <Page>
@@ -303,7 +305,7 @@ const RawMaterialForm = () => {
             >
               <div className="flex-1">
                 <h1 className="text-lg font-bold text-gray-800">
-                  {editId ? "Update Raw Material" : "Create Raw Material"}
+                  {editId ? "Update Yarn" : "Create Yarn"}
                 </h1>
               </div>
             </div>{" "}
@@ -319,28 +321,13 @@ const RawMaterialForm = () => {
                       </label>
                       <Input
                         className="bg-white"
-                        value={formData.raw_material_date}
-                        onChange={(e) =>
-                          handleInputChange(e, "raw_material_date")
-                        }
+                        value={formData.yarn_sale_date}
+                        onChange={(e) => handleInputChange(e, "yarn_sale_date")}
                         type="date"
                       />
                     </div>
                   </div>
-                  <div>
-                    <label
-                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
-                    >
-                      Bill Ref<span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      className="bg-white border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
-                      value={formData.raw_material_bill_ref}
-                      onChange={(e) =>
-                        handleInputChange(e, "raw_material_bill_ref")
-                      }
-                    />
-                  </div>
+
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <label
@@ -351,10 +338,8 @@ const RawMaterialForm = () => {
                     </div>
 
                     <MemoizedSelect
-                      value={formData.raw_material_vendor_id}
-                      onChange={(e) =>
-                        handleInputChange(e, "raw_material_vendor_id")
-                      }
+                      value={formData.yarn_vendor_id}
+                      onChange={(e) => handleInputChange(e, "yarn_vendor_id")}
                       options={
                         vendorData?.data?.map((vendor) => ({
                           value: vendor.id,
@@ -373,7 +358,17 @@ const RawMaterialForm = () => {
                         <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
                           <div className="flex items-center justify-between">
                             <span>
-                              Item
+                              Color
+                              <span className="text-red-500 ml-1 text-xs">
+                                *
+                              </span>
+                            </span>
+                          </div>
+                        </TableHead>
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                          <div className="flex items-center justify-between">
+                            <span>
+                              Bags
                               <span className="text-red-500 ml-1 text-xs">
                                 *
                               </span>
@@ -411,38 +406,54 @@ const RawMaterialForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <MemoizedProductSelect
-                                value={row.raw_material_sub_item_id}
+                                value={row.yarn_sub_color_id}
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "raw_material_sub_item_id"
+                                    "yarn_sub_color_id"
                                   )
                                 }
                                 options={
-                                  itemData?.data?.map((item) => ({
+                                  colorData?.data?.map((item) => ({
                                     value: item.id,
-                                    label: item.item_name,
+                                    label: item.color,
                                   })) || []
                                 }
-                                placeholder="Select Item"
+                                placeholder="Select Color"
                               />
                             </div>
                           </TableCell>
-
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
                                 value={
-                                  invoiceData[rowIndex]
-                                    ?.raw_material_sub_weight || ""
+                                  invoiceData[rowIndex]?.yarn_sub_thickness ||
+                                  ""
                                 }
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "raw_material_sub_weight"
+                                    "yarn_sub_thickness"
+                                  )
+                                }
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 align-top">
+                            <div className="flex flex-col gap-1">
+                              <Input
+                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
+                                value={
+                                  invoiceData[rowIndex]?.yarn_sub_weight || ""
+                                }
+                                onChange={(e) =>
+                                  handlePaymentChange(
+                                    e,
+                                    rowIndex,
+                                    "yarn_sub_weight"
                                   )
                                 }
                               />
@@ -491,16 +502,16 @@ const RawMaterialForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Raw Material"
+                  "Update Yarn"
                 ) : (
-                  "Create Raw Material"
+                  "Create Yarn"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/raw-material");
+                  navigate("/yarn");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >
@@ -515,8 +526,8 @@ const RawMaterialForm = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the raw
-              material.
+              This action cannot be undone. This will permanently delete the
+              granual
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -534,4 +545,4 @@ const RawMaterialForm = () => {
   );
 };
 
-export default RawMaterialForm;
+export default YarnForm;

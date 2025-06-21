@@ -24,7 +24,7 @@ const ChangePassword = ({ open, setOpen }) => {
   const username = useSelector((state) => state.auth.name);
   const token = usetoken();
   const [formData, setFormData] = useState({
-    name: username,
+    username: username,
     old_password: "",
     new_password: "",
   });
@@ -39,7 +39,7 @@ const ChangePassword = ({ open, setOpen }) => {
 
   const handleSubmit = async () => {
     const missingFields = [];
-    if (!formData.name) missingFields.push("Name");
+    if (!formData.username) missingFields.push("Name");
     if (!formData.old_password) missingFields.push("Old Password");
     if (!formData.new_password) missingFields.push("New Password");
 
@@ -78,7 +78,7 @@ const ChangePassword = ({ open, setOpen }) => {
         });
 
         setFormData({
-          name: "",
+          username: "",
           old_password: "",
           new_password: "",
         });

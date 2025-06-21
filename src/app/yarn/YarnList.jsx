@@ -1,4 +1,15 @@
-import { RAW_MATERIAL_LIST } from "@/api";
+// import React from "react";
+
+// const YarnList = () => {
+//   return (
+//     <div>
+//       <h1>Yarn list</h1>
+//     </div>
+//   );
+// };
+
+// export default YarnList;
+import { GRANUALS_LIST, RAW_MATERIAL_LIST, YARN_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -51,20 +62,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-const RawMaterialList = () => {
+const YarnList = () => {
   const token = usetoken();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
   const {
-    data: rawmaterial,
+    data: yarn,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["rawmaterial"],
+    queryKey: ["yarns"],
     queryFn: async () => {
-      const response = await apiClient.get(`${RAW_MATERIAL_LIST}`, {
+      const response = await apiClient.get(`${YARN_LIST}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
@@ -74,14 +85,12 @@ const RawMaterialList = () => {
     setDeleteItemId(productId);
     setDeleteConfirmOpen(true);
   };
-  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
 
-  // Define columns for the table
   const columns = [
     {
       accessorKey: "index",
@@ -89,29 +98,26 @@ const RawMaterialList = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "raw_material_date",
+      accessorKey: "yarn_sale_date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("raw_material_date");
+        const date = row.getValue("yarn_sale_date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
-   
+
+
     {
       accessorKey: "vendor_name",
       header: "Vendor",
       cell: ({ row }) => <div>{row.getValue("vendor_name")}</div>,
     },
     {
-      accessorKey: "total_weight",
+      accessorKey: "total_weights",
       header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+      cell: ({ row }) => <div>{row.getValue("total_weights")}</div>,
     },
-    {
-      accessorKey: "total_items",
-      header: "Total Items",
-      cell: ({ row }) => <div>{row.getValue("total_items")}</div>,
-    },
+ 
 
     {
       id: "actions",
@@ -129,7 +135,7 @@ const RawMaterialList = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/raw-material-update/${encodeURIComponent(
+                        `/yarn-update/${encodeURIComponent(
                           encryptId(id)
                         )}`
                       );
@@ -139,7 +145,7 @@ const RawMaterialList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Raw Material</p>
+                  <p>Edit Yarn</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -156,7 +162,7 @@ const RawMaterialList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Delete Raw Material</p>
+                  <p>Delete Yarn</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -167,7 +173,7 @@ const RawMaterialList = () => {
   ];
 
   const table = useReactTable({
-    data: rawmaterial || [],
+    data: yarn || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -192,7 +198,7 @@ const RawMaterialList = () => {
   const confirmDelete = async () => {
     try {
       const response = await apiClient.delete(
-        `${RAW_MATERIAL_LIST}/${deleteItemId}`,
+        `${GRANUALS_LIST}/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -229,19 +235,19 @@ const RawMaterialList = () => {
           "Something unexpected happened.",
         variant: "destructive",
       });
-      console.error("Failed to delete product:", error);
+      console.error("Failed to delete Granuals:", error);
     } finally {
       setDeleteConfirmOpen(false);
       setDeleteItemId(null);
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Raw Material Data" />;
+    return <LoaderComponent name="Granuals" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent message="Error Fetching Raw Material" refetch={refetch} />
+      <ErrorComponent message="Error Fetching Granuals" refetch={refetch} />
     );
   }
 
@@ -249,14 +255,14 @@ const RawMaterialList = () => {
     <Page>
       <div className="w-full p-4">
         <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Raw Material List
+          Yarn List
         </div>
 
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Raw Material..."
+              placeholder="Search Yarn..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -293,10 +299,10 @@ const RawMaterialList = () => {
             variant="default"
             className={`ml-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
             onClick={() => {
-              navigate("/raw-material-create");
+              navigate("/yarn-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Raw Material
+            <SquarePlus className="h-4 w-4 " /> Yarn
           </Button>
         </div>
         {/* table  */}
@@ -356,7 +362,7 @@ const RawMaterialList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Raw Material : &nbsp;
+            Total Yarn : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -384,8 +390,8 @@ const RawMaterialList = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the raw
-              material.
+              This action cannot be undone. This will permanently delete the
+              Yarn.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -403,4 +409,4 @@ const RawMaterialList = () => {
   );
 };
 
-export default RawMaterialList;
+export default YarnList;
