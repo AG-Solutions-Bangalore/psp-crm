@@ -1,19 +1,19 @@
-// import React from "react";
 
-// const YarnList = () => {
-//   return (
-//     <div>
-//       <h1>Yarn list</h1>
-//     </div>
-//   );
-// };
-
-// export default YarnList;
-import { GRANUALS_LIST, RAW_MATERIAL_LIST, YARN_LIST } from "@/api";
+import { YARN_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ButtonConfig } from "@/config/ButtonConfig";
+import { useToast } from "@/hooks/use-toast";
 import { encryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -51,17 +52,6 @@ import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
 const YarnList = () => {
   const token = usetoken();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -198,7 +188,7 @@ const YarnList = () => {
   const confirmDelete = async () => {
     try {
       const response = await apiClient.delete(
-        `${GRANUALS_LIST}/${deleteItemId}`,
+        `${YARN_LIST}/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -235,19 +225,19 @@ const YarnList = () => {
           "Something unexpected happened.",
         variant: "destructive",
       });
-      console.error("Failed to delete Granuals:", error);
+      console.error("Failed to delete yarn:", error);
     } finally {
       setDeleteConfirmOpen(false);
       setDeleteItemId(null);
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Granuals" />;
+    return <LoaderComponent name="Yarn" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent message="Error Fetching Granuals" refetch={refetch} />
+      <ErrorComponent message="Error Fetching Yarn" refetch={refetch} />
     );
   }
 

@@ -234,7 +234,7 @@ const YarnForm = () => {
       console.log(error);
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Failed to save granual",
+        description: error?.response?.data?.message || "Failed to save yarn",
         variant: "destructive",
       });
     } finally {
@@ -311,7 +311,7 @@ const YarnForm = () => {
             </div>{" "}
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2  gap-2">
                   <div>
                     <div>
                       <label
@@ -368,7 +368,7 @@ const YarnForm = () => {
                         <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
                           <div className="flex items-center justify-between">
                             <span>
-                              Bags
+                              Thickness
                               <span className="text-red-500 ml-1 text-xs">
                                 *
                               </span>
@@ -432,6 +432,7 @@ const YarnForm = () => {
                                   invoiceData[rowIndex]?.yarn_sub_thickness ||
                                   ""
                                 }
+                                placeholder="Select Thickness"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
@@ -449,6 +450,7 @@ const YarnForm = () => {
                                 value={
                                   invoiceData[rowIndex]?.yarn_sub_weight || ""
                                 }
+                                placeholder="Select Weight"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
@@ -527,7 +529,7 @@ const YarnForm = () => {
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the
-              granual
+              yarn
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
