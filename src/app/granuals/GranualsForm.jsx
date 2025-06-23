@@ -2,29 +2,21 @@ import { GRANUALS_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
+import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 import { MemoizedSelect } from "@/components/common/MemoizedSelect";
+import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +58,7 @@ const GranualsForm = () => {
   const navigate = useNavigate();
   const today = moment().format("YYYY-MM-DD");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const token = usetoken();
 
@@ -171,6 +164,33 @@ const GranualsForm = () => {
 
     setFormData(updatedFormData);
   };
+  useEffect(() => {
+    const calculateProgress = () => {
+      const totalFormFields = Object.keys(formData).length;
+      const filledFormFields = Object.values(formData).filter(
+        (value) => value.toString().trim() !== ""
+      ).length;
+
+      const totalInvoiceFields = invoiceData.length * 3;
+      const filledInvoiceFields = invoiceData.reduce((acc, item) => {
+        return (
+          acc +
+          (item.granuals_sub_color_id.toString().trim() !== "" ? 1 : 0) +
+          (item.granuals_sub_bags.toString().trim() !== "" ? 1 : 0) +
+          (item.granuals_sub_weight.toString().trim() !== "" ? 1 : 0)
+        );
+      }, 0);
+
+      const totalFields = totalFormFields + totalInvoiceFields;
+      const filledFields = filledFormFields + filledInvoiceFields;
+
+      const percentage =
+        totalFields === 0 ? 0 : Math.round((filledFields / totalFields) * 100);
+      setProgress(percentage);
+    };
+
+    calculateProgress();
+  }, [formData, invoiceData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -239,8 +259,7 @@ const GranualsForm = () => {
       console.log(error);
       toast({
         title: "Error",
-        description:
-          error?.response?.data?.message || "Failed to save granual",
+        description: error?.response?.data?.message || "Failed to save granual",
         variant: "destructive",
       });
     } finally {
@@ -303,10 +322,10 @@ const GranualsForm = () => {
   }
   return (
     <Page>
-      <div className="p-0 md:p-4">
+      <div className="p-0">
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
-            <div
+            {/* <div
               className={`flex sticky top-0 z-10 border border-gray-200 rounded-lg justify-between items-start gap-8 mb-2 ${ButtonConfig.cardheaderColor} p-4 shadow-sm`}
             >
               <div className="flex-1">
@@ -314,7 +333,13 @@ const GranualsForm = () => {
                   {editId ? "Update Granuals" : "Create Granuals"}
                 </h1>
               </div>
-            </div>{" "}
+            </div>{" "} */}
+            <PageHeaders
+              title={editId ? "Update Granuals" : "Create Granuals"}
+              subtitle="granuals"
+              progress={progress}
+              mode={editId ? "edit" : "create"}
+            />
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -340,7 +365,7 @@ const GranualsForm = () => {
                       Bill Ref<span className="text-red-500">*</span>
                     </label>
                     <Input
-                      className="bg-white border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
+                      className="bg-white border border-gray-300 rounded-lg w-full focus:ring-2 "
                       value={formData.granuals_bill_ref}
                       onChange={(e) =>
                         handleInputChange(e, "granuals_bill_ref")
@@ -448,10 +473,11 @@ const GranualsForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <Input
-                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
+                                className="bg-white border border-gray-300 rounded-lg  "
                                 value={
                                   invoiceData[rowIndex]?.granuals_sub_bags || ""
                                 }
+                                placeholder="Enter Bags"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
@@ -465,11 +491,12 @@ const GranualsForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <Input
-                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
+                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
                                   invoiceData[rowIndex]?.granuals_sub_weight ||
                                   ""
                                 }
+                                placeholder="Enter Weight"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
@@ -542,25 +569,13 @@ const GranualsForm = () => {
           </form>
         </div>
       </div>
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the granual
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className={`${ButtonConfig.backgroundColor}  ${ButtonConfig.textColor} text-black hover:bg-red-600`}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+      <DeleteAlertDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        description="Granuals Sub"
+        handleDelete={handleDelete}
+      />
     </Page>
   );
 };

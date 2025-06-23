@@ -275,7 +275,7 @@ const VendorEdit = () => {
 
   return (
     <Page>
-      <form onSubmit={handleSubmit} className="w-full p-4">
+      <form onSubmit={handleSubmit} className="w-full p-0">
         <VendorHeader vendorDetails={vendorDetails?.data} />
 
         <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
@@ -511,6 +511,15 @@ const VendorEdit = () => {
             disabled={updateVendorMutation.isPending}
           >
             {updateVendorMutation.isPending ? "Updating..." : "Update Vendor"}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              navigate(-1);
+            }}
+            className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
+          >
+            Go Back
           </Button>
         </div>
       </form>

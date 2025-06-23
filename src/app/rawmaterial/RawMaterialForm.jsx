@@ -2,19 +2,11 @@ import { RAW_MATERIAL_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
+import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 import { MemoizedSelect } from "@/components/common/MemoizedSelect";
+import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -66,6 +58,7 @@ const RawMaterialForm = () => {
   const navigate = useNavigate();
   const today = moment().format("YYYY-MM-DD");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const token = usetoken();
 
@@ -162,6 +155,32 @@ const RawMaterialForm = () => {
 
     setFormData(updatedFormData);
   };
+  useEffect(() => {
+    const calculateProgress = () => {
+      const totalFormFields = Object.keys(formData).length;
+      const filledFormFields = Object.values(formData).filter(
+        (value) => value.toString().trim() !== ""
+      ).length;
+
+      const totalInvoiceFields = invoiceData.length * 2;
+      const filledInvoiceFields = invoiceData.reduce((acc, item) => {
+        return (
+          acc +
+          (item.raw_material_sub_item_id.toString().trim() !== "" ? 1 : 0) +
+          (item.raw_material_sub_weight.toString().trim() !== "" ? 1 : 0)
+        );
+      }, 0);
+
+      const totalFields = totalFormFields + totalInvoiceFields;
+      const filledFields = filledFormFields + filledInvoiceFields;
+
+      const percentage =
+        totalFields === 0 ? 0 : Math.round((filledFields / totalFields) * 100);
+      setProgress(percentage);
+    };
+
+    calculateProgress();
+  }, [formData, invoiceData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -295,18 +314,15 @@ const RawMaterialForm = () => {
   }
   return (
     <Page>
-      <div className="p-0 md:p-4">
+      <div className="p-0">
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
-            <div
-              className={`flex sticky top-0 z-10 border border-gray-200 rounded-lg justify-between items-start gap-8 mb-2 ${ButtonConfig.cardheaderColor} p-4 shadow-sm`}
-            >
-              <div className="flex-1">
-                <h1 className="text-lg font-bold text-gray-800">
-                  {editId ? "Update Raw Material" : "Create Raw Material"}
-                </h1>
-              </div>
-            </div>{" "}
+            <PageHeaders
+              title={editId ? "Update Raw Material" : "Create Raw Material"}
+              subtitle="raw material"
+              progress={progress}
+              mode={editId ? "edit" : "create"}
+            />
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -334,7 +350,7 @@ const RawMaterialForm = () => {
                       Bill Ref<span className="text-red-500">*</span>
                     </label>
                     <Input
-                      className="bg-white border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
+                      className="bg-white border border-gray-300 rounded-lg w-full focus:ring-2 "
                       value={formData.raw_material_bill_ref}
                       onChange={(e) =>
                         handleInputChange(e, "raw_material_bill_ref")
@@ -433,11 +449,12 @@ const RawMaterialForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <Input
-                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400"
+                                className="bg-white border border-gray-300 rounded-lg  "
                                 value={
                                   invoiceData[rowIndex]
                                     ?.raw_material_sub_weight || ""
                                 }
+                                placeholder="Enter Weight"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
@@ -510,26 +527,13 @@ const RawMaterialForm = () => {
           </form>
         </div>
       </div>
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the raw
-              material.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className={`${ButtonConfig.backgroundColor}  ${ButtonConfig.textColor} text-black hover:bg-red-600`}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+      <DeleteAlertDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        description="Raw Material Sub"
+        handleDelete={handleDelete}
+      />
     </Page>
   );
 };
