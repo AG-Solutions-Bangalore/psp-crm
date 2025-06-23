@@ -29,4 +29,7 @@ export const ITEM_LIST = `/api/items`;
 export const VENDOR_LIST = `/api/vendors`;
 //RAW_MATERIAL_LIST
 export const RAW_MATERIAL_LIST = `/api/rawmaterial`;
-
+//GRANUALS_LIST
+export const GRANUALS_LIST = `/api/granuals`;
+//YARN_LIST
+export const YARN_LIST = `/api/yarnsale`;

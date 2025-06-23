@@ -43,7 +43,10 @@ export const useFetchVendor = () => {
   return useQuery(createQueryConfig(["vendor"], "/api/vendor/vendor"));
 };
 export const useFetchItem = () => {
-  return useQuery(createQueryConfig(["items"], "api/item/active"));
+  return useQuery(createQueryConfig(["items"], "/api/item/active"));
+};
+export const useFetchColor = () => {
+  return useQuery(createQueryConfig(["colors"], "/api/color/active"));
 };
 
 

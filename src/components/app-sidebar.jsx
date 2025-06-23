@@ -94,8 +94,14 @@ export function AppSidebar({ ...props }) {
         isActive: false,
       },
       {
-        title: "Invoice",
-        url: "/invoice",
+        title: "Granuals",
+        url: "/granuals",
+        icon: NotebookText,
+        isActive: false,
+      },
+      {
+        title: "Yarn",
+        url: "/yarn",
         icon: NotebookText,
         isActive: false,
       },
