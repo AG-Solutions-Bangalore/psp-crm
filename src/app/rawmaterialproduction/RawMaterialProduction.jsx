@@ -1,4 +1,4 @@
-import { YARN_LIST } from "@/api";
+import { RAW_MATERIAL_PRODUCTION_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -42,20 +42,20 @@ import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const YarnList = () => {
+const RawMaterialProduction = () => {
   const token = usetoken();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
   const {
-    data: yarn,
+    data: rawmaterialproduction,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["yarns"],
+    queryKey: ["rawmaterialproduction"],
     queryFn: async () => {
-      const response = await apiClient.get(`${YARN_LIST}`, {
+      const response = await apiClient.get(`${RAW_MATERIAL_PRODUCTION_LIST}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
@@ -65,12 +65,14 @@ const YarnList = () => {
     setDeleteItemId(productId);
     setDeleteConfirmOpen(true);
   };
+  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
 
+  // Define columns for the table
   const columns = [
     {
       accessorKey: "index",
@@ -78,23 +80,28 @@ const YarnList = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "yarn_sale_date",
+      accessorKey: "raw_material_to_p_date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("yarn_sale_date");
+        const date = row.getValue("raw_material_to_p_date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
 
     {
-      accessorKey: "vendor_name",
-      header: "Vendor",
-      cell: ({ row }) => <div>{row.getValue("vendor_name")}</div>,
+      accessorKey: "total_weight",
+      header: "Total Weight",
+      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
     },
     {
-      accessorKey: "total_weights",
-      header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weights")}</div>,
+      accessorKey: "totalCount",
+      header: "Count",
+      cell: ({ row }) => <div>{row.getValue("totalCount")}</div>,
+    },
+    {
+      accessorKey: "productionCount",
+      header: "Production Count",
+      cell: ({ row }) => <div>{row.getValue("productionCount")}</div>,
     },
 
     {
@@ -113,7 +120,9 @@ const YarnList = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/yarn-update/${encodeURIComponent(encryptId(id))}`
+                        `/raw-material-production-update/${encodeURIComponent(
+                          encryptId(id)
+                        )}`
                       );
                     }}
                   >
@@ -121,7 +130,7 @@ const YarnList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Yarn</p>
+                  <p>Edit Raw Material</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -138,10 +147,32 @@ const YarnList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Delete Yarn</p>
+                  <p>Delete Raw Material</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      navigate(
+                        `/granual-production/${encodeURIComponent(
+                          encryptId(id)
+                        )}`
+                      );
+                    }}
+                  >
+                    <SquarePlus />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Create Granuals</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>{" "}
           </div>
         );
       },
@@ -149,7 +180,7 @@ const YarnList = () => {
   ];
 
   const table = useReactTable({
-    data: yarn || [],
+    data: rawmaterialproduction || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -173,11 +204,14 @@ const YarnList = () => {
   });
   const confirmDelete = async () => {
     try {
-      const response = await apiClient.delete(`${YARN_LIST}/${deleteItemId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.delete(
+        `${RAW_MATERIAL_PRODUCTION_LIST}/${deleteItemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = response.data;
       if (data.code == 201) {
@@ -208,32 +242,37 @@ const YarnList = () => {
           "Something unexpected happened.",
         variant: "destructive",
       });
-      console.error("Failed to delete yarn:", error);
+      console.error("Failed to delete product:", error);
     } finally {
       setDeleteConfirmOpen(false);
       setDeleteItemId(null);
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Yarn" />;
+    return <LoaderComponent name="Raw Material Production Data" />;
   }
 
   if (isError) {
-    return <ErrorComponent message="Error Fetching Yarn" refetch={refetch} />;
+    return (
+      <ErrorComponent
+        message="Error Fetching Raw Material Production"
+        refetch={refetch}
+      />
+    );
   }
 
   return (
     <Page>
       <div className="w-full p-4">
         <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Yarn List
+          Raw Material Production List
         </div>
 
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Yarn..."
+              placeholder="Search Raw Material Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -270,10 +309,10 @@ const YarnList = () => {
             variant="default"
             className={`ml-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
             onClick={() => {
-              navigate("/yarn-create");
+              navigate("/raw-material-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Yarn
+            <SquarePlus className="h-4 w-4 " /> Raw Material Production
           </Button>
         </div>
         {/* table  */}
@@ -333,7 +372,7 @@ const YarnList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Yarn : &nbsp;
+            Total Raw Material Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -356,15 +395,15 @@ const YarnList = () => {
           </div>
         </div>
       </div>
-      
+
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="Yarn"
+        description="Raw Material Production"
         handleDelete={confirmDelete}
       />
     </Page>
   );
 };
 
-export default YarnList;
+export default RawMaterialProduction;

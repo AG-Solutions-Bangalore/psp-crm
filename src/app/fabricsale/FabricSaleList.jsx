@@ -1,4 +1,4 @@
-import { YARN_LIST } from "@/api";
+import { FABRIC_SALE_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -42,20 +42,20 @@ import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const YarnList = () => {
+const FabricSaleList = () => {
   const token = usetoken();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
   const {
-    data: yarn,
+    data: fabricsale,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["yarns"],
+    queryKey: ["FabricSales"],
     queryFn: async () => {
-      const response = await apiClient.get(`${YARN_LIST}`, {
+      const response = await apiClient.get(`${FABRIC_SALE_LIST}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
@@ -78,10 +78,10 @@ const YarnList = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "yarn_sale_date",
+      accessorKey: "fabric_sales_date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("yarn_sale_date");
+        const date = row.getValue("fabric_sales_date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
@@ -95,6 +95,16 @@ const YarnList = () => {
       accessorKey: "total_weights",
       header: "Total Weight",
       cell: ({ row }) => <div>{row.getValue("total_weights")}</div>,
+    },
+    {
+      accessorKey: "total_mtr",
+      header: "Total Meter",
+      cell: ({ row }) => <div>{row.getValue("total_mtr")}</div>,
+    },
+    {
+      accessorKey: "total_thickness",
+      header: "Total Thickness",
+      cell: ({ row }) => <div>{row.getValue("total_thickness")}</div>,
     },
 
     {
@@ -113,7 +123,9 @@ const YarnList = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/yarn-update/${encodeURIComponent(encryptId(id))}`
+                        `/fabric-sale-update/${encodeURIComponent(
+                          encryptId(id)
+                        )}`
                       );
                     }}
                   >
@@ -121,7 +133,7 @@ const YarnList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Yarn</p>
+                  <p>Edit Fabric Sale</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -138,7 +150,7 @@ const YarnList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Delete Yarn</p>
+                  <p>Delete Fabric Sale</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -149,7 +161,7 @@ const YarnList = () => {
   ];
 
   const table = useReactTable({
-    data: yarn || [],
+    data: fabricsale || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -173,11 +185,14 @@ const YarnList = () => {
   });
   const confirmDelete = async () => {
     try {
-      const response = await apiClient.delete(`${YARN_LIST}/${deleteItemId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.delete(
+        `${FABRIC_SALE_LIST}/${deleteItemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = response.data;
       if (data.code == 201) {
@@ -208,32 +223,34 @@ const YarnList = () => {
           "Something unexpected happened.",
         variant: "destructive",
       });
-      console.error("Failed to delete yarn:", error);
+      console.error("Failed to delete fabric sale:", error);
     } finally {
       setDeleteConfirmOpen(false);
       setDeleteItemId(null);
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Yarn" />;
+    return <LoaderComponent name="Fabric Sale" />;
   }
 
   if (isError) {
-    return <ErrorComponent message="Error Fetching Yarn" refetch={refetch} />;
+    return (
+      <ErrorComponent message="Error Fetching Fabric Sale" refetch={refetch} />
+    );
   }
 
   return (
     <Page>
       <div className="w-full p-4">
         <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Yarn List
+          Fabric Sale List
         </div>
 
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Yarn..."
+              placeholder="Search Fabric Sale..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -270,10 +287,10 @@ const YarnList = () => {
             variant="default"
             className={`ml-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
             onClick={() => {
-              navigate("/yarn-create");
+              navigate("/fabric-sale-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Yarn
+            <SquarePlus className="h-4 w-4 " /> Fabric Sale
           </Button>
         </div>
         {/* table  */}
@@ -333,7 +350,7 @@ const YarnList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Yarn : &nbsp;
+            Total Fabric Sale : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -356,15 +373,15 @@ const YarnList = () => {
           </div>
         </div>
       </div>
-      
+   
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="Yarn"
+        description="fabric sale"
         handleDelete={confirmDelete}
       />
     </Page>
   );
 };
 
-export default YarnList;
+export default FabricSaleList;

@@ -62,14 +62,14 @@ const BranchHeader = ({ progress }) => {
 
           <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
             <div
-              className="bg-yellow-500 h-full rounded-full transition-all duration-300 shadow-sm"
+              className="bg-[#1f7a57] h-full rounded-full transition-all duration-300 shadow-sm"
               style={{ width: `${progress}%` }}
             />
           </div>
 
           <div className="flex justify-between items-center mt-2">
             <span className="text-sm font-medium text-gray-600">Progress</span>
-            <span className="text-sm font-medium text-yellow-600">
+            <span className="text-sm font-medium text-[#1f7a57]">
               {progress}% Complete
             </span>
           </div>
@@ -211,7 +211,7 @@ const CreateVendor = () => {
   console.log(formData.vendor_roles);
   return (
     <Page>
-      <form onSubmit={handleSubmit} className="w-full p-4">
+      <form onSubmit={handleSubmit} className="w-full p-0">
         <BranchHeader progress={progress} />
         <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
           <CardContent className="p-6">
@@ -407,7 +407,7 @@ const CreateVendor = () => {
                     }),
                     multiValueRemove: (base, state) => ({
                       ...base,
-                      color: state.isFocused ? "#1f7a57" : "#6b7280", 
+                      color: state.isFocused ? "#1f7a57" : "#6b7280",
                       backgroundColor: state.isFocused
                         ? "#d1fae5"
                         : "transparent",
@@ -434,6 +434,16 @@ const CreateVendor = () => {
             disabled={createBranchMutation.isPending}
           >
             {createBranchMutation.isPending ? "Submitting..." : "Create Vendor"}
+          </Button>
+
+          <Button
+            type="button"
+            onClick={() => {
+              navigate(-1);
+            }}
+            className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
+          >
+            Go Back
           </Button>
         </div>
       </form>

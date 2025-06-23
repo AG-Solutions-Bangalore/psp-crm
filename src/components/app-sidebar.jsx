@@ -105,60 +105,30 @@ export function AppSidebar({ ...props }) {
         icon: NotebookText,
         isActive: false,
       },
-
-      // {
-      //   title: "Purchase",
-      //   url: "#",
-      //   icon: TicketPlus,
-      //   isActive: false,
-      //   items: [
-      //     {
-      //       title: "Purchase Order",
-      //       url: "/purchase-order",
-      //     },
-      //     {
-      //       title: "Purchase",
-      //       url: "/purchase/market-purchase",
-      //     },
-      //     {
-      //       title: "Production",
-      //       url: "/purchase/market-production",
-      //     },
-      //     {
-      //       title: "Processing",
-      //       url: "/purchase/market-processing",
-      //     },
-      //     {
-      //       title: "Dispatch",
-      //       url: "/purchase/market-dispatch",
-      //     },
-      //     {
-      //       title: "Stock",
-      //       url: "/purchase/stock",
-      //     },
-      //   ],
-      // },
+      {
+        title: "Fabric Sale",
+        url: "/fabric-sale",
+        icon: NotebookText,
+        isActive: false,
+      },
+      {
+        title: "Raw Materil Production",
+        url: "/raw-material-production",
+        icon: NotebookText,
+        isActive: false,
+      },
+      {
+        title: "Granuals To Yarn Production",
+        url: "/granual-yarn-production",
+        icon: NotebookText,
+        isActive: false,
+      },
     ],
-
-    // userManagement: [
-    //   {
-    //     name: "User Management",
-    //     url: "/userManagement",
-    //     icon: Frame,
-    //   },
-    //   {
-    //     name: "UserType",
-    //     url: "/user-type",
-    //     icon: Settings,
-    //   },
-    // ],
   };
 
   const data = {
     ...initialData,
     navMain: initialData.navMain,
-
-    // userManagement: initialData.userManagement,
   };
 
   return (

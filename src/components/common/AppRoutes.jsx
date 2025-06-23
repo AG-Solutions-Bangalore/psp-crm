@@ -15,16 +15,21 @@ import YarnList from "@/app/yarn/YarnList";
 import YarnForm from "@/app/yarn/YarnForm";
 import NotFound from "@/app/errors/NotFound";
 import ColorList from "@/app/master/color/ColorList";
+import FabricSaleList from "@/app/fabricsale/FabricSaleList";
+import FabricSaleForm from "@/app/fabricsale/FabricSaleForm";
+import RawMaterialProduction from "@/app/rawmaterialproduction/RawMaterialProduction";
+import RawMaterialProductionForm from "@/app/rawmaterialproduction/RawMaterialProductionForm";
+import GranualProductForm from "@/app/granualsproduction/GranualProductForm";
+import GranualsToYarnProduction from "@/app/granualstoyarnproduction/GranualsToYarnProduction";
+import GranualsToYarnProductionForm from "@/app/granualstoyarnproduction/GranualsToYarnProductionForm";
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/maintenance" element={<Maintenance />} />
-
       {/* HOME */}
       <Route path="/home" element={<TeamList />} />
-
       {/* Master */}
       <Route path="/master/team" element={<TeamList />} />
       <Route path="/master/color" element={<ColorList />} />
@@ -44,6 +49,37 @@ const AppRoutes = () => {
       <Route path="/yarn" element={<YarnList />} />
       <Route path="/yarn-create" element={<YarnForm />} />
       <Route path="/yarn-update/:id" element={<YarnForm />} />
+      {/* //FabricSales */}
+      <Route path="/fabric-sale" element={<FabricSaleList />} />
+      <Route path="/fabric-sale-create" element={<FabricSaleForm />} />
+      <Route path="/fabric-sale-update/:id" element={<FabricSaleForm />} />
+      {/* //rawmaterialproduction */}
+      <Route
+        path="/raw-material-production"
+        element={<RawMaterialProduction />}
+      />
+      <Route
+        path="/raw-material-production-create"
+        element={<RawMaterialProductionForm />}
+      />
+      <Route
+        path="/raw-material-production-update/:id"
+        element={<RawMaterialProductionForm />}
+      />
+      <Route path="/granual-production/:id" element={<GranualProductForm />} />
+      {/* //RAW_MATERIAL_PRODUCTION_LIST */}
+      <Route
+        path="/granual-yarn-production"
+        element={<GranualsToYarnProduction />}
+      />
+      <Route
+        path="/granual-yarn-production-create"
+        element={<GranualsToYarnProductionForm />}
+      />
+      <Route
+        path="/granual-yarn-production-update/:id"
+        element={<GranualsToYarnProductionForm />}
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

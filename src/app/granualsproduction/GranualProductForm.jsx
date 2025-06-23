@@ -1,22 +1,10 @@
-import { YARN_LIST } from "@/api";
+import { GRANUALS_PRODUCTION_LIST, RAW_MATERIAL_PRODUCTION_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
-import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
-import { MemoizedSelect } from "@/components/common/MemoizedSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,27 +18,29 @@ import {
 } from "@/components/ui/table";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchColor, useFetchVendor } from "@/hooks/useApi";
+import { useFetchColor } from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, MinusCircle, PlusCircle, Trash2 } from "lucide-react";
+import { Loader2, MinusCircle, PlusCircle } from "lucide-react";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const fetchRawMaterialById = async (id, token) => {
-  const response = await apiClient.get(`${YARN_LIST}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(
+    `${RAW_MATERIAL_PRODUCTION_LIST}/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-const YarnForm = () => {
+const GranualProductForm = () => {
   const { id } = useParams();
   let decryptedId = null;
   const isEdit = Boolean(id);
-  const [progress, setProgress] = useState(0);
 
   if (isEdit) {
     try {
@@ -61,72 +51,65 @@ const YarnForm = () => {
     }
   }
 
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deleteItemId, setDeleteItemId] = useState(null);
-
-  const editId = Boolean(id);
   const { toast } = useToast();
   const navigate = useNavigate();
   const today = moment().format("YYYY-MM-DD");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const token = usetoken();
+  const getFinancialYear = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
 
+    // Assuming financial year starts in April
+    if (month >= 4) {
+      return `${year}-${(year + 1).toString().slice(-2)}`;
+    } else {
+      return `${year - 1}-${year.toString().slice(-2)}`;
+    }
+  };
+
+  const financialYear = getFinancialYear();
   const [formData, setFormData] = useState({
-    yarn_sale_date: today,
-    yarn_vendor_id: "",
+    year: financialYear,
+    raw_material_to_p_date: today,
+    raw_material_to_p_ref: "",
   });
-
+  console.log(formData);
   const [invoiceData, setInvoiceData] = useState([
     {
-      id: editId ? "" : null,
-      yarn_sub_color_id: "",
-      yarn_sub_thickness: "",
-      yarn_sub_weight: "",
+      granuals_from_p_color_id: "",
+      granuals_from_p_bags: "",
+      granuals_from_p_weight: "",
     },
   ]);
-  const { data: rawMaterialById, isFetching } = useQuery({
-    queryKey: ["rawMaterialById", decryptedId],
+  const { data: GranualProductionById, isFetching } = useQuery({
+    queryKey: ["granualbyId", decryptedId],
     queryFn: () => fetchRawMaterialById(decryptedId, token),
     enabled: !!decryptedId,
   });
   useEffect(() => {
-    if (decryptedId && rawMaterialById?.data) {
-      const raw = rawMaterialById.data;
+    if (decryptedId && GranualProductionById?.data) {
+      const raw = GranualProductionById.data;
       setFormData({
-        yarn_sale_date: raw.yarn_sale_date || "",
-        yarn_vendor_id: raw.yarn_vendor_id || "",
+        year: financialYear || "",
+        raw_material_to_p_date: raw.raw_material_to_p_date || "",
+        raw_material_to_p_ref: raw.raw_material_to_p_ref || "",
       });
-
-      const subItems = Array.isArray(rawMaterialById?.data?.subs)
-        ? rawMaterialById?.data?.subs.map((sub) => ({
-            id: sub.id || "",
-            yarn_sub_color_id: sub.yarn_sub_color_id || "",
-            yarn_sub_thickness: sub.yarn_sub_thickness || "",
-            yarn_sub_weight: sub.yarn_sub_weight || "",
-          }))
-        : [
-            {
-              yarn_sub_color_id: "",
-              yarn_sub_thickness: "",
-              yarn_sub_weight: "",
-            },
-          ];
-
-      setInvoiceData(subItems);
     }
-  }, [decryptedId, rawMaterialById]);
+  }, [decryptedId, GranualProductionById]);
 
-  const { data: vendorData, isLoading: loadingvendor } = useFetchVendor();
   const { data: colorData, isLoading: loadingitem } = useFetchColor();
 
   const addRow = useCallback(() => {
     setInvoiceData((prev) => [
       ...prev,
       {
-        yarn_sub_color_id: "",
-        yarn_sub_thickness: "",
-        yarn_sub_weight: "",
+        granuals_from_p_color_id: "",
+        granuals_from_p_bags: "",
+        granuals_from_p_weight: "",
       },
     ]);
   }, []);
@@ -146,7 +129,8 @@ const YarnForm = () => {
         : selectedValue;
 
     if (
-      (fieldName === "yarn_sub_weight" || fieldName === "yarn_sub_thickness") &&
+      (fieldName === "granuals_from_p_bags" ||
+        fieldName === "granuals_from_p_weight") &&
       !/^\d*\.?\d*$/.test(value)
     ) {
       console.warn(
@@ -182,9 +166,9 @@ const YarnForm = () => {
       const filledInvoiceFields = invoiceData.reduce((acc, item) => {
         return (
           acc +
-          (item.yarn_sub_color_id.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_sub_thickness.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_sub_thickness.toString().trim() !== "" ? 1 : 0)
+          (item.granuals_from_p_color_id.toString().trim() !== "" ? 1 : 0) +
+          (item.granuals_from_p_bags.toString().trim() !== "" ? 1 : 0) +
+          (item.granuals_from_p_weight.toString().trim() !== "" ? 1 : 0)
         );
       }, 0);
 
@@ -198,18 +182,22 @@ const YarnForm = () => {
 
     calculateProgress();
   }, [formData, invoiceData]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.yarn_sale_date) missingFields.push("Date");
-    if (!formData.yarn_vendor_id) missingFields.push("Vendor");
+    if (!formData.year) missingFields.push("Year");
+    if (!formData.raw_material_to_p_date) missingFields.push("Date");
+    if (!formData.raw_material_to_p_ref) missingFields.push("Ref");
 
     invoiceData.forEach((row, index) => {
-      if (!row.yarn_sub_color_id) missingFields.push(`Row ${index + 1}: Color`);
-      if (!row.yarn_sub_thickness)
-        missingFields.push(`Row ${index + 1}: Thickness`);
-      if (!row.yarn_sub_weight) missingFields.push(`Row ${index + 1}: Weight`);
+      if (!row.granuals_from_p_color_id)
+        missingFields.push(`Row ${index + 1}: Color`);
+      if (!row.granuals_from_p_bags)
+        missingFields.push(`Row ${index + 1}: Bags`);
+      if (!row.granuals_from_p_weight)
+        missingFields.push(`Row ${index + 1}: Weight`);
     });
 
     if (missingFields.length > 0) {
@@ -235,13 +223,14 @@ const YarnForm = () => {
     try {
       const payload = {
         ...formData,
-        subs: invoiceData,
+        subs1: invoiceData,
       };
 
-      const url = editId ? `${YARN_LIST}/${decryptedId}` : YARN_LIST;
-      const method = editId ? "put" : "post";
+      const url = `${GRANUALS_PRODUCTION_LIST}`;
 
-      const response = await apiClient[method](url, payload, {
+      const method = "post";
+
+      const response = await apiClient.post(GRANUALS_PRODUCTION_LIST, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -251,7 +240,7 @@ const YarnForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/yarn");
+        navigate("/raw-material-production");
       } else {
         toast({
           title: "Error",
@@ -263,78 +252,26 @@ const YarnForm = () => {
       console.log(error);
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Failed to save yarn",
+        description: error?.response?.data?.message || "Failed to save granual",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
-  const handleDeleteRow = (productId) => {
-    setDeleteConfirmOpen(true);
-    setDeleteItemId(productId);
-  };
-  const handleDelete = async () => {
-    try {
-      const response = await apiClient.delete(
-        `${YARN_LIST}/sub/${deleteItemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      const data = response.data;
-
-      if (data.code == 201) {
-        toast({
-          title: "Success",
-          description: data.message,
-        });
-
-        setInvoiceData((prevData) =>
-          prevData.filter((row) => row.id !== deleteItemId)
-        );
-      } else if (data.code == 400) {
-        toast({
-          title: "Duplicate Entry",
-          description: data.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Unexpected Response",
-          description: data.message || "Something unexpected happened.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error?.response?.data?.message || error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setDeleteConfirmOpen(false);
-      setDeleteItemId(null);
-    }
-  };
-
-  if (isFetching || loadingvendor || loadingitem) {
-    return <LoaderComponent name="Yarn" />;
+  if (isFetching || loadingitem) {
+    return <LoaderComponent name="Granuals" />;
   }
   return (
     <Page>
       <div className="p-0">
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
- 
             <PageHeaders
-              title={editId ? "Update Yarn" : "Create Yarn"}
-              subtitle="yarn"
+              title={"Create Production Granuals"}
+              subtitle="granuals"
               progress={progress}
-              mode={editId ? "edit" : "create"}
             />
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
               <CardContent className="p-6">
@@ -348,32 +285,25 @@ const YarnForm = () => {
                       </label>
                       <Input
                         className="bg-white"
-                        value={formData.yarn_sale_date}
-                        onChange={(e) => handleInputChange(e, "yarn_sale_date")}
+                        value={formData.raw_material_to_p_date}
                         type="date"
+                        disabled
                       />
                     </div>
                   </div>
-
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <label
-                        className={`text-sm font-medium ${ButtonConfig.cardLabel}`}
-                      >
-                        Vendor <span className="text-red-500">*</span>
-                      </label>
-                    </div>
-
-                    <MemoizedSelect
-                      value={formData.yarn_vendor_id}
-                      onChange={(e) => handleInputChange(e, "yarn_vendor_id")}
-                      options={
-                        vendorData?.data?.map((vendor) => ({
-                          value: vendor.id,
-                          label: vendor.vendor_name,
-                        })) || []
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Ref<span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      className="bg-white border border-gray-300 rounded-lg w-full focus:ring-2 "
+                      value={formData.raw_material_to_p_ref}
+                      onChange={(e) =>
+                        handleInputChange(e, "raw_material_to_p_ref")
                       }
-                      placeholder="Select Vendor"
+                      disabled
                     />
                   </div>
                 </div>
@@ -395,7 +325,7 @@ const YarnForm = () => {
                         <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
                           <div className="flex items-center justify-between">
                             <span>
-                              Thickness
+                              Bags
                               <span className="text-red-500 ml-1 text-xs">
                                 *
                               </span>
@@ -433,12 +363,12 @@ const YarnForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <MemoizedProductSelect
-                                value={row.yarn_sub_color_id}
+                                value={row.granuals_from_p_color_id}
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "yarn_sub_color_id"
+                                    "granuals_from_p_color_id"
                                   )
                                 }
                                 options={
@@ -454,17 +384,17 @@ const YarnForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <Input
-                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
+                                className="bg-white border border-gray-300 rounded-lg  "
                                 value={
-                                  invoiceData[rowIndex]?.yarn_sub_thickness ||
+                                  invoiceData[rowIndex]?.granuals_from_p_bags ||
                                   ""
                                 }
-                                placeholder="Enter Thickness"
+                                placeholder="Enter Bags"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "yarn_sub_thickness"
+                                    "granuals_from_p_bags"
                                   )
                                 }
                               />
@@ -475,14 +405,15 @@ const YarnForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]?.yarn_sub_weight || ""
+                                  invoiceData[rowIndex]
+                                    ?.granuals_from_p_weight || ""
                                 }
                                 placeholder="Enter Weight"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "yarn_sub_weight"
+                                    "granuals_from_p_weight"
                                   )
                                 }
                               />
@@ -490,27 +421,15 @@ const YarnForm = () => {
                           </TableCell>
 
                           <TableCell className="p-2 align-middle">
-                            {row.id ? (
-                              <Button
-                                variant="ghost"
-                                onClick={() => handleDeleteRow(row.id)}
-                                className="text-red-500"
-                                disabled={invoiceData.length === 1}
-                                type="button"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="ghost"
-                                onClick={() => removeRow(rowIndex)}
-                                disabled={invoiceData.length === 1}
-                                className="text-red-500"
-                                type="button"
-                              >
-                                <MinusCircle className="h-4 w-4" />
-                              </Button>
-                            )}
+                            <Button
+                              variant="ghost"
+                              onClick={() => removeRow(rowIndex)}
+                              disabled={invoiceData.length === 1}
+                              className="text-red-500"
+                              type="button"
+                            >
+                              <MinusCircle className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -528,19 +447,17 @@ const YarnForm = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {editId ? "Updating..." : "Creating..."}
+                    {"Creating..."}
                   </>
-                ) : editId ? (
-                  "Update Yarn"
                 ) : (
-                  "Create Yarn"
+                  "Create Granuals"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/yarn");
+                  navigate("/raw-material-production");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >
@@ -550,15 +467,8 @@ const YarnForm = () => {
           </form>
         </div>
       </div>
-
-      <DeleteAlertDialog
-        open={deleteConfirmOpen}
-        onOpenChange={setDeleteConfirmOpen}
-        description="Yarn Sub"
-        handleDelete={handleDelete}
-      />
     </Page>
   );
 };
 
-export default YarnForm;
+export default GranualProductForm;

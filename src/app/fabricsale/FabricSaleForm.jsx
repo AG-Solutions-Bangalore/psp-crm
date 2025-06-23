@@ -1,4 +1,4 @@
-import { YARN_LIST } from "@/api";
+import { FABRIC_SALE_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -7,16 +7,6 @@ import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect
 import { MemoizedSelect } from "@/components/common/MemoizedSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,7 +28,7 @@ import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const fetchRawMaterialById = async (id, token) => {
-  const response = await apiClient.get(`${YARN_LIST}/${id}`, {
+  const response = await apiClient.get(`${FABRIC_SALE_LIST}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -46,11 +36,10 @@ const fetchRawMaterialById = async (id, token) => {
   return response.data;
 };
 
-const YarnForm = () => {
+const FabricSaleForm = () => {
   const { id } = useParams();
   let decryptedId = null;
   const isEdit = Boolean(id);
-  const [progress, setProgress] = useState(0);
 
   if (isEdit) {
     try {
@@ -69,20 +58,22 @@ const YarnForm = () => {
   const navigate = useNavigate();
   const today = moment().format("YYYY-MM-DD");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const token = usetoken();
 
   const [formData, setFormData] = useState({
-    yarn_sale_date: today,
-    yarn_vendor_id: "",
+    fabric_sales_date: today,
+    fabric_sales_vendor_id: "",
   });
 
   const [invoiceData, setInvoiceData] = useState([
     {
       id: editId ? "" : null,
-      yarn_sub_color_id: "",
-      yarn_sub_thickness: "",
-      yarn_sub_weight: "",
+      fabric_sales_sub_color_id: "",
+      fabric_sales_thickness: "",
+      fabric_sales_weight: "",
+      fabric_sales_mtr: "",
     },
   ]);
   const { data: rawMaterialById, isFetching } = useQuery({
@@ -94,22 +85,24 @@ const YarnForm = () => {
     if (decryptedId && rawMaterialById?.data) {
       const raw = rawMaterialById.data;
       setFormData({
-        yarn_sale_date: raw.yarn_sale_date || "",
-        yarn_vendor_id: raw.yarn_vendor_id || "",
+        fabric_sales_date: raw.fabric_sales_date || "",
+        fabric_sales_vendor_id: raw.fabric_sales_vendor_id || "",
       });
 
       const subItems = Array.isArray(rawMaterialById?.data?.subs)
         ? rawMaterialById?.data?.subs.map((sub) => ({
             id: sub.id || "",
-            yarn_sub_color_id: sub.yarn_sub_color_id || "",
-            yarn_sub_thickness: sub.yarn_sub_thickness || "",
-            yarn_sub_weight: sub.yarn_sub_weight || "",
+            fabric_sales_sub_color_id: sub.fabric_sales_sub_color_id || "",
+            fabric_sales_thickness: sub.fabric_sales_thickness || "",
+            fabric_sales_weight: sub.fabric_sales_weight || "",
+            fabric_sales_mtr: sub.fabric_sales_mtr || "",
           }))
         : [
             {
-              yarn_sub_color_id: "",
-              yarn_sub_thickness: "",
-              yarn_sub_weight: "",
+              fabric_sales_sub_color_id: "",
+              fabric_sales_thickness: "",
+              fabric_sales_weight: "",
+              fabric_sales_mtr: "",
             },
           ];
 
@@ -124,9 +117,9 @@ const YarnForm = () => {
     setInvoiceData((prev) => [
       ...prev,
       {
-        yarn_sub_color_id: "",
-        yarn_sub_thickness: "",
-        yarn_sub_weight: "",
+        fabric_sales_sub_color_id: "",
+        fabric_sales_thickness: "",
+        fabric_sales_weight: "",
       },
     ]);
   }, []);
@@ -146,7 +139,9 @@ const YarnForm = () => {
         : selectedValue;
 
     if (
-      (fieldName === "yarn_sub_weight" || fieldName === "yarn_sub_thickness") &&
+      (fieldName === "fabric_sales_weight" ||
+        fieldName === "fabric_sales_thickness" ||
+        fieldName === "fabric_sales_mtr") &&
       !/^\d*\.?\d*$/.test(value)
     ) {
       console.warn(
@@ -171,6 +166,7 @@ const YarnForm = () => {
 
     setFormData(updatedFormData);
   };
+
   useEffect(() => {
     const calculateProgress = () => {
       const totalFormFields = Object.keys(formData).length;
@@ -182,9 +178,9 @@ const YarnForm = () => {
       const filledInvoiceFields = invoiceData.reduce((acc, item) => {
         return (
           acc +
-          (item.yarn_sub_color_id.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_sub_thickness.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_sub_thickness.toString().trim() !== "" ? 1 : 0)
+          (item.fabric_sales_sub_color_id.toString().trim() !== "" ? 1 : 0) +
+          (item.fabric_sales_thickness.toString().trim() !== "" ? 1 : 0) +
+          (item.fabric_sales_weight.toString().trim() !== "" ? 1 : 0)
         );
       }, 0);
 
@@ -202,14 +198,17 @@ const YarnForm = () => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.yarn_sale_date) missingFields.push("Date");
-    if (!formData.yarn_vendor_id) missingFields.push("Vendor");
+    if (!formData.fabric_sales_date) missingFields.push("Date");
+    if (!formData.fabric_sales_vendor_id) missingFields.push("Vendor");
 
     invoiceData.forEach((row, index) => {
-      if (!row.yarn_sub_color_id) missingFields.push(`Row ${index + 1}: Color`);
-      if (!row.yarn_sub_thickness)
+      if (!row.fabric_sales_sub_color_id)
+        missingFields.push(`Row ${index + 1}: Color`);
+      if (!row.fabric_sales_thickness)
         missingFields.push(`Row ${index + 1}: Thickness`);
-      if (!row.yarn_sub_weight) missingFields.push(`Row ${index + 1}: Weight`);
+      if (!row.fabric_sales_weight)
+        missingFields.push(`Row ${index + 1}: Weight`);
+      if (!row.fabric_sales_mtr) missingFields.push(`Row ${index + 1}: Meter`);
     });
 
     if (missingFields.length > 0) {
@@ -238,7 +237,9 @@ const YarnForm = () => {
         subs: invoiceData,
       };
 
-      const url = editId ? `${YARN_LIST}/${decryptedId}` : YARN_LIST;
+      const url = editId
+        ? `${FABRIC_SALE_LIST}/${decryptedId}`
+        : FABRIC_SALE_LIST;
       const method = editId ? "put" : "post";
 
       const response = await apiClient[method](url, payload, {
@@ -251,7 +252,7 @@ const YarnForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/yarn");
+        navigate("/fabric-sale");
       } else {
         toast({
           title: "Error",
@@ -263,7 +264,8 @@ const YarnForm = () => {
       console.log(error);
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Failed to save yarn",
+        description:
+          error?.response?.data?.message || "Failed to save fabric sale",
         variant: "destructive",
       });
     } finally {
@@ -277,7 +279,7 @@ const YarnForm = () => {
   const handleDelete = async () => {
     try {
       const response = await apiClient.delete(
-        `${YARN_LIST}/sub/${deleteItemId}`,
+        `${FABRIC_SALE_LIST}/sub/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -322,17 +324,16 @@ const YarnForm = () => {
   };
 
   if (isFetching || loadingvendor || loadingitem) {
-    return <LoaderComponent name="Yarn" />;
+    return <LoaderComponent name="Fabric Sale" />;
   }
   return (
     <Page>
       <div className="p-0">
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
- 
             <PageHeaders
-              title={editId ? "Update Yarn" : "Create Yarn"}
-              subtitle="yarn"
+              title={editId ? "Update Fabric Sale" : "Create Fabric Sale"}
+              subtitle="fabric sale"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -348,8 +349,10 @@ const YarnForm = () => {
                       </label>
                       <Input
                         className="bg-white"
-                        value={formData.yarn_sale_date}
-                        onChange={(e) => handleInputChange(e, "yarn_sale_date")}
+                        value={formData.fabric_sales_date}
+                        onChange={(e) =>
+                          handleInputChange(e, "fabric_sales_date")
+                        }
                         type="date"
                       />
                     </div>
@@ -365,8 +368,10 @@ const YarnForm = () => {
                     </div>
 
                     <MemoizedSelect
-                      value={formData.yarn_vendor_id}
-                      onChange={(e) => handleInputChange(e, "yarn_vendor_id")}
+                      value={formData.fabric_sales_vendor_id}
+                      onChange={(e) =>
+                        handleInputChange(e, "fabric_sales_vendor_id")
+                      }
                       options={
                         vendorData?.data?.map((vendor) => ({
                           value: vendor.id,
@@ -412,6 +417,16 @@ const YarnForm = () => {
                             </span>
                           </div>
                         </TableHead>
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                          <div className="flex items-center justify-between">
+                            <span>
+                              Meter
+                              <span className="text-red-500 ml-1 text-xs">
+                                *
+                              </span>
+                            </span>
+                          </div>
+                        </TableHead>
                         <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
                           <div className="flex justify-center items-center gap-2">
                             Action
@@ -433,12 +448,12 @@ const YarnForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <MemoizedProductSelect
-                                value={row.yarn_sub_color_id}
+                                value={row.fabric_sales_sub_color_id}
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "yarn_sub_color_id"
+                                    "fabric_sales_sub_color_id"
                                   )
                                 }
                                 options={
@@ -456,15 +471,15 @@ const YarnForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]?.yarn_sub_thickness ||
-                                  ""
+                                  invoiceData[rowIndex]
+                                    ?.fabric_sales_thickness || ""
                                 }
                                 placeholder="Enter Thickness"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "yarn_sub_thickness"
+                                    "fabric_sales_thickness"
                                   )
                                 }
                               />
@@ -475,14 +490,33 @@ const YarnForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]?.yarn_sub_weight || ""
+                                  invoiceData[rowIndex]?.fabric_sales_weight ||
+                                  ""
                                 }
                                 placeholder="Enter Weight"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "yarn_sub_weight"
+                                    "fabric_sales_weight"
+                                  )
+                                }
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 align-top">
+                            <div className="flex flex-col gap-1">
+                              <Input
+                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
+                                value={
+                                  invoiceData[rowIndex]?.fabric_sales_mtr || ""
+                                }
+                                placeholder="Enter Meter"
+                                onChange={(e) =>
+                                  handlePaymentChange(
+                                    e,
+                                    rowIndex,
+                                    "fabric_sales_mtr"
                                   )
                                 }
                               />
@@ -531,16 +565,16 @@ const YarnForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Yarn"
+                  "Update Fabric Sale"
                 ) : (
-                  "Create Yarn"
+                  "Create Fabric Sale"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/yarn");
+                  navigate("/fabric-sale");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >
@@ -554,11 +588,11 @@ const YarnForm = () => {
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="Yarn Sub"
+        description="fabric sub sale"
         handleDelete={handleDelete}
       />
     </Page>
   );
 };
 
-export default YarnForm;
+export default FabricSaleForm;
