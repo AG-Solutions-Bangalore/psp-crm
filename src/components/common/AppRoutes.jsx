@@ -22,6 +22,16 @@ import RawMaterialProductionForm from "@/app/rawmaterialproduction/RawMaterialPr
 import GranualProductForm from "@/app/granualsproduction/GranualProductForm";
 import GranualsToYarnProduction from "@/app/granualstoyarnproduction/GranualsToYarnProduction";
 import GranualsToYarnProductionForm from "@/app/granualstoyarnproduction/GranualsToYarnProductionForm";
+import YarnProductionForm from "@/app/granualstoyarnproduction/YarnProductionForm";
+import YarnToFabricProductionList from "@/app/yarntofabricproduction/YarnToFabricProductionList";
+import YarnToFabricProductionForm from "@/app/yarntofabricproduction/YarnToFabricProductionForm";
+import FabricProductionForm from "@/app/yarntofabricproduction/FabricProductionForm";
+import YarnToFabricWorkProductionForm from "@/app/yarntofabricworkproduction/YarnToFabricWorkProductionForm";
+import YarnToFabricWorkProductionList from "@/app/yarntofabricworkproduction/YarnToFabricWorkProductionList";
+import FabricWorkProductionForm from "@/app/yarntofabricworkproduction/FabricWorkProductionForm";
+import RawMaterialReport from "@/app/report/stock/RawMaterialReport";
+import GranualsStockReport from "@/app/report/stock/GranualsStockReport";
+import YarnStockReport from "@/app/report/YarnStockReport";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -67,7 +77,7 @@ const AppRoutes = () => {
         element={<RawMaterialProductionForm />}
       />
       <Route path="/granual-production/:id" element={<GranualProductForm />} />
-      {/* //RAW_MATERIAL_PRODUCTION_LIST */}
+      {/* //GRANUAL_TO_YARN PRODUCTION_LIST */}
       <Route
         path="/granual-yarn-production"
         element={<GranualsToYarnProduction />}
@@ -80,6 +90,47 @@ const AppRoutes = () => {
         path="/granual-yarn-production-update/:id"
         element={<GranualsToYarnProductionForm />}
       />
+      <Route path="/yarn-production/:id" element={<YarnProductionForm />} />
+      {/* //YARN_TO_FABRIC PRODUCTION_LIST */}
+
+      <Route
+        path="/yarn-fabric-production"
+        element={<YarnToFabricProductionList />}
+      />
+
+      <Route
+        path="/yarn-fabric-production-create"
+        element={<YarnToFabricProductionForm />}
+      />
+      <Route
+        path="/yarn-fabric-production-update/:id"
+        element={<YarnToFabricProductionForm />}
+      />
+      <Route path="/fabric-production/:id" element={<FabricProductionForm />} />
+
+      {/* //YARN_TO_FABRIC WORK PRODUCTION_LIST */}
+
+      <Route
+        path="/yarn-fabric-work-production"
+        element={<YarnToFabricWorkProductionList />}
+      />
+
+      <Route
+        path="/yarn-fabric-work-production-create"
+        element={<YarnToFabricWorkProductionForm />}
+      />
+      <Route
+        path="/yarn-fabric-work-production-update/:id"
+        element={<YarnToFabricWorkProductionForm />}
+      />
+      <Route
+        path="/fabric-work-production/:id"
+        element={<FabricWorkProductionForm />}
+      />
+      {/* //Report */}
+      <Route path="/report/raw-material" element={<RawMaterialReport />} />
+      <Route path="/report/granuals" element={<GranualsStockReport />} />
+      <Route path="/report/yarn" element={<YarnStockReport />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

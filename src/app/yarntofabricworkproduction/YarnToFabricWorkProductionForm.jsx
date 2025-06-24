@@ -1,4 +1,4 @@
-import { GRANUALS_TO_YARN_PRODUCTION, YARN_FROM_PRODUCTION } from "@/api";
+import { FABRIC_WORK_PRODUCTION, YARN_TO_FABRIC_WORK_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -10,24 +10,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchColor, useFetchItem } from "@/hooks/useApi";
+import { useFetchColor } from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TabbedTableGranualToYarn from "./TabbedTableGranualToYarn";
-const fetchGranualsToYarn = async (id, token) => {
-  const response = await apiClient.get(`${GRANUALS_TO_YARN_PRODUCTION}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+import TabbedTableYarnToFabricWorkProduction from "./TabbedTableYarnToFabricWorkProduction";
+const fetchYarnToFabricWork = async (id, token) => {
+  const response = await apiClient.get(
+    `${YARN_TO_FABRIC_WORK_PRODUCTION}/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-const GranualsToYarnProductionForm = () => {
+const YarnToFabricWorkProductionForm = () => {
   const { id } = useParams();
   let decryptedId = null;
   const isEdit = Boolean(id);
@@ -56,74 +59,75 @@ const GranualsToYarnProductionForm = () => {
   const token = usetoken();
 
   const [formData, setFormData] = useState({
-    granuals_to_yp_date: today,
+    yarn_to_fwp_date: today,
   });
 
   const [invoiceData, setInvoiceData] = useState([
     {
       id: editId ? "" : null,
-      granuals_to_yp_sub_color_id: "",
-      granuals_to_yp_bags: "",
-      granuals_to_yp_weight: "",
+      yarn_to_fwp_sub_color_id: "",
+      yarn_to_fwp_thickness: "",
+      yarn_to_fwp_weight: "",
     },
   ]);
   const [invoiceDataOne, setInvoiceDataOne] = useState([
     {
       id: editId ? "" : null,
-      yarn_from_p_color_id: "",
-      yarn_from_p_bags: "",
-      yarn_from_p_weight: "",
-      yarn_from_p_thickness: "",
+      fabric_from_wp_color_id: "",
+      fabric_from_wp_mtr: "",
+      fabric_from_wp_weight: "",
+      fabric_from_wp_thickness: "",
     },
   ]);
-  const { data: GranualstoYarn, isFetching } = useQuery({
-    queryKey: ["granualstoyarnId", decryptedId],
-    queryFn: () => fetchGranualsToYarn(decryptedId, token),
+
+  const { data: YarnToWork, isFetching } = useQuery({
+    queryKey: ["yarntofabricworkId", decryptedId],
+    queryFn: () => fetchYarnToFabricWork(decryptedId, token),
     enabled: !!decryptedId,
   });
   useEffect(() => {
-    if (decryptedId && GranualstoYarn?.data) {
-      const raw = GranualstoYarn.data;
+    if (decryptedId && YarnToWork?.data) {
+      const raw = YarnToWork.data;
       setFormData({
-        granuals_to_yp_date: raw.granuals_to_yp_date || "",
+        yarn_to_fwp_date: raw.yarn_to_fwp_date || "",
       });
 
-      const subItems = Array.isArray(GranualstoYarn?.data?.subs)
-        ? GranualstoYarn?.data?.subs.map((sub) => ({
+      const subItems = Array.isArray(YarnToWork?.data?.subs)
+        ? YarnToWork?.data?.subs.map((sub) => ({
             id: sub.id || "",
-            granuals_to_yp_sub_color_id: sub.granuals_to_yp_sub_color_id || "",
-            granuals_to_yp_bags: sub.granuals_to_yp_bags || "",
-            granuals_to_yp_weight: sub.granuals_to_yp_weight || "",
+            yarn_to_fwp_sub_color_id: sub.yarn_to_fwp_sub_color_id || "",
+            yarn_to_fwp_thickness: sub.yarn_to_fwp_thickness || "",
+            yarn_to_fwp_weight: sub.yarn_to_fwp_weight || "",
           }))
         : [
             {
-              granuals_to_yp_bags: "",
-              granuals_to_yp_sub_color_id: "",
-              granuals_to_yp_weight: "",
+              yarn_to_fwp_thickness: "",
+              yarn_to_fwp_sub_color_id: "",
+              yarn_to_fwp_weight: "",
             },
           ];
-      const subItemsOne = Array.isArray(GranualstoYarn?.data?.subs1)
-        ? GranualstoYarn?.data?.subs1.map((sub) => ({
+      const subItemsOne = Array.isArray(YarnToWork?.data?.subs1)
+        ? YarnToWork?.data?.subs1.map((sub) => ({
             id: sub.id || "",
-            yarn_from_p_color_id: sub.yarn_from_p_color_id || "",
-            yarn_from_p_bags: sub.yarn_from_p_bags || "",
-            yarn_from_p_weight: sub.yarn_from_p_weight || "",
-            yarn_from_p_thickness: sub.yarn_from_p_thickness || "",
+            fabric_from_wp_color_id: sub.fabric_from_wp_color_id || "",
+            fabric_from_wp_mtr: sub.fabric_from_wp_mtr || "",
+            fabric_from_wp_weight: sub.fabric_from_wp_weight || "",
+            fabric_from_wp_thickness: sub.fabric_from_wp_thickness || "",
           }))
         : [
             {
               id: "",
-              yarn_from_p_color_id: "",
-              yarn_from_p_bags: "",
-              yarn_from_p_weight: "",
-              yarn_from_p_thickness: "",
+              fabric_from_wp_color_id: "",
+              fabric_from_wp_mtr: "",
+              fabric_from_wp_weight: "",
+              fabric_from_wp_thickness: "",
             },
           ];
 
       setInvoiceData(subItems);
       setInvoiceDataOne(subItemsOne);
     }
-  }, [decryptedId, GranualstoYarn]);
+  }, [decryptedId, YarnToWork]);
 
   const { data: colorData, isLoading: loadingcolor } = useFetchColor();
 
@@ -131,9 +135,9 @@ const GranualsToYarnProductionForm = () => {
     setInvoiceData((prev) => [
       ...prev,
       {
-        granuals_to_yp_bags: "",
-        granuals_to_yp_sub_color_id: "",
-        granuals_to_yp_weight: "",
+        yarn_to_fwp_thickness: "",
+        yarn_to_fwp_sub_color_id: "",
+        yarn_to_fwp_weight: "",
       },
     ]);
   }, []);
@@ -141,10 +145,10 @@ const GranualsToYarnProductionForm = () => {
     setInvoiceDataOne((prev) => [
       ...prev,
       {
-        yarn_from_p_color_id: "",
-        yarn_from_p_bags: "",
-        yarn_from_p_weight: "",
-        yarn_from_p_thickness: "",
+        fabric_from_wp_color_id: "",
+        fabric_from_wp_mtr: "",
+        fabric_from_wp_weight: "",
+        fabric_from_wp_thickness: "",
       },
     ]);
   }, []);
@@ -172,11 +176,11 @@ const GranualsToYarnProductionForm = () => {
         : selectedValue;
 
     const numericFields = [
-      "granuals_to_yp_bags",
-      "granuals_to_yp_weight",
-      "yarn_from_p_bags",
-      "yarn_from_p_weight",
-      "yarn_from_p_thickness",
+      "yarn_to_fwp_thickness",
+      "yarn_to_fwp_weight",
+      "fabric_from_wp_mtr",
+      "fabric_from_wp_weight",
+      "fabric_from_wp_thickness",
     ];
 
     if (numericFields.includes(fieldName) && !/^\d*\.?\d*$/.test(value)) {
@@ -185,9 +189,9 @@ const GranualsToYarnProductionForm = () => {
     }
 
     if (
-      fieldName === "granuals_to_yp_bags" ||
-      fieldName === "granuals_to_yp_sub_color_id" ||
-      fieldName === "granuals_to_yp_weight"
+      fieldName === "yarn_to_fwp_thickness" ||
+      fieldName === "yarn_to_fwp_sub_color_id" ||
+      fieldName === "yarn_to_fwp_weight"
     ) {
       setInvoiceData((prevData) => {
         const updatedData = [...prevData];
@@ -198,10 +202,10 @@ const GranualsToYarnProductionForm = () => {
         return updatedData;
       });
     } else if (
-      fieldName === "yarn_from_p_color_id" ||
-      fieldName === "yarn_from_p_bags" ||
-      fieldName === "yarn_from_p_weight" ||
-      fieldName === "yarn_from_p_thickness"
+      fieldName === "fabric_from_wp_color_id" ||
+      fieldName === "fabric_from_wp_mtr" ||
+      fieldName === "fabric_from_wp_weight" ||
+      fieldName === "fabric_from_wp_thickness"
     ) {
       setInvoiceDataOne((prevData) => {
         const updatedData = [...prevData];
@@ -232,9 +236,9 @@ const GranualsToYarnProductionForm = () => {
       const filledInvoiceFields = invoiceData.reduce((acc, item) => {
         return (
           acc +
-          (item.granuals_to_yp_bags?.toString().trim() !== "" ? 1 : 0) +
-          (item.granuals_to_yp_sub_color_id?.toString().trim() !== "" ? 1 : 0) +
-          (item.granuals_to_yp_weight?.toString().trim() !== "" ? 1 : 0)
+          (item.yarn_to_fwp_thickness?.toString().trim() !== "" ? 1 : 0) +
+          (item.yarn_to_fwp_sub_color_id?.toString().trim() !== "" ? 1 : 0) +
+          (item.yarn_to_fwp_weight?.toString().trim() !== "" ? 1 : 0)
         );
       }, 0);
 
@@ -242,10 +246,10 @@ const GranualsToYarnProductionForm = () => {
       const filledInvoiceOneFields = invoiceDataOne.reduce((acc, item) => {
         return (
           acc +
-          (item.yarn_from_p_color_id?.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_from_p_bags?.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_from_p_weight?.toString().trim() !== "" ? 1 : 0) +
-          (item.yarn_from_p_thickness?.toString().trim() !== "" ? 1 : 0)
+          (item.fabric_from_wp_color_id?.toString().trim() !== "" ? 1 : 0) +
+          (item.fabric_from_wp_mtr?.toString().trim() !== "" ? 1 : 0) +
+          (item.fabric_from_wp_weight?.toString().trim() !== "" ? 1 : 0) +
+          (item.fabric_from_wp_thickness?.toString().trim() !== "" ? 1 : 0)
         );
       }, 0);
 
@@ -266,50 +270,43 @@ const GranualsToYarnProductionForm = () => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.granuals_to_yp_date) missingFields.push("Date");
+    if (!formData.yarn_to_fwp_date) missingFields.push("Date");
 
     invoiceData.forEach((row, index) => {
-      if (!row.granuals_to_yp_bags)
+      if (!row.yarn_to_fwp_thickness)
         missingFields.push(`Row ${index + 1}: Bags`);
-      if (!row.granuals_to_yp_sub_color_id)
+      if (!row.yarn_to_fwp_sub_color_id)
         missingFields.push(`Row ${index + 1}: Color`);
-      if (!row.granuals_to_yp_weight)
+      if (!row.yarn_to_fwp_weight)
         missingFields.push(`Row ${index + 1}: Weight`);
     });
 
     invoiceDataOne.forEach((row, index) => {
       const {
-        yarn_from_p_color_id: yarn_from_p_color_id,
-        yarn_from_p_bags: yarn_from_p_bags,
-        yarn_from_p_weight: yarn_from_p_weight,
-        yarn_from_p_thickness: yarn_from_p_thickness,
+        fabric_from_wp_color_id: fabric_from_wp_color_id,
+        fabric_from_wp_mtr: fabric_from_wp_mtr,
+        fabric_from_wp_weight: fabric_from_wp_weight,
+        fabric_from_wp_thickness: fabric_from_wp_thickness,
       } = row;
 
       const isAnyFieldFilled =
-        yarn_from_p_color_id?.toString().trim() !== "" ||
-        yarn_from_p_bags?.toString().trim() !== "" ||
-        yarn_from_p_weight?.toString().trim() !== "";
-      yarn_from_p_thickness?.toString().trim() !== "";
+        fabric_from_wp_color_id?.toString().trim() !== "" ||
+        fabric_from_wp_mtr?.toString().trim() !== "" ||
+        fabric_from_wp_weight?.toString().trim() !== "";
+      fabric_from_wp_thickness?.toString().trim() !== "";
 
       if (isAnyFieldFilled) {
-        if (!yarn_from_p_color_id)
-          missingFields.push(`Yarn Row ${index + 1}: Color`);
-        if (!yarn_from_p_bags)
-          missingFields.push(`Yarn Row ${index + 1}: Bags`);
-        if (!yarn_from_p_weight)
-          missingFields.push(`Yarn Row ${index + 1}: Weight`);
-        if (!yarn_from_p_thickness)
-          missingFields.push(`Yarn Row ${index + 1}: Thickness`);
+        if (!fabric_from_wp_color_id)
+          missingFields.push(`Fabric Row ${index + 1}: Color`);
+        if (!fabric_from_wp_mtr)
+          missingFields.push(`Fabric Row ${index + 1}: Meter`);
+        if (!fabric_from_wp_weight)
+          missingFields.push(`Fabric Row ${index + 1}: Weight`);
+        if (!fabric_from_wp_thickness)
+          missingFields.push(`Fabric Row ${index + 1}: Thickness`);
       }
     });
-    // const cleanedInvoiceDataOne = invoiceDataOne.filter((row) => {
-    //   return (
-    //     row.yarn_from_p_color_id?.toString().trim() !== "" ||
-    //     row.yarn_from_p_bags?.toString().trim() !== "" ||
-    //     row.yarn_from_p_weight?.toString().trim() !== "" ||
-    //     row.yarn_from_p_thickness?.toString().trim() !== ""
-    //   );
-    // });
+
     if (missingFields.length > 0) {
       toast({
         title: "Validation Error",
@@ -333,22 +330,23 @@ const GranualsToYarnProductionForm = () => {
     try {
       const hasValidGranualsData = invoiceDataOne.some((row) => {
         return (
-          row.yarn_from_p_color_id?.toString().trim() !== "" ||
-          row.yarn_from_p_bags?.toString().trim() !== "" ||
-          row.yarn_from_p_weight?.toString().trim() !== "" ||
-          row.yarn_from_p_thickness?.toString().trim() !== ""
+          row.fabric_from_wp_color_id?.toString().trim() !== "" ||
+          row.fabric_from_wp_mtr?.toString().trim() !== "" ||
+          row.fabric_from_wp_weight?.toString().trim() !== "" ||
+          row.fabric_from_wp_thickness?.toString().trim() !== ""
         );
       });
+
       const payload = {
         ...formData,
         subs: invoiceData,
-        // subs1: invoiceDataOne,
+
         ...(isEdit || hasValidGranualsData ? { subs1: invoiceDataOne } : {}),
       };
 
       const url = editId
-        ? `${GRANUALS_TO_YARN_PRODUCTION}/${decryptedId}`
-        : GRANUALS_TO_YARN_PRODUCTION;
+        ? `${YARN_TO_FABRIC_WORK_PRODUCTION}/${decryptedId}`
+        : YARN_TO_FABRIC_WORK_PRODUCTION;
       const method = editId ? "put" : "post";
 
       const response = await apiClient[method](url, payload, {
@@ -361,7 +359,7 @@ const GranualsToYarnProductionForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/granual-yarn-production");
+        navigate("/yarn-fabric-work-production");
       } else {
         toast({
           title: "Error",
@@ -381,18 +379,18 @@ const GranualsToYarnProductionForm = () => {
       setIsLoading(false);
     }
   };
-  const handleDeleteGranualSub = (productId) => {
+  const handleDeleteYarnSub = (productId) => {
     setDeleteConfirmOpen(true);
     setDeleteItemId(productId);
   };
-  const handleDeleteYarnSub = (productId) => {
+  const handleDeleteFabricSub = (productId) => {
     setDeleteConfirmOpen1(true);
     setDeleteItemId1(productId);
   };
-  const handleDeleteGranual = async () => {
+  const handleDeleteYarn = async () => {
     try {
       const response = await apiClient.delete(
-        `${GRANUALS_TO_YARN_PRODUCTION}/sub/${deleteItemId}`,
+        `${YARN_TO_FABRIC_WORK_PRODUCTION}/sub/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -435,10 +433,10 @@ const GranualsToYarnProductionForm = () => {
       setDeleteItemId(null);
     }
   };
-  const handleDeleteYarn = async () => {
+  const handleDeleteFabric = async () => {
     try {
       const response = await apiClient.delete(
-        `${YARN_FROM_PRODUCTION}/${deleteItemId1}`,
+        `${FABRIC_WORK_PRODUCTION}/${deleteItemId1}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -481,8 +479,8 @@ const GranualsToYarnProductionForm = () => {
       setDeleteItemId1(null);
     }
   };
-  if (isFetching  || loadingcolor) {
-    return <LoaderComponent name="Granual To Yarn Production" />;
+  if (isFetching || loadingcolor) {
+    return <LoaderComponent name="Yarn To Fabric Production" />;
   }
   return (
     <Page>
@@ -492,10 +490,10 @@ const GranualsToYarnProductionForm = () => {
             <PageHeaders
               title={
                 editId
-                  ? "Update Granual To Yarn Production"
-                  : "Create Granual To Yarn Production"
+                  ? "Update Yarn To Fabric Work Production"
+                  : "Create Yarn To Fabric Work Production"
               }
-              subtitle="granual to yarn  production"
+              subtitle="yarn to fabric  work production"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -511,9 +509,9 @@ const GranualsToYarnProductionForm = () => {
                       </label>
                       <Input
                         className="bg-white"
-                        value={formData.granuals_to_yp_date}
+                        value={formData.yarn_to_fwp_date}
                         onChange={(e) =>
-                          handleInputChange(e, "granuals_to_yp_date")
+                          handleInputChange(e, "yarn_to_fwp_date")
                         }
                         type="date"
                       />
@@ -521,17 +519,17 @@ const GranualsToYarnProductionForm = () => {
                   </div>
                 </div>
 
-                <TabbedTableGranualToYarn
-                  granualsRows={invoiceData}
-                  YarnRows={invoiceDataOne}
+                <TabbedTableYarnToFabricWorkProduction
+                  YarnRows={invoiceData}
+                  FabricRows={invoiceDataOne}
                   colorData={colorData}
                   handleChange={handlePaymentChange}
-                  addGranualsRow={addRow}
-                  addYarnRow={addRowOne}
-                  removeGranualsRow={removeRow}
-                  removeYarnRow={removeRowOne}
-                  deleteRowGranuals={handleDeleteGranualSub}
+                  addYarnRow={addRow}
+                  addFabricRow={addRowOne}
+                  removeYarnRow={removeRow}
+                  removeFabricRow={removeRowOne}
                   deleteRowYarn={handleDeleteYarnSub}
+                  deleteRowFabric={handleDeleteFabricSub}
                 />
               </CardContent>
             </Card>
@@ -547,16 +545,16 @@ const GranualsToYarnProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Granual To Yarn Production"
+                  "Update Yarn To Fabric Production"
                 ) : (
-                  "Create Granual To Yarn Production"
+                  "Create Yarn To Fabric Production"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/granual-yarn-production");
+                  navigate("/yarn-fabric-work-production");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >
@@ -570,18 +568,18 @@ const GranualsToYarnProductionForm = () => {
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="Granuals Production Sub"
-        handleDelete={handleDeleteGranual}
+        description="Yarn  Production Sub"
+        handleDelete={handleDeleteYarn}
       />
 
       <DeleteAlertDialog
         open={deleteConfirmOpen1}
         onOpenChange={setDeleteConfirmOpen1}
-        description="Yarn Production Sub"
-        handleDelete={handleDeleteYarn}
+        description="Fabric Work Production Sub"
+        handleDelete={handleDeleteFabric}
       />
     </Page>
   );
 };
 
-export default GranualsToYarnProductionForm;
+export default YarnToFabricWorkProductionForm;

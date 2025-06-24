@@ -29,7 +29,7 @@ const buttonVariants = {
 
 export function NavMain({ items }) {
   const location = useLocation();
-  
+
   const handleLinkClick = (e) => {
     const sidebarContent = document.querySelector(".sidebar-content");
     if (sidebarContent) {
@@ -52,9 +52,9 @@ export function NavMain({ items }) {
 
   return (
     <SidebarGroup>
-        <SidebarGroupLabel>Home</SidebarGroupLabel>
+      <SidebarGroupLabel>Home</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        {/* {items.map((item) => {
           const hasSubItems = item.items && item.items.length > 0;
           const isParentActive = hasSubItems 
             ? item.items.some((subItem) => subItem.url === location.pathname)
@@ -143,9 +143,89 @@ export function NavMain({ items }) {
               </SidebarMenuItem>
             </Collapsible>
           );
+        })} */}
+        {items.map((item) => {
+          const renderItem = (item, depth = 0) => {
+            const hasSubItems = item.items && item.items.length > 0;
+            const isItemActive = location.pathname === item.url;
+            const isParentActive = hasSubItems
+              ? item.items.some((sub) =>
+                  sub.items?.length
+                    ? sub.items.some(
+                        (deepSub) => deepSub.url === location.pathname
+                      )
+                    : sub.url === location.pathname
+                )
+              : isItemActive;
+
+            if (!hasSubItems) {
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <Link to={item.url} onClick={handleLinkClick}>
+                    <motion.div variants={buttonVariants} whileHover="hover">
+                      <SidebarMenuButton tooltip={item.title}>
+                        {item.icon && <item.icon />}
+                        <span
+                          className={`transition-colors duration-200 ${
+                            isItemActive
+                              ? "text-blue-500"
+                              : "hover:text-blue-500"
+                          }`}
+                        >
+                          {item.title}
+                        </span>
+                      </SidebarMenuButton>
+                    </motion.div>
+                  </Link>
+                </SidebarMenuItem>
+              );
+            }
+
+            return (
+              <Collapsible
+                key={item.title}
+                asChild
+                defaultOpen={isParentActive}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <motion.div variants={buttonVariants} whileHover="hover">
+                      <SidebarMenuButton tooltip={item.title}>
+                        {item.icon && <item.icon />}
+                        <span
+                          className={`transition-colors duration-200 ${
+                            isParentActive
+                              ? "text-blue-500"
+                              : "hover:text-blue-500"
+                          }`}
+                        >
+                          {item.title}
+                        </span>
+                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                      </SidebarMenuButton>
+                    </motion.div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent
+                    as={motion.div}
+                    variants={itemVariants}
+                    initial="closed"
+                    animate={isParentActive ? "open" : "closed"}
+                  >
+                    <SidebarMenuSub
+                      className={`border-l border-blue-500 pl-${depth + 2}`}
+                    >
+                      {item.items.map((sub) => renderItem(sub, depth + 1))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            );
+          };
+
+          return renderItem(item);
         })}
       </SidebarMenu>
     </SidebarGroup>
   );
 }
-

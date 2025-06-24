@@ -77,6 +77,7 @@ const RawMaterialProductionForm = () => {
       granuals_from_p_weight: "",
     },
   ]);
+  console.log(invoiceDataOne, "invoiceDataOne");
   const { data: rawMaterialById, isFetching } = useQuery({
     queryKey: ["rawMaterialById", decryptedId],
     queryFn: () => fetchRawMaterialById(decryptedId, token),
@@ -103,22 +104,38 @@ const RawMaterialProductionForm = () => {
               raw_material_sub_to_p_weight: "",
             },
           ];
-      const subItemsOne = Array.isArray(rawMaterialById?.data?.subs1)
-        ? rawMaterialById?.data?.subs1.map((sub) => ({
-            id: sub.id || "",
-            granuals_from_p_color_id: sub.granuals_from_p_color_id || "",
-            granuals_from_p_bags: sub.granuals_from_p_bags || "",
-            granuals_from_p_weight: sub.granuals_from_p_weight || "",
-          }))
-        : [
-            {
-              id: "",
-              granuals_from_p_color_id: "",
-              granuals_from_p_bags: "",
-              granuals_from_p_weight: "",
-            },
-          ];
-
+      // const subItemsOne = Array.isArray(rawMaterialById?.data?.subs1)
+      //   ? rawMaterialById?.data?.subs1.map((sub) => ({
+      //       id: sub.id || "",
+      //       granuals_from_p_color_id: sub.granuals_from_p_color_id || "",
+      //       granuals_from_p_bags: sub.granuals_from_p_bags || "",
+      //       granuals_from_p_weight: sub.granuals_from_p_weight || "",
+      //     }))
+      //   : [
+      //       {
+      //         id: "",
+      //         granuals_from_p_color_id: "",
+      //         granuals_from_p_bags: "",
+      //         granuals_from_p_weight: "",
+      //       },
+      //     ];
+      const subItemsOne =
+        Array.isArray(rawMaterialById?.data?.subs1) &&
+        rawMaterialById.data.subs1.length > 0
+          ? rawMaterialById.data.subs1.map((sub) => ({
+              id: sub.id || "",
+              granuals_from_p_color_id: sub.granuals_from_p_color_id || "",
+              granuals_from_p_bags: sub.granuals_from_p_bags || "",
+              granuals_from_p_weight: sub.granuals_from_p_weight || "",
+            }))
+          : [
+              {
+                id: "",
+                granuals_from_p_color_id: "",
+                granuals_from_p_bags: "",
+                granuals_from_p_weight: "",
+              },
+            ];
       setInvoiceData(subItems);
       setInvoiceDataOne(subItemsOne);
     }
@@ -312,10 +329,19 @@ const RawMaterialProductionForm = () => {
     setIsLoading(true);
 
     try {
+      const hasValidGranualsData = invoiceDataOne.some((row) => {
+        return (
+          row.granuals_from_p_color_id?.toString().trim() !== "" ||
+          row.granuals_from_p_bags?.toString().trim() !== "" ||
+          row.granuals_from_p_weight?.toString().trim() !== ""
+        );
+      });
+
       const payload = {
         ...formData,
         subs: invoiceData,
-        subs1: invoiceDataOne,
+
+        ...(isEdit || hasValidGranualsData ? { subs1: invoiceDataOne } : {}),
       };
 
       const url = editId
