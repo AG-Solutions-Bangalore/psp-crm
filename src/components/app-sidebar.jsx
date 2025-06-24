@@ -1,18 +1,11 @@
-import * as React from "react";
 import {
   AudioWaveform,
-  BadgeIndianRupee,
   Blocks,
   Command,
-  Folder,
   Frame,
   GalleryVerticalEnd,
-  Map,
   NotebookText,
-  ReceiptText,
-  Settings,
   Settings2,
-  TicketPlus,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -25,7 +18,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMainUser } from "./nav-main-user";
 import { useSelector } from "react-redux";
 
 export function AppSidebar({ ...props }) {
@@ -122,6 +114,50 @@ export function AppSidebar({ ...props }) {
         url: "/granual-yarn-production",
         icon: NotebookText,
         isActive: false,
+      },
+      {
+        title: "Yarn To Fabric Production",
+        url: "/yarn-fabric-production",
+        icon: NotebookText,
+        isActive: false,
+      },
+      {
+        title: "Yarn To Fabric Work Production",
+        url: "/yarn-fabric-work-production",
+        icon: NotebookText,
+        isActive: false,
+      },
+      {
+        title: "Report",
+        url: "#",
+        isActive: false,
+        icon: Settings2,
+        items: [
+          {
+            title: "Stock",
+            url: "#",
+            isActive: false,
+            icon: Settings2,
+            items: [
+              {
+                title: "Raw material",
+                url: "/report/raw-material",
+              },
+              {
+                title: "Granuals",
+                url: "/report/granuals",
+              },
+              {
+                title: "Yarn",
+                url: "/report/yarn",
+              },
+              {
+                title: "Fabric",
+                url: "/report/fabric",
+              },
+            ],
+          },
+        ],
       },
     ],
   };

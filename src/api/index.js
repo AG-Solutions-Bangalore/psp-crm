@@ -37,7 +37,23 @@ export const YARN_LIST = `/api/yarnsale`;
 export const FABRIC_SALE_LIST = `/api/fabricsale`;
 //RAW_MATERIAL_PRODUCTION_LIST
 export const RAW_MATERIAL_PRODUCTION_LIST = `/api/rawmaterialtoproduction`;
-//RAW_MATERIAL_PRODUCTION_LIST
+//GRANUALS_PRODUCTION_LIST
 export const GRANUALS_PRODUCTION_LIST = `/api/granualsfromproduction`;
-//RAW_MATERIAL_PRODUCTION_LIST
+//GRANUALS_TO_YARN_PRODUCTION
 export const GRANUALS_TO_YARN_PRODUCTION = `/api/granualstoyarnproduction`;
+//YARN_FROM_PRODUCTION
+export const YARN_FROM_PRODUCTION = `/api/yarnfromproduction`;
+//YARN_TO_FABRIC_PRODUCTION
+export const YARN_TO_FABRIC_PRODUCTION = `/api/yarntofabricproduction`;
+//FABRIC_FROM_PRODUCTION
+export const FABRIC_FROM_PRODUCTION = `/api/fabricfromproduction`;
+//YARN_TO_FABRIC_WORK_PRODUCTION
+export const YARN_TO_FABRIC_WORK_PRODUCTION = `/api/yarntofabricworkproduction`;
+//YARN_TO_FABRIC_WORK_PRODUCTION
+export const FABRIC_WORK_PRODUCTION = `/api/fabricfromworkproduction`;
+//RAW_MATERIAL_STOCK
+export const RAW_MATERIAL_STOCK = `/api/rawmaterialstock`;
+//GRANUALS_STOCK
+export const GRANUALS_STOCK = `/api/granualsstock`;
+//GRANUALS_STOCK
+export const YARN_STOCK = `/api/yarnstock`;

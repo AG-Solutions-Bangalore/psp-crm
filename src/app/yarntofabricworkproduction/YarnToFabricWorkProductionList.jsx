@@ -1,7 +1,4 @@
-import {
-  GRANUALS_TO_YARN_PRODUCTION,
-  RAW_MATERIAL_PRODUCTION_LIST,
-} from "@/api";
+import { YARN_TO_FABRIC_WORK_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/dashboard/page";
@@ -45,22 +42,25 @@ import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const GranualsToYarnProduction = () => {
+const YarnToFabricWorkProductionList = () => {
   const token = usetoken();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
   const {
-    data: granualstoyarnproduction,
+    data: yarntofabricworkproduction,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["granualstoyarnproduction"],
+    queryKey: ["yarntofabricworkproduction"],
     queryFn: async () => {
-      const response = await apiClient.get(`${GRANUALS_TO_YARN_PRODUCTION}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get(
+        `${YARN_TO_FABRIC_WORK_PRODUCTION}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data.data;
     },
   });
@@ -83,10 +83,10 @@ const GranualsToYarnProduction = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "granuals_to_yp_date",
+      accessorKey: "yarn_to_fwp_date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("granuals_to_yp_date");
+        const date = row.getValue("yarn_to_fwp_date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
@@ -123,7 +123,7 @@ const GranualsToYarnProduction = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/granual-yarn-production-update/${encodeURIComponent(
+                        `/yarn-fabric-work-production-update/${encodeURIComponent(
                           encryptId(id)
                         )}`
                       );
@@ -133,7 +133,7 @@ const GranualsToYarnProduction = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Granuals Production</p>
+                  <p>Edit Fabric  Work Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -150,7 +150,7 @@ const GranualsToYarnProduction = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Delete Granuals Production</p>
+                  <p>Delete Fabric Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -162,7 +162,9 @@ const GranualsToYarnProduction = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/yarn-production/${encodeURIComponent(encryptId(id))}`
+                        `/fabric-work-production/${encodeURIComponent(
+                          encryptId(id)
+                        )}`
                       );
                     }}
                   >
@@ -170,7 +172,7 @@ const GranualsToYarnProduction = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Create Yarn </p>
+                  <p>Create Fabric Work</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -181,7 +183,7 @@ const GranualsToYarnProduction = () => {
   ];
 
   const table = useReactTable({
-    data: granualstoyarnproduction || [],
+    data: yarntofabricworkproduction || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -206,7 +208,7 @@ const GranualsToYarnProduction = () => {
   const confirmDelete = async () => {
     try {
       const response = await apiClient.delete(
-        `${GRANUALS_TO_YARN_PRODUCTION}/${deleteItemId}`,
+        `${YARN_TO_FABRIC_WORK_PRODUCTION}/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -250,13 +252,13 @@ const GranualsToYarnProduction = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Granuals To Yarn  Data" />;
+    return <LoaderComponent name="Yarn To Fabric Work Production" />;
   }
 
   if (isError) {
     return (
       <ErrorComponent
-        message="Error Fetching Granuals To Yarn Production"
+        message="Error Fetching Yarn To Fabric Work Production"
         refetch={refetch}
       />
     );
@@ -266,14 +268,14 @@ const GranualsToYarnProduction = () => {
     <Page>
       <div className="w-full p-4">
         <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Granuals To Yarn Production List
+          Yarn To Fabric Work Production List
         </div>
 
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Granuals To Yarn..."
+              placeholder="Search Yarn To Fabric Work..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -310,10 +312,10 @@ const GranualsToYarnProduction = () => {
             variant="default"
             className={`ml-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
             onClick={() => {
-              navigate("/granual-yarn-production-create");
+              navigate("/yarn-fabric-work-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Granuals To Yarn Production
+            <SquarePlus className="h-4 w-4 " /> Yarn To Fabric Work Production
           </Button>
         </div>
         {/* table  */}
@@ -373,7 +375,7 @@ const GranualsToYarnProduction = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Granual To Yarn Production : &nbsp;
+            Total Yarn To Fabric Work Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -400,11 +402,11 @@ const GranualsToYarnProduction = () => {
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="Granuals To Yarn Production"
+        description="Yarn To Fabric Work Production"
         handleDelete={confirmDelete}
       />
     </Page>
   );
 };
 
-export default GranualsToYarnProduction;
+export default YarnToFabricWorkProductionList;

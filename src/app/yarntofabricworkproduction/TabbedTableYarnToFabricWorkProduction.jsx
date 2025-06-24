@@ -13,16 +13,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 
-const TabbedTableGranualToYarn = ({
-  rawMaterialRows,
-  granualsRows,
+const TabbedTableYarnToFabricWorkProduction = ({
+  YarnRows,
+  FabricRows,
   handleChange,
-  addRawRow,
-  addGranualsRow,
-  removeRawRow,
-  removeGranualsRow,
-  deleteRow,
-  deleteRow1,
+  addYarnRow,
+  addFabricRow,
+  removeYarnRow,
+  removeFabricRow,
+  deleteRowYarn,
+  deleteRowFabric,
   colorData,
 }) => {
   return (
@@ -33,53 +33,53 @@ const TabbedTableGranualToYarn = ({
             value="first"
             className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
           >
-            Granuals
+            Yarn
           </TabsTrigger>
           <TabsTrigger
             value="second"
             className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
           >
-            Yarn
+            Fabric Work
           </TabsTrigger>
         </TabsList>
       </div>
 
       <TabsContent value="first">
         <TableSection
-          rows={rawMaterialRows}
+          rows={YarnRows}
           itemData={colorData}
-          addRow={addRawRow}
-          removeRow={removeRawRow}
-          deleteRow={deleteRow}
+          addRow={addYarnRow}
+          removeRow={removeYarnRow}
+          deleteRow={deleteRowYarn}
           handleChange={handleChange}
           fields={[
-            "granuals_to_yp_sub_color_id",
-            "granuals_to_yp_bags",
-            "granuals_to_yp_weight",
+            "yarn_to_fwp_sub_color_id",
+            "yarn_to_fwp_thickness",
+            "yarn_to_fwp_weight",
           ]}
-          labels={["Color", "Bags", "Weight"]}
-          placeholders={["Select Item", "Enter Bags", "Enter Weight"]}
+          labels={["Color", "Thickness", "Weight"]}
+          placeholders={["Select Color", "Enter Thickness", "Enter Weight"]}
         />
       </TabsContent>
 
       <TabsContent value="second">
         <TableSection
-          rows={granualsRows}
+          rows={FabricRows}
           itemData={colorData}
-          addRow={addGranualsRow}
-          removeRow={removeGranualsRow}
-          deleteRow={deleteRow1}
+          addRow={addFabricRow}
+          removeRow={removeFabricRow}
+          deleteRow={deleteRowFabric}
           handleChange={handleChange}
           fields={[
-            "yarn_from_p_color_id",
-            "yarn_from_p_bags",
-            "yarn_from_p_weight",
-            "yarn_from_p_weight",
+            "fabric_from_wp_color_id",
+            "fabric_from_wp_mtr",
+            "fabric_from_wp_weight",
+            "fabric_from_wp_thickness",
           ]}
-          labels={["Color", "Bags", "Weight", "Thickness"]}
+          labels={["Color", "Meter", "Weight", "Thickness"]}
           placeholders={[
             "Select Color",
-            "Enter Bags",
+            "Enter Meter",
             "Enter Weight",
             "Enter Thickness",
           ]}
@@ -192,4 +192,4 @@ const TableSection = ({
   );
 };
 
-export default TabbedTableGranualToYarn;
+export default TabbedTableYarnToFabricWorkProduction;
