@@ -1,7 +1,7 @@
 import { FABRIC_WORK_PRODUCTION, YARN_TO_FABRIC_WORK_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";

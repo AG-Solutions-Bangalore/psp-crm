@@ -1,6 +1,3 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,9 +8,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import BASE_URL from "@/config/BaseUrl";
+import { ButtonConfig } from "@/config/ButtonConfig";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -118,7 +119,7 @@ export default function ForgotPassword() {
       >
         <Card className="w-80 max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">
+            <CardTitle className="text-2xl text-center text-[#1f7a57]">
               Forgot Password
             </CardTitle>
             <CardDescription className="text-center">
@@ -171,7 +172,7 @@ export default function ForgotPassword() {
                 >
                   <Button
                     type="submit"
-                    className="w-full bg-yellow-500 text-black hover:bg-yellow-100"
+                    className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center w-full`}
                     disabled={isLoading}
                   >
                     {isLoading ? (

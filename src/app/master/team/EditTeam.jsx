@@ -1,13 +1,17 @@
-import { useToast } from "@/hooks/use-toast";
-import React, { useEffect } from "react";
+import { FETCH_TEAM_BY_ID, UPDATE_TEAM } from "@/api";
+import apiClient from "@/api/axios";
+import usetoken from "@/api/usetoken";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,18 +25,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import axios from "axios";
-import BASE_URL from "@/config/BaseUrl";
-import { Edit, Loader2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { ButtonConfig } from "@/config/ButtonConfig";
-import usetoken from "@/api/usetoken";
-import { FETCH_TEAM_BY_ID, UPDATE_TEAM } from "@/api";
-import apiClient from "@/api/axios";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { Edit, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const EditTeam = ({ teamId }) => {
   const token = usetoken();

@@ -1,10 +1,7 @@
-import {
-    GRANUALS_TO_YARN_PRODUCTION,
-    YARN_FROM_PRODUCTION
-} from "@/api";
+import { GRANUALS_TO_YARN_PRODUCTION, YARN_FROM_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
@@ -12,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
@@ -29,14 +26,11 @@ import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const fetchRawMaterialById = async (id, token) => {
-  const response = await apiClient.get(
-    `${GRANUALS_TO_YARN_PRODUCTION}/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await apiClient.get(`${GRANUALS_TO_YARN_PRODUCTION}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };
 
@@ -436,8 +430,8 @@ const YarnProductionForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]?.yarn_from_p_thickness ||
-                                  ""
+                                  invoiceData[rowIndex]
+                                    ?.yarn_from_p_thickness || ""
                                 }
                                 placeholder="Enter Weight"
                                 onChange={(e) =>

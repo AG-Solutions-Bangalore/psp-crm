@@ -1,4 +1,4 @@
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";

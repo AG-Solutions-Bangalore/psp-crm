@@ -3,9 +3,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
+  BreadcrumbList
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -15,9 +13,6 @@ import {
 } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Profile from "../auth/Profile";
-import ChangePassword from "../auth/ChangePassword";
-import { useState } from "react";
 
 // eslint-disable-next-line react/prop-types
 export default function Page({ children }) {

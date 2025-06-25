@@ -1,4 +1,4 @@
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,7 +24,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import axios from "axios";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -34,6 +33,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { VENDOR_LIST } from "@/api";
+import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import {
   ErrorComponent,
@@ -45,11 +46,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import BASE_URL from "@/config/BaseUrl";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useNavigate } from "react-router-dom";
-import { VENDOR_LIST } from "@/api";
-import apiClient from "@/api/axios";
 
 const VendorList = () => {
   const token = usetoken();

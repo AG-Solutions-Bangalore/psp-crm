@@ -1,9 +1,9 @@
 import { FABRIC_SALE_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
-import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -373,7 +373,7 @@ const FabricSaleList = () => {
           </div>
         </div>
       </div>
-   
+
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}

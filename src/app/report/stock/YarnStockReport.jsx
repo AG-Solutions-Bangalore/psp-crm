@@ -1,7 +1,7 @@
 import { YARN_STOCK } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { ReportPageHeader } from "@/components/common/ReportPageHeader";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,18 @@ import {
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useFetchColor } from "@/hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
-import { Loader, Printer } from "lucide-react";
+import {
+  ArrowDownToLine,
+  File,
+  FileSpreadsheet,
+  Loader,
+  Printer,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
+import html2pdf from "html2pdf.js";
+import { useToast } from "@/hooks/use-toast";
+import downloadExcel from "@/components/common/downloadExcel";
 
 const YarnStockReport = () => {
   const containerRef = useRef();
@@ -38,8 +47,11 @@ const YarnStockReport = () => {
     toDate: formatDate(today),
     itemName: "",
   });
+  const { toast } = useToast();
   const [printloading, setPrintLoading] = useState(false);
-
+  const [pdfloading, setPdfLoading] = useState(false);
+  const [excelloading, setExcelLoading] = useState(false);
+  const [pdf, setPdf] = useState(false);
   const handleInputChange = (field, valueOrEvent) => {
     const value =
       typeof valueOrEvent === "object" && valueOrEvent.target
@@ -90,7 +102,6 @@ const YarnStockReport = () => {
   });
 
   const { data: colorData, isLoading: loadingitem } = useFetchColor();
-  console.log(formValues.itemName);
   const handlePrintPdf = useReactToPrint({
     content: () => containerRef.current,
     documentTitle: "Yarn",
@@ -123,13 +134,162 @@ const YarnStockReport = () => {
       setPrintLoading(false);
     },
   });
-  const { aggregatedData, total } = yarnData?.reduce(
-    (acc, raw) => {
-      const name = raw.item_name;
+  const handleSaveAsPdf = () => {
+    if (!containerRef.current) {
+      console.error("Element not found");
+      return;
+    }
 
-      if (!acc.aggregatedData[name]) {
-        acc.aggregatedData[name] = {
-          item_name: name,
+    setPdf(true);
+    setPdfLoading(true);
+
+    html2pdf()
+      .from(containerRef.current)
+      .set({
+        margin: 10,
+        filename: "Yarn Stock.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      })
+      .save()
+      .then(() => {
+        setPdf(false);
+        setPdfLoading(false);
+      })
+      .catch((error) => {
+        console.error("PDF export error:", error);
+        setPdf(false);
+        setPdfLoading(false);
+      });
+  };
+  const downloadCSV = async (
+    granualsData,
+    toast,
+    formValues,
+    setExcelLoading
+  ) => {
+    const filteredItems = granualsData?.filter((raw) =>
+      formValues?.itemName
+        ? String(raw.color_id) === String(formValues.itemName)
+        : true
+    );
+
+    if (!filteredItems || filteredItems.length === 0) {
+      toast?.({
+        title: "No Data",
+        description: "No data available to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setExcelLoading(true);
+
+    try {
+      const headers = [
+        "Color Name",
+        "Opening Stock",
+        "Incoming",
+        "Sold",
+        "Used For Fabric",
+        "Used For Fabric Work",
+        "Period",
+        "Closing Stock",
+      ];
+
+      const getRowData = (item) => [
+        item.color_name || "",
+        Number(item.opening_stock || 0),
+        Number(item.incoming || 0),
+        Number(item.sold || 0),
+        Number(item.used_for_fabric || 0),
+        Number(item.used_for_fabric_work || 0),
+        Number(item.in_period || 0),
+        Number(item.closing_stock || 0),
+      ];
+
+      const dataWithTotal = [...filteredItems];
+
+      const customGetRowData = (item) => getRowData(item);
+
+      await downloadExcel({
+        data: dataWithTotal,
+        sheetName: "Yarn Stock",
+        headers,
+        getRowData: customGetRowData,
+        fileNamePrefix: "yarn_stock",
+        toast,
+        emptyDataCallback: () => ({
+          title: "No Data",
+          description: "No data available to export",
+          variant: "destructive",
+        }),
+      });
+    } catch (error) {
+      toast?.({
+        title: "Error",
+        description: "Failed to export Excel file",
+        variant: "destructive",
+      });
+      console.error("Excel export error:", error);
+    } finally {
+      setTimeout(() => {
+        setExcelLoading(false);
+      }, 300);
+    }
+  };
+  const { total } = yarnData
+    ?.filter((raw) =>
+      formValues.itemName
+        ? String(raw.color_id) === String(formValues.itemName)
+        : true
+    )
+    .reduce(
+      (acc, raw) => {
+        const name = raw.color_name;
+
+        if (!acc.aggregatedData[name]) {
+          acc.aggregatedData[name] = {
+            color_name: name,
+            opening_stock: 0,
+            incoming: 0,
+            sold: 0,
+            used_for_fabric: 0,
+            used_for_fabric_work: 0,
+            in_period: 0,
+            closing_stock: 0,
+          };
+        }
+
+        acc.aggregatedData[name].opening_stock += Number(
+          raw.opening_stock || 0
+        );
+        acc.aggregatedData[name].incoming += Number(raw.incoming || 0);
+        acc.aggregatedData[name].sold += Number(raw.sold || 0);
+        acc.aggregatedData[name].used_for_fabric += Number(
+          raw.used_for_fabric || 0
+        );
+        acc.aggregatedData[name].used_for_fabric_work += Number(
+          raw.used_for_fabric_work || 0
+        );
+        acc.aggregatedData[name].in_period += Number(raw.in_period || 0);
+        acc.aggregatedData[name].closing_stock += Number(
+          raw.closing_stock || 0
+        );
+
+        acc.total.opening_stock += Number(raw.opening_stock || 0);
+        acc.total.incoming += Number(raw.incoming || 0);
+        acc.total.sold += Number(raw.sold || 0);
+        acc.total.used_for_fabric += Number(raw.used_for_fabric || 0);
+        acc.total.used_for_fabric_work += Number(raw.used_for_fabric_work || 0);
+        acc.total.in_period += Number(raw.in_period || 0);
+        acc.total.closing_stock += Number(raw.closing_stock || 0);
+        return acc;
+      },
+      {
+        aggregatedData: {},
+        total: {
           opening_stock: 0,
           incoming: 0,
           sold: 0,
@@ -137,43 +297,9 @@ const YarnStockReport = () => {
           used_for_fabric_work: 0,
           in_period: 0,
           closing_stock: 0,
-        };
+        },
       }
-
-      acc.aggregatedData[name].opening_stock += Number(raw.opening_stock || 0);
-      acc.aggregatedData[name].incoming += Number(raw.incoming || 0);
-      acc.aggregatedData[name].sold += Number(raw.sold || 0);
-      acc.aggregatedData[name].used_for_fabric += Number(
-        raw.used_for_fabric || 0
-      );
-      acc.aggregatedData[name].used_for_fabric_work += Number(
-        raw.used_for_fabric_work || 0
-      );
-      acc.aggregatedData[name].in_period += Number(raw.in_period || 0);
-      acc.aggregatedData[name].closing_stock += Number(raw.closing_stock || 0);
-
-      acc.total.opening_stock += Number(raw.opening_stock || 0);
-      acc.total.incoming += Number(raw.incoming || 0);
-      acc.total.sold += Number(raw.sold || 0);
-      acc.total.used_for_fabric += Number(raw.used_for_fabric || 0);
-      acc.total.used_for_fabric_work += Number(raw.used_for_fabric_work || 0);
-      acc.total.in_period += Number(raw.in_period || 0);
-      acc.total.closing_stock += Number(raw.closing_stock || 0);
-      return acc;
-    },
-    {
-      aggregatedData: {},
-      total: {
-        opening_stock: 0,
-        incoming: 0,
-        sold: 0,
-        used_for_fabric: 0,
-        used_for_fabric_work: 0,
-        in_period: 0,
-        closing_stock: 0,
-      },
-    }
-  ) || { aggregatedData: {}, total: {} };
+    ) || { aggregatedData: {}, total: {} };
 
   if (isLoading || loadingitem) {
     return <LoaderComponent name="Yarn" />;
@@ -252,21 +378,61 @@ const YarnStockReport = () => {
           ]}
           actionButtons={[
             {
+              title: "Print Report",
               element: (
                 <Button
                   type="button"
                   size="sm"
                   variant="outline"
                   disabled={printloading}
-                  className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
+                  className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center `}
                   onClick={handlePrintPdf}
                 >
                   {printloading ? (
                     <Loader className="animate-spin h-3 w-3" />
                   ) : (
-                    <Printer className="h-3 w-3 mr-1" />
+                    <Printer className="h-3 w-3 " />
                   )}{" "}
-                  Print
+                </Button>
+              ),
+            },
+            {
+              title: "PDF Report",
+              element: (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={pdfloading}
+                  className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center `}
+                  onClick={handleSaveAsPdf}
+                >
+                  {pdfloading ? (
+                    <Loader className="animate-spin h-3 w-3" />
+                  ) : (
+                    <ArrowDownToLine className="h-3 w-3 " />
+                  )}{" "}
+                </Button>
+              ),
+            },
+            {
+              title: "Excel Report",
+              element: (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={excelloading}
+                  className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center `}
+                  onClick={() =>
+                    downloadCSV(yarnData, toast, formValues, setExcelLoading)
+                  }
+                >
+                  {excelloading ? (
+                    <Loader className="animate-spin h-3 w-3" />
+                  ) : (
+                    <FileSpreadsheet className="h-3 w-3 " />
+                  )}{" "}
                 </Button>
               ),
             },
@@ -276,7 +442,11 @@ const YarnStockReport = () => {
           className="overflow-x-auto text-[11px] grid grid-cols-1"
           ref={containerRef}
         >
-          <h1 className="text-center text-2xl font-semibold mb-3 hidden print:block">
+          <h1
+            className={`text-center text-2xl font-semibold mb-3 ${
+              pdf ? "block" : "hidden"
+            } print:block`}
+          >
             Yarn Stock
           </h1>
           <table className="w-full border-collapse border border-black">

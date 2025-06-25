@@ -1,7 +1,7 @@
 import { VENDOR_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { ProgressBar } from "@/components/spinner/ProgressBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -60,10 +60,10 @@ const VendorHeader = ({ vendorDetails }) => {
     >
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-gray-800 capitalize">
             {vendorDetails?.vendor_name || "Vendor Details"}
           </h1>
-          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">
+          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded capitalize">
             {vendorDetails?.status || "N/A"}
           </span>
         </div>
@@ -72,13 +72,18 @@ const VendorHeader = ({ vendorDetails }) => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col gap-3">
-        <div className="flex items-center justify-end gap-2 text-sm">
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="flex items-center justify-end text-sm">
           <span className="font-medium">
             State: {vendorDetails?.vendor_state_name || "N/A"}
           </span>
         </div>
-        <div className="flex items-center justify-end gap-2 text-sm">
+        <div className="flex items-center justify-end text-sm">
+          <span className="font-medium">
+            State Code: {vendorDetails?.vendor_state_code || "N/A"}
+          </span>
+        </div>
+        <div className="flex items-center justify-end text-sm">
           <span className="font-medium">
             GST: {vendorDetails?.vendor_gst || "N/A"}
           </span>
@@ -119,7 +124,7 @@ const VendorEdit = () => {
     vendor_contact_mobile: "",
     vendor_state_name: "",
     vendor_state_code: "",
-    vendor_type: "1",
+    vendor_type: "",
     status: "Active",
   });
 
@@ -401,8 +406,8 @@ const VendorEdit = () => {
                 <Input
                   className="bg-white"
                   value={formData.vendor_state_code}
-                  onChange={(e) => handleInputChange(e, "vendor_state_code")}
-                  placeholder="Enter state code"
+                  placeholder="Select state"
+                  disabled
                 />
               </div>
 
@@ -503,7 +508,7 @@ const VendorEdit = () => {
         </Card>
 
         {/* Submit Button */}
-        <div className="flex flex-col items-end">
+        <div className="flex justify-end space-x-3">
           {updateVendorMutation.isPending && <ProgressBar progress={70} />}
           <Button
             type="submit"

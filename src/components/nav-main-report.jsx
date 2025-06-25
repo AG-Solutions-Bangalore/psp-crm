@@ -1,22 +1,16 @@
 
 
-import { ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+  Collapsible
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+  SidebarMenuItem
+} from "@/components/ui/sidebar";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 

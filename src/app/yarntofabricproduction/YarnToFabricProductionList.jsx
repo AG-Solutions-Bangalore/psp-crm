@@ -1,7 +1,7 @@
 import { YARN_TO_FABRIC_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
@@ -159,7 +159,9 @@ const YarnToFabricProductionList = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/fabric-production/${encodeURIComponent(encryptId(id))}`
+                        `/fabric-production/${encodeURIComponent(
+                          encryptId(id)
+                        )}`
                       );
                     }}
                   >

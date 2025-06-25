@@ -1,5 +1,4 @@
 import { ButtonConfig } from "@/config/ButtonConfig";
-import React from "react";
 
 const PageHeaders = ({ progress, title, subtitle, mode = "create" }) => {
   const actionText =

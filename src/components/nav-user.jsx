@@ -1,4 +1,3 @@
-import { ArrowRight, ChevronsUpDown, Key, LogOut, User } from "lucide-react";
 import ChangePassword from "@/app/auth/ChangePassword";
 import Profile from "@/app/auth/Profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,9 +16,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import useLogout from "@/hooks/useLogout";
+import { setShowUpdateDialog } from "@/redux/slices/versionSlice";
+import { ArrowRight, ChevronsUpDown, Key, LogOut, User } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setShowUpdateDialog } from "@/redux/slices/versionSlice";
 
 export function NavUser({ user }) {
   const [open, setOpen] = useState(false);
@@ -101,7 +101,7 @@ export function NavUser({ user }) {
                       </span>
                     </span>
                     <span className="flex items-center gap-1 font-semibold">
-                      Updated on :24/06/2025
+                      Updated on :25/06/2025
                     </span>
                   </div>
                 </div>

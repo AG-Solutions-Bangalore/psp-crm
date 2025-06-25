@@ -1,9 +1,9 @@
 import { YARN_TO_FABRIC_WORK_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
-import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -133,7 +133,7 @@ const YarnToFabricWorkProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Fabric  Work Production</p>
+                  <p>Edit Fabric Work Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}

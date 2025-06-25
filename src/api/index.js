@@ -55,5 +55,9 @@ export const FABRIC_WORK_PRODUCTION = `/api/fabricfromworkproduction`;
 export const RAW_MATERIAL_STOCK = `/api/rawmaterialstock`;
 //GRANUALS_STOCK
 export const GRANUALS_STOCK = `/api/granualsstock`;
-//GRANUALS_STOCK
+//YARN_STOCK
 export const YARN_STOCK = `/api/yarnstock`;
+//FABRIC_STOCK
+export const FABRIC_STOCK = `/api/fabricstock`;
+//WEBSITE_ENQUIRY
+export const WEBSITE_ENQUIRY = `/api/panel-fetch-website-contact`;

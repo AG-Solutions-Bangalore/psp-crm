@@ -1,5 +1,3 @@
-import { ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
 import {
   Collapsible,
   CollapsibleContent,
@@ -11,12 +9,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  SidebarMenuSub
 } from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const itemVariants = {
   open: { opacity: 1, height: "auto", transition: { duration: 0.3 } },

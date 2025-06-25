@@ -11,10 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import BASE_URL from "@/config/BaseUrl";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";

@@ -1,4 +1,4 @@
-import { GRANUALS_STOCK } from "@/api";
+import { FABRIC_STOCK } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
@@ -20,11 +20,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useFetchColor } from "@/hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
 import html2pdf from "html2pdf.js";
-import { ArrowDownToLine, FileSpreadsheet, Loader, Printer } from "lucide-react";
+import {
+  ArrowDownToLine,
+  FileSpreadsheet,
+  Loader,
+  Printer,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
-const GranualsStockReport = () => {
+const FabricStockReport = () => {
   const containerRef = useRef();
   const token = usetoken();
   const formatDate = (date) => {
@@ -42,7 +47,6 @@ const GranualsStockReport = () => {
     itemName: "",
   });
   const { toast } = useToast();
-
   const [printloading, setPrintLoading] = useState(false);
   const [pdfloading, setPdfLoading] = useState(false);
   const [excelloading, setExcelLoading] = useState(false);
@@ -63,7 +67,7 @@ const GranualsStockReport = () => {
 
     try {
       const response = await apiClient.get(
-        `${GRANUALS_STOCK}?from=${from}&to=${to}`,
+        `${FABRIC_STOCK}?from=${from}&to=${to}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,19 +76,19 @@ const GranualsStockReport = () => {
       );
       return response?.data?.data;
     } catch (error) {
-      console.error("Error fetching granuals stock:", error);
+      console.error("Error fetching fabric stock:", error);
       throw error;
     }
   };
 
   const {
-    data: granualsData,
+    data: fabricData,
     isLoading,
     isError,
     refetch,
   } = useQuery({
     queryKey: [
-      "granualsData",
+      "fabricData",
       {
         from: formValues.fromDate,
         to: formValues.toDate,
@@ -99,7 +103,7 @@ const GranualsStockReport = () => {
   const { data: colorData, isLoading: loadingitem } = useFetchColor();
   const handlePrintPdf = useReactToPrint({
     content: () => containerRef.current,
-    documentTitle: "Granual",
+    documentTitle: "Fabric",
     pageStyle: `
     @page {
       size: A4 portrait;
@@ -142,7 +146,7 @@ const GranualsStockReport = () => {
       .from(containerRef.current)
       .set({
         margin: 10,
-        filename: " Granual Stock.pdf",
+        filename: "Fabric Stock.pdf",
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -159,12 +163,12 @@ const GranualsStockReport = () => {
       });
   };
   const downloadCSV = async (
-    granualsData,
+    fabricData,
     toast,
     formValues,
     setExcelLoading
   ) => {
-    const filteredItems = granualsData?.filter((raw) =>
+    const filteredItems = fabricData?.filter((raw) =>
       formValues?.itemName
         ? String(raw.color_id) === String(formValues.itemName)
         : true
@@ -185,19 +189,21 @@ const GranualsStockReport = () => {
       const headers = [
         "Color Name",
         "Opening Stock",
-        "Received",
         "Produce",
-        "Consume",
+        "Work Produce",
+        "Sold",
+        "Period",
         "Closing Stock",
       ];
 
       const getRowData = (item) => [
         item.color_name || "",
-        Number(item.opening_stock || 0),
-        Number(item.received || 0),
+        Number(item.open_stock || 0),
         Number(item.produced || 0),
-        Number(item.consumed || 0),
-        Number(item.closing_stock || 0),
+        Number(item.work_produced || 0),
+        Number(item.sold || 0),
+        Number(item.in_period || 0),
+        Number(item.close_stock || 0),
       ];
 
       const dataWithTotal = [...filteredItems];
@@ -206,10 +212,10 @@ const GranualsStockReport = () => {
 
       await downloadExcel({
         data: dataWithTotal,
-        sheetName: "Granual Stock",
+        sheetName: "Fabric Stock",
         headers,
         getRowData: customGetRowData,
-        fileNamePrefix: "granual_stock",
+        fileNamePrefix: "fabric_stock",
         toast,
         emptyDataCallback: () => ({
           title: "No Data",
@@ -230,7 +236,7 @@ const GranualsStockReport = () => {
       }, 300);
     }
   };
-  const { total } = granualsData
+  const { total } = fabricData
     ?.filter((raw) =>
       formValues.itemName
         ? String(raw.color_id) === String(formValues.itemName)
@@ -243,46 +249,48 @@ const GranualsStockReport = () => {
         if (!acc.aggregatedData[name]) {
           acc.aggregatedData[name] = {
             color_name: name,
-            opening_stock: 0,
+            open_stock: 0,
             produced: 0,
-            received: 0,
-            consumed: 0,
-            closing_stock: 0,
+            work_produced: 0,
+            sold: 0,
+            in_period: 0,
+            close_stock: 0,
           };
         }
 
-        acc.aggregatedData[name].opening_stock += Number(
-          raw.opening_stock || 0
-        );
+        acc.aggregatedData[name].open_stock += Number(raw.open_stock || 0);
         acc.aggregatedData[name].produced += Number(raw.produced || 0);
-        acc.aggregatedData[name].received += Number(raw.received || 0);
-        acc.aggregatedData[name].consumed += Number(raw.consumed || 0);
-        acc.aggregatedData[name].closing_stock += Number(
-          raw.closing_stock || 0
+        acc.aggregatedData[name].work_produced += Number(
+          raw.work_produced || 0
         );
+        acc.aggregatedData[name].sold += Number(raw.sold || 0);
 
-        acc.total.opening_stock += Number(raw.opening_stock || 0);
+        acc.aggregatedData[name].in_period += Number(raw.in_period || 0);
+        acc.aggregatedData[name].close_stock += Number(raw.close_stock || 0);
+
+        acc.total.open_stock += Number(raw.open_stock || 0);
         acc.total.produced += Number(raw.produced || 0);
-        acc.total.received += Number(raw.received || 0);
-        acc.total.consumed += Number(raw.consumed || 0);
-        acc.total.closing_stock += Number(raw.closing_stock || 0);
-
+        acc.total.work_produced += Number(raw.work_produced || 0);
+        acc.total.sold += Number(raw.sold || 0);
+        acc.total.in_period += Number(raw.in_period || 0);
+        acc.total.close_stock += Number(raw.close_stock || 0);
         return acc;
       },
       {
         aggregatedData: {},
         total: {
-          opening_stock: 0,
+          open_stock: 0,
           produced: 0,
-          received: 0,
-          consumed: 0,
-          closing_stock: 0,
+          work_produced: 0,
+          sold: 0,
+          in_period: 0,
+          close_stock: 0,
         },
       }
     ) || { aggregatedData: {}, total: {} };
 
   if (isLoading || loadingitem) {
-    return <LoaderComponent name="Granual" />;
+    return <LoaderComponent name="Fabric" />;
   }
 
   if (isError) {
@@ -291,7 +299,7 @@ const GranualsStockReport = () => {
         <Card className="w-full max-w-md mx-auto mt-10">
           <CardHeader>
             <CardTitle className="text-destructive">
-              Error Fetching Granual
+              Error Fetching Fabric
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -307,8 +315,8 @@ const GranualsStockReport = () => {
     <Page>
       <div className="p-0 md:p-4">
         <ReportPageHeader
-          title="Granual Stock"
-          subtitle="View granual stock"
+          title="Fabric Stock"
+          subtitle="View Fabric stock"
           filters={[
             {
               label: "From Date",
@@ -393,12 +401,12 @@ const GranualsStockReport = () => {
                   ) : (
                     <ArrowDownToLine className="h-3 w-3 " />
                   )}{" "}
-             
                 </Button>
               ),
             },
             {
               title: "Excel Report",
+
               element: (
                 <Button
                   type="button"
@@ -407,12 +415,7 @@ const GranualsStockReport = () => {
                   disabled={excelloading}
                   className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center `}
                   onClick={() =>
-                    downloadCSV(
-                      granualsData,
-                      toast,
-                      formValues,
-                      setExcelLoading
-                    )
+                    downloadCSV(fabricData, toast, formValues, setExcelLoading)
                   }
                 >
                   {excelloading ? (
@@ -420,7 +423,6 @@ const GranualsStockReport = () => {
                   ) : (
                     <FileSpreadsheet className="h-3 w-3 " />
                   )}{" "}
-         
                 </Button>
               ),
             },
@@ -435,7 +437,7 @@ const GranualsStockReport = () => {
               pdf ? "block" : "hidden"
             } print:block`}
           >
-            Granual Stock
+            Fabric Stock
           </h1>
           <table className="w-full border-collapse border border-black">
             <thead className="bg-gray-100">
@@ -447,24 +449,28 @@ const GranualsStockReport = () => {
                   Opening Stock
                 </th>
                 <th className="border border-black px-2 py-2 text-center">
-                  Received
+                  Produce
+                </th>
+                <th className="border border-black px-2 py-2 text-center">
+                  Work Produce
                 </th>
 
                 <th className="border border-black px-2 py-2 text-center">
-                  Produce
+                  Sold
+                </th>
+
+                <th className="border border-black px-2 py-2 text-center cursor-pointer">
+                  Period
                 </th>
                 <th className="border border-black px-2 py-2 text-center cursor-pointer">
-                  Consume{" "}
-                </th>
-                <th className="border border-black px-2 py-2 text-center cursor-pointer">
-                  Closing Stock{" "}
+                  Closing Stock
                 </th>
               </tr>
             </thead>
 
             <tbody>
-              {granualsData && granualsData.length > 0 ? (
-                granualsData
+              {fabricData && fabricData.length > 0 ? (
+                fabricData
                   .filter((raw) =>
                     formValues.itemName
                       ? String(raw.color_id) === String(formValues.itemName)
@@ -479,20 +485,23 @@ const GranualsStockReport = () => {
                         {raw.color_name}
                       </td>
                       <td className="border border-black px-2 py-2 text-right">
-                        {raw.opening_stock}
+                        {raw.open_stock}
                       </td>
-                      <td className="border border-black px-2 py-2 text-right">
-                        {raw.received}
-                      </td>
-
                       <td className="border border-black px-2 py-2 text-right">
                         {raw.produced}
                       </td>
                       <td className="border border-black px-2 py-2 text-right">
-                        {raw.consumed}
+                        {raw.work_produced}
+                      </td>
+
+                      <td className="border border-black px-2 py-2 text-right">
+                        {raw.sold}
                       </td>
                       <td className="border border-black px-2 py-2 text-right">
-                        {raw.closing_stock}
+                        {raw.in_period}
+                      </td>
+                      <td className="border border-black px-2 py-2 text-right">
+                        {raw.close_stock}
                       </td>
                     </tr>
                   ))
@@ -508,19 +517,22 @@ const GranualsStockReport = () => {
               <tr className="bg-gray-200  font-bold">
                 <td className="border border-black px-2 py-2">Total</td>
                 <td className="border border-black px-2 py-2 text-right">
-                  {total.opening_stock.toFixed(2)}
+                  {total.open_stock.toFixed(2) || ""}
                 </td>
                 <td className="border border-black px-2 py-2 text-right">
-                  {total.received.toFixed(2)}
+                  {total.produced.toFixed(2) || ""}
                 </td>
                 <td className="border border-black px-2 py-2 text-right">
-                  {total.produced.toFixed(2)}
+                  {total.work_produced.toFixed(2) || ""}
                 </td>
                 <td className="border border-black px-2 py-2 text-right">
-                  {total.consumed.toFixed(2)}
+                  {total.sold.toFixed(2) || ""}
                 </td>
                 <td className="border border-black px-2 py-2 text-right">
-                  {total.closing_stock.toFixed(2)}
+                  {total.in_period.toFixed(2) || ""}
+                </td>
+                <td className="border border-black px-2 py-2 text-right">
+                  {total.close_stock.toFixed(2) || ""}
                 </td>
               </tr>
             </tfoot>
@@ -531,4 +543,4 @@ const GranualsStockReport = () => {
   );
 };
 
-export default GranualsStockReport;
+export default FabricStockReport;

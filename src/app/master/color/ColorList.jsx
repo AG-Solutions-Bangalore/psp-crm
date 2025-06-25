@@ -1,6 +1,5 @@
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -32,7 +31,7 @@ import { useNavigate } from "react-router-dom";
 import { COLOR_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateColor from "./CreateColor";
 import EditColor from "./EditColor";

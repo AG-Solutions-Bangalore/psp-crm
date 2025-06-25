@@ -1,22 +1,12 @@
 import { YARN_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 import { MemoizedSelect } from "@/components/common/MemoizedSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -329,7 +319,6 @@ const YarnForm = () => {
       <div className="p-0">
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
- 
             <PageHeaders
               title={editId ? "Update Yarn" : "Create Yarn"}
               subtitle="yarn"

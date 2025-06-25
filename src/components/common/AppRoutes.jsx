@@ -31,7 +31,11 @@ import YarnToFabricWorkProductionList from "@/app/yarntofabricworkproduction/Yar
 import FabricWorkProductionForm from "@/app/yarntofabricworkproduction/FabricWorkProductionForm";
 import RawMaterialReport from "@/app/report/stock/RawMaterialReport";
 import GranualsStockReport from "@/app/report/stock/GranualsStockReport";
-import YarnStockReport from "@/app/report/YarnStockReport";
+import YarnStockReport from "@/app/report/stock/YarnStockReport";
+import FabricStockReport from "@/app/report/stock/FabricStockReport";
+import Dashboard from "@/app/dashboard/Dashboard";
+import WebsiteEnquiry from "@/app/websiteenquiry/WebsiteEnquiry";
+import TaxInvoice from "@/app/report/taxinvoice/TaxInvoice";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -39,7 +43,7 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/maintenance" element={<Maintenance />} />
       {/* HOME */}
-      <Route path="/home" element={<TeamList />} />
+      <Route path="/home" element={<Dashboard />} />
       {/* Master */}
       <Route path="/master/team" element={<TeamList />} />
       <Route path="/master/color" element={<ColorList />} />
@@ -131,6 +135,11 @@ const AppRoutes = () => {
       <Route path="/report/raw-material" element={<RawMaterialReport />} />
       <Route path="/report/granuals" element={<GranualsStockReport />} />
       <Route path="/report/yarn" element={<YarnStockReport />} />
+      <Route path="/report/fabric" element={<FabricStockReport />} />
+      {/* //Website enquiryt */}
+      <Route path="/website-enquiry" element={<WebsiteEnquiry />} />
+      <Route path="/report-tax-invoice" element={<TaxInvoice />} />
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
