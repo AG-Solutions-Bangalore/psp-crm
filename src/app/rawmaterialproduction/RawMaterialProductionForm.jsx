@@ -1,7 +1,7 @@
 import { GRANUALS_PRODUCTION_LIST, RAW_MATERIAL_PRODUCTION_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";

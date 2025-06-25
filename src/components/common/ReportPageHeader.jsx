@@ -1,4 +1,5 @@
 import { ButtonConfig } from "@/config/ButtonConfig";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export function ReportPageHeader({
   title = "Section Title",
@@ -19,7 +20,7 @@ export function ReportPageHeader({
 
         <div className="bg-white p-3 rounded-md shadow-xs">
           <div className="flex flex-col lg:flex-col lg:items-end gap-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 space-x-3 items-center">
               {filters.map(({ label, element }, idx) => (
                 <div className="space-y-1" key={idx}>
                   <label
@@ -34,10 +35,24 @@ export function ReportPageHeader({
               ))}
 
               {actionButtons.length > 0 && (
-                <div className="mt-3 flex space-x-3">
-                  {actionButtons.map(({ element }, idx) => (
-                    <div key={idx}>{element}</div>
-                  ))}
+                <div>
+                  <span
+                    className={`text-xs ${
+                      ButtonConfig.cardLabel || "text-gray-700"
+                    } block`}
+                  >
+                    Downloads
+                  </span>
+                  <div className="flex space-x-2 mt-1">
+                    {actionButtons.map(({ element, title }, idx) => (
+                      <Tooltip key={idx}>
+                        <TooltipTrigger asChild>
+                          <div>{element}</div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">{title}</TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

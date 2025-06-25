@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { AlertTriangle, Clock, Timer } from "lucide-react";
 import usetoken from "@/api/usetoken";
+import { AlertTriangle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
   const [showBanner, setShowBanner] = useState(false);

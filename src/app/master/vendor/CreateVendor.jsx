@@ -1,7 +1,8 @@
 import { VENDOR_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
+import PageHeaders from "@/components/common/PageHeaders";
 import { ProgressBar } from "@/components/spinner/ProgressBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,16 +14,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ReactSelect, { components } from "react-select";
 import { Textarea } from "@/components/ui/textarea";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
 import { useFetchState } from "@/hooks/useApi";
 import { useMutation } from "@tanstack/react-query";
+import { ChevronsUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactSelect from "react-select";
 import { z } from "zod";
-import { ChevronsUpDown } from "lucide-react";
 const DropdownIndicator = () => (
   <div className="p-2 flex items-center ">
     <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400" />
@@ -40,44 +41,6 @@ const branchFormSchema = z.object({
   vendor_state_code: z.string().min(1, "State code is required"),
   vendor_type: z.string().min(1, "Vendor type is required"),
 });
-
-const BranchHeader = ({ progress }) => {
-  return (
-    <div
-      className={`flex sticky top-0 z-10 border border-gray-200 rounded-lg justify-between items-start gap-8 mb-2 ${ButtonConfig.cardheaderColor} p-4 shadow-sm`}
-    >
-      <div className="flex-1">
-        <h1 className="text-3xl font-bold text-gray-800">Create Vendor</h1>
-        <p className="text-gray-600 mt-2">
-          Add a new vendor to your organization
-        </p>
-      </div>
-
-      <div className="flex-1 pt-2">
-        <div className="sticky top-4">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium">Basic Details</span>
-            <span className="text-sm font-medium">Additional Details</span>
-          </div>
-
-          <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-            <div
-              className="bg-[#1f7a57] h-full rounded-full transition-all duration-300 shadow-sm"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className="flex justify-between items-center mt-2">
-            <span className="text-sm font-medium text-gray-600">Progress</span>
-            <span className="text-sm font-medium text-[#1f7a57]">
-              {progress}% Complete
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const createBranch = async (data, token) => {
   if (!token) throw new Error("No authentication token found");
@@ -153,10 +116,23 @@ const CreateVendor = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+
+    if (field === "vendor_state_name") {
+      const matchedState = stateData.data.find(
+        (state) => state.state_name === value
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+        vendor_state_code: matchedState ? matchedState.state_code : "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
   };
 
   useEffect(() => {
@@ -212,7 +188,11 @@ const CreateVendor = () => {
   return (
     <Page>
       <form onSubmit={handleSubmit} className="w-full p-0">
-        <BranchHeader progress={progress} />
+        <PageHeaders
+          title={"Create Vendor"}
+          subtitle="vendor"
+          progress={progress}
+        />
         <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
           <CardContent className="p-6">
             <div className="grid grid-cols-4 gap-6">
@@ -341,8 +321,9 @@ const CreateVendor = () => {
                 <Input
                   className="bg-white"
                   value={formData.vendor_state_code}
-                  onChange={(e) => handleInputChange(e, "vendor_state_code")}
+                  // onChange={(e) => handleInputChange(e, "vendor_state_code")}
                   placeholder="Enter state code"
+                  disabled
                 />
               </div>
 
@@ -426,7 +407,7 @@ const CreateVendor = () => {
           </CardContent>
         </Card>
 
-        <div className="flex flex-col items-end">
+        <div className="flex justify-end space-x-2">
           {createBranchMutation.isPending && <ProgressBar progress={70} />}
           <Button
             type="submit"

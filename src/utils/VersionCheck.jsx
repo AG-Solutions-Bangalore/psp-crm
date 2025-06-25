@@ -12,13 +12,10 @@ import { setShowUpdateDialog } from "@/redux/slices/versionSlice";
 import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 const VersionCheck = () => {
   const token = usetoken();
-  const localVersion = useSelector((state) => state.auth?.version);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const Logout = useLogout();
   const [retryPopup, setRetryPopup] = useState(false);

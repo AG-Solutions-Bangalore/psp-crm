@@ -157,7 +157,20 @@ export function AppSidebar({ ...props }) {
               },
             ],
           },
+
+          {
+            title: "Tax Invoice",
+            url: "/report-tax-invoice",
+            icon: NotebookText,
+            isActive: false,
+          },
         ],
+      },
+      {
+        title: "Website Enquiry",
+        url: "/website-enquiry",
+        icon: NotebookText,
+        isActive: false,
       },
     ],
   };

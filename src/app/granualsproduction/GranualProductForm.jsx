@@ -1,7 +1,7 @@
 import { GRANUALS_PRODUCTION_LIST, RAW_MATERIAL_PRODUCTION_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/dashboard/page";
+import Page from "@/app/page/page";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
@@ -225,10 +225,6 @@ const GranualProductForm = () => {
         ...formData,
         subs1: invoiceData,
       };
-
-      const url = `${GRANUALS_PRODUCTION_LIST}`;
-
-      const method = "post";
 
       const response = await apiClient.post(GRANUALS_PRODUCTION_LIST, payload, {
         headers: {

@@ -8,19 +8,17 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
+import { CREATE_TEAM } from "@/api";
+import apiClient from "@/api/axios";
+import usetoken from "@/api/usetoken";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import BASE_URL from "@/config/BaseUrl";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { Loader2, SquarePlus } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import usetoken from "@/api/usetoken";
-import { CREATE_TEAM } from "@/api";
-import apiClient from "@/api/axios";
 
 const CreateTeam = () => {
   const token = usetoken();

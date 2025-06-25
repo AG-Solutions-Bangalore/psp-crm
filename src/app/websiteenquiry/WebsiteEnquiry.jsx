@@ -28,26 +28,27 @@ import { ArrowUpDown, ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ITEM_LIST } from "@/api";
+import { ITEM_LIST, WEBSITE_ENQUIRY } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { ButtonConfig } from "@/config/ButtonConfig";
-import CreateItem from "./CreateItem";
-import EditItem from "./EditItem";
 
-const ItemList = () => {
+const WebsiteEnquiry = () => {
   const token = usetoken();
 
   const {
-    data: item,
+    data: websiteenquiry,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["item"],
+    queryKey: ["websiteenquirys"],
     queryFn: async () => {
-      const response = await apiClient.get(`${ITEM_LIST}`, {
+      const response = await apiClient.get(`${WEBSITE_ENQUIRY}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
@@ -69,56 +70,37 @@ const ItemList = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "item_name",
+      accessorKey: "contact_name",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Item
+          Contact Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("item_name")}</div>,
-    },
-
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.getValue("status");
-
-        return (
-          <span
-            className={`px-2 py-1 rounded text-xs ${
-              status == "Active"
-                ? "bg-green-100 text-green-800"
-                : "bg-gray-100 text-gray-800"
-            }`}
-          >
-            {status}
-          </span>
-        );
-      },
+      cell: ({ row }) => <div>{row.getValue("contact_name")}</div>,
     },
     {
-      id: "actions",
-      header: "Action",
-      cell: ({ row }) => {
-        const customdescriptionId = row.original.id;
-
-        return (
-          <div className="flex flex-row">
-            <EditItem customdescriptionId={customdescriptionId} />
-          </div>
-        );
-      },
+      accessorKey: "contact_mobile",
+      header: "Mobile",
+      cell: ({ row }) => <div>{row.getValue("contact_mobile")}</div>,
+    },
+    {
+      accessorKey: "contact_email",
+      header: "Email",
+      cell: ({ row }) => <div>{row.getValue("contact_email")}</div>,
+    },
+    {
+      accessorKey: "contact_message",
+      header: "Message",
+      cell: ({ row }) => <div>{row.getValue("contact_message")}</div>,
     },
   ];
 
-  // Create the table instance
   const table = useReactTable({
-    data: item || [],
+    data: websiteenquiry || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -143,25 +125,29 @@ const ItemList = () => {
 
   // Render loading state
   if (isLoading) {
-    return <LoaderComponent name="Item Data" />;
+    return <LoaderComponent name="Website Enquiry Data" />;
   }
 
   if (isError) {
-    return <ErrorComponent message="Error Fetching Item" refetch={refetch} />;
+    return (
+      <ErrorComponent
+        message="Error Fetching Website Enquiry"
+        refetch={refetch}
+      />
+    );
   }
   return (
     <Page>
       <div className="w-full p-4">
         <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Items List
+          Website Enquiry List
         </div>
 
         <div className="flex items-center py-4">
-
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Item..."
+              placeholder="Search Website Enquiry..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -193,8 +179,6 @@ const ItemList = () => {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <CreateItem />
         </div>
         {/* table  */}
         <div className="rounded-md border">
@@ -253,7 +237,7 @@ const ItemList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Items : &nbsp;
+            Total Website Enquiry : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -280,4 +264,4 @@ const ItemList = () => {
   );
 };
 
-export default ItemList;
+export default WebsiteEnquiry;
