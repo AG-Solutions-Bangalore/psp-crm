@@ -1,4 +1,4 @@
-import { FABRIC_SALE_LIST } from "@/api";
+import { SALES_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
@@ -18,9 +18,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchColor, useFetchVendor } from "@/hooks/useApi";
+import { useFetchColor, useFetchProduct, useFetchVendor } from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, MinusCircle, PlusCircle, Trash2 } from "lucide-react";
@@ -28,7 +29,7 @@ import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const fetchRawMaterialById = async (id, token) => {
-  const response = await apiClient.get(`${FABRIC_SALE_LIST}/${id}`, {
+  const response = await apiClient.get(`${SALES_LIST}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -36,10 +37,11 @@ const fetchRawMaterialById = async (id, token) => {
   return response.data;
 };
 
-const FabricSaleForm = () => {
+const SalesForm = () => {
   const { id } = useParams();
   let decryptedId = null;
   const isEdit = Boolean(id);
+  const [progress, setProgress] = useState(0);
 
   if (isEdit) {
     try {
@@ -58,22 +60,28 @@ const FabricSaleForm = () => {
   const navigate = useNavigate();
   const today = moment().format("YYYY-MM-DD");
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   const token = usetoken();
 
   const [formData, setFormData] = useState({
-    fabric_sales_date: today,
-    fabric_sales_vendor_id: "",
+    sales_type: "",
+    sales_date: today,
+    sales_vendor_id: "",
+    sales_dispatched: "",
+    sales_document: "",
+    sales_description: "",
+    sales_quantity: "",
+    sales_rate: "",
+    sales_amount: "",
   });
 
   const [invoiceData, setInvoiceData] = useState([
     {
       id: editId ? "" : null,
-      fabric_sales_sub_color_id: "",
-      fabric_sales_thickness: "",
-      fabric_sales_weight: "",
-      fabric_sales_mtr: "",
+      sales_sub_color_id: "",
+      sales_sub_thickness: "",
+      sales_sub_weight: "",
+      sales_sub_mtr: "",
     },
   ]);
   const { data: rawMaterialById, isFetching } = useQuery({
@@ -85,24 +93,32 @@ const FabricSaleForm = () => {
     if (decryptedId && rawMaterialById?.data) {
       const raw = rawMaterialById.data;
       setFormData({
-        fabric_sales_date: raw.fabric_sales_date || "",
-        fabric_sales_vendor_id: raw.fabric_sales_vendor_id || "",
+        sales_type: raw.sales_type || "",
+        sales_date: raw.sales_date || "",
+        sales_vendor_id: raw.sales_vendor_id || "",
+        sales_dispatched: raw.sales_dispatched || "",
+        sales_document: raw.sales_document || "",
+        sales_description: raw.sales_description || "",
+        sales_quantity: raw.sales_quantity || "",
+        sales_rate: raw.sales_rate || "",
+        sales_amount: raw.sales_amount || "",
       });
 
       const subItems = Array.isArray(rawMaterialById?.data?.subs)
         ? rawMaterialById?.data?.subs.map((sub) => ({
             id: sub.id || "",
-            fabric_sales_sub_color_id: sub.fabric_sales_sub_color_id || "",
-            fabric_sales_thickness: sub.fabric_sales_thickness || "",
-            fabric_sales_weight: sub.fabric_sales_weight || "",
-            fabric_sales_mtr: sub.fabric_sales_mtr || "",
+
+            sales_sub_color_id: sub.sales_sub_color_id || "",
+            sales_sub_thickness: sub.sales_sub_thickness || "",
+            sales_sub_weight: sub.sales_sub_weight || "",
+            sales_sub_mtr: sub.sales_sub_mtr || "",
           }))
         : [
             {
-              fabric_sales_sub_color_id: "",
-              fabric_sales_thickness: "",
-              fabric_sales_weight: "",
-              fabric_sales_mtr: "",
+              sales_sub_color_id: "",
+              sales_sub_thickness: "",
+              sales_sub_weight: "",
+              sales_sub_mtr: "",
             },
           ];
 
@@ -110,16 +126,18 @@ const FabricSaleForm = () => {
     }
   }, [decryptedId, rawMaterialById]);
 
+  const { data: productData, isLoading: loadingproduct } = useFetchProduct();
   const { data: vendorData, isLoading: loadingvendor } = useFetchVendor();
-  const { data: colorData, isLoading: loadingitem } = useFetchColor();
-
+  const { data: colorData, isLoading: loadingcolor } = useFetchColor();
+  console.log(colorData);
   const addRow = useCallback(() => {
     setInvoiceData((prev) => [
       ...prev,
       {
-        fabric_sales_sub_color_id: "",
-        fabric_sales_thickness: "",
-        fabric_sales_weight: "",
+        sales_sub_color_id: "",
+        sales_sub_thickness: "",
+        sales_sub_weight: "",
+        sales_sub_mtr: "",
       },
     ]);
   }, []);
@@ -139,9 +157,9 @@ const FabricSaleForm = () => {
         : selectedValue;
 
     if (
-      (fieldName === "fabric_sales_weight" ||
-        fieldName === "fabric_sales_thickness" ||
-        fieldName === "fabric_sales_mtr") &&
+      (fieldName === "sales_sub_thickness" ||
+        fieldName === "sales_sub_weight" ||
+        fieldName === "sales_sub_mtr") &&
       !/^\d*\.?\d*$/.test(value)
     ) {
       console.warn(
@@ -162,7 +180,28 @@ const FabricSaleForm = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target ? e.target.value : e;
-    let updatedFormData = { ...formData, [field]: value };
+    const updatedFormData = { ...formData, [field]: value };
+
+    if (field === "sales_type") {
+      const selectedProduct = productData?.data?.find(
+        (item) => item.product_type === value
+      );
+
+      if (selectedProduct) {
+        updatedFormData.sales_description = selectedProduct.product_default;
+      }
+    }
+    if (field === "sales_quantity" || field === "sales_rate") {
+      const quantity =
+        field === "sales_quantity" ? value : formData.sales_quantity;
+      const rate = field === "sales_rate" ? value : formData.sales_rate;
+
+      const salesAmount = Number(quantity) * Number(rate);
+
+      if (!isNaN(salesAmount)) {
+        updatedFormData.sales_amount = salesAmount;
+      }
+    }
 
     setFormData(updatedFormData);
   };
@@ -174,13 +213,14 @@ const FabricSaleForm = () => {
         (value) => value.toString().trim() !== ""
       ).length;
 
-      const totalInvoiceFields = invoiceData.length * 3;
+      const totalInvoiceFields = invoiceData.length * 4;
       const filledInvoiceFields = invoiceData.reduce((acc, item) => {
         return (
           acc +
-          (item.fabric_sales_sub_color_id.toString().trim() !== "" ? 1 : 0) +
-          (item.fabric_sales_thickness.toString().trim() !== "" ? 1 : 0) +
-          (item.fabric_sales_weight.toString().trim() !== "" ? 1 : 0)
+          (item.sales_sub_color_id.toString().trim() !== "" ? 1 : 0) +
+          (item.sales_sub_thickness.toString().trim() !== "" ? 1 : 0) +
+          (item.sales_sub_weight.toString().trim() !== "" ? 1 : 0) +
+          (item.sales_sub_mtr.toString().trim() !== "" ? 1 : 0)
         );
       }, 0);
 
@@ -198,17 +238,19 @@ const FabricSaleForm = () => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.fabric_sales_date) missingFields.push("Date");
-    if (!formData.fabric_sales_vendor_id) missingFields.push("Vendor");
+    if (!formData.sales_type) missingFields.push("Sales Type");
+    if (!formData.sales_date) missingFields.push("Date");
+    if (!formData.sales_vendor_id) missingFields.push("Vendor");
+    if (!formData.sales_quantity) missingFields.push("Quantity");
+    if (!formData.sales_rate) missingFields.push("Rate");
+    if (!formData.sales_amount) missingFields.push("Ampunt");
 
     invoiceData.forEach((row, index) => {
-      if (!row.fabric_sales_sub_color_id)
+      if (!row.sales_sub_color_id)
         missingFields.push(`Row ${index + 1}: Color`);
-      if (!row.fabric_sales_thickness)
+      if (!row.sales_sub_thickness)
         missingFields.push(`Row ${index + 1}: Thickness`);
-      if (!row.fabric_sales_weight)
-        missingFields.push(`Row ${index + 1}: Weight`);
-      if (!row.fabric_sales_mtr) missingFields.push(`Row ${index + 1}: Meter`);
+      if (!row.sales_sub_weight) missingFields.push(`Row ${index + 1}: Weight`);
     });
 
     if (missingFields.length > 0) {
@@ -237,9 +279,7 @@ const FabricSaleForm = () => {
         subs: invoiceData,
       };
 
-      const url = editId
-        ? `${FABRIC_SALE_LIST}/${decryptedId}`
-        : FABRIC_SALE_LIST;
+      const url = editId ? `${SALES_LIST}/${decryptedId}` : SALES_LIST;
       const method = editId ? "put" : "post";
 
       const response = await apiClient[method](url, payload, {
@@ -252,7 +292,7 @@ const FabricSaleForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/fabric-sale");
+        navigate("/sales");
       } else {
         toast({
           title: "Error",
@@ -264,8 +304,7 @@ const FabricSaleForm = () => {
       console.log(error);
       toast({
         title: "Error",
-        description:
-          error?.response?.data?.message || "Failed to save fabric sale",
+        description: error?.response?.data?.message || "Failed to save sales",
         variant: "destructive",
       });
     } finally {
@@ -279,7 +318,7 @@ const FabricSaleForm = () => {
   const handleDelete = async () => {
     try {
       const response = await apiClient.delete(
-        `${FABRIC_SALE_LIST}/sub/${deleteItemId}`,
+        `${SALES_LIST}/sub/${deleteItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -323,8 +362,8 @@ const FabricSaleForm = () => {
     }
   };
 
-  if (isFetching || loadingvendor || loadingitem) {
-    return <LoaderComponent name="Fabric Sale" />;
+  if (isFetching || loadingvendor || loadingcolor || loadingproduct) {
+    return <LoaderComponent name="Sales" />;
   }
   return (
     <Page>
@@ -332,30 +371,48 @@ const FabricSaleForm = () => {
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
             <PageHeaders
-              title={editId ? "Update Fabric Sale" : "Create Fabric Sale"}
-              subtitle="fabric sale"
+              title={editId ? "Update Sales" : "Create Sales"}
+              subtitle="sales"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2  gap-2">
-                  <div>
-                    <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-2">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
                       <label
-                        className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                        className={`text-sm font-medium ${ButtonConfig.cardLabel}`}
                       >
-                        Date <span className="text-red-500">*</span>
+                        Sales Type <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        className="bg-white"
-                        value={formData.fabric_sales_date}
-                        onChange={(e) =>
-                          handleInputChange(e, "fabric_sales_date")
-                        }
-                        type="date"
-                      />
                     </div>
+
+                    <MemoizedSelect
+                      value={formData.sales_type}
+                      onChange={(e) => handleInputChange(e, "sales_type")}
+                      options={
+                        productData?.data?.map((product) => ({
+                          value: product.product_type,
+                          label: product.product_type,
+                        })) || []
+                      }
+                      placeholder="Select Sales Type"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Date <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.sales_date}
+                      onChange={(e) => handleInputChange(e, "sales_date")}
+                      type="date"
+                    />
                   </div>
 
                   <div className="mb-4">
@@ -368,10 +425,8 @@ const FabricSaleForm = () => {
                     </div>
 
                     <MemoizedSelect
-                      value={formData.fabric_sales_vendor_id}
-                      onChange={(e) =>
-                        handleInputChange(e, "fabric_sales_vendor_id")
-                      }
+                      value={formData.sales_vendor_id}
+                      onChange={(e) => handleInputChange(e, "sales_vendor_id")}
                       options={
                         vendorData?.data?.map((vendor) => ({
                           value: vendor.id,
@@ -381,8 +436,81 @@ const FabricSaleForm = () => {
                       placeholder="Select Vendor"
                     />
                   </div>
+
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Dispatched
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.sales_dispatched}
+                      onChange={(e) => handleInputChange(e, "sales_dispatched")}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Document
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.sales_document}
+                      onChange={(e) => handleInputChange(e, "sales_document")}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Quantity <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.sales_quantity}
+                      onChange={(e) => handleInputChange(e, "sales_quantity")}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Rate <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.sales_rate}
+                      onChange={(e) => handleInputChange(e, "sales_rate")}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Amount <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.sales_amount}
+                      disabled
+                    />
+                  </div>
                 </div>
 
+                <div className="mt-2">
+                  <label
+                    className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                  >
+                    Description
+                  </label>
+                  <Textarea
+                    className="bg-white"
+                    value={formData.sales_description}
+                    onChange={(e) => handleInputChange(e, "sales_description")}
+                  />
+                </div>
                 <div className="mt-4 grid grid-cols-1">
                   <Table className="border border-gray-300 rounded-lg shadow-sm">
                     <TableHeader>
@@ -397,7 +525,7 @@ const FabricSaleForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[20%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Thickness
@@ -407,7 +535,7 @@ const FabricSaleForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[20%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Weight
@@ -417,17 +545,10 @@ const FabricSaleForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
-                          <div className="flex items-center justify-between">
-                            <span>
-                              Meter
-                              <span className="text-red-500 ml-1 text-xs">
-                                *
-                              </span>
-                            </span>
-                          </div>
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[20%]">
+                          Meter
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[5%]">
                           <div className="flex justify-center items-center gap-2">
                             Action
                             <PlusCircle
@@ -448,12 +569,12 @@ const FabricSaleForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <MemoizedProductSelect
-                                value={row.fabric_sales_sub_color_id}
+                                value={row.sales_sub_color_id}
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "fabric_sales_sub_color_id"
+                                    "sales_sub_color_id"
                                   )
                                 }
                                 options={
@@ -471,15 +592,15 @@ const FabricSaleForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]
-                                    ?.fabric_sales_thickness || ""
+                                  invoiceData[rowIndex]?.sales_sub_thickness ||
+                                  ""
                                 }
                                 placeholder="Enter Thickness"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "fabric_sales_thickness"
+                                    "sales_sub_thickness"
                                   )
                                 }
                               />
@@ -490,15 +611,14 @@ const FabricSaleForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]?.fabric_sales_weight ||
-                                  ""
+                                  invoiceData[rowIndex]?.sales_sub_weight || ""
                                 }
                                 placeholder="Enter Weight"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "fabric_sales_weight"
+                                    "sales_sub_weight"
                                   )
                                 }
                               />
@@ -509,14 +629,14 @@ const FabricSaleForm = () => {
                               <Input
                                 className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
                                 value={
-                                  invoiceData[rowIndex]?.fabric_sales_mtr || ""
+                                  invoiceData[rowIndex]?.sales_sub_mtr || ""
                                 }
                                 placeholder="Enter Meter"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
                                     rowIndex,
-                                    "fabric_sales_mtr"
+                                    "sales_sub_mtr"
                                   )
                                 }
                               />
@@ -565,16 +685,16 @@ const FabricSaleForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Fabric Sale"
+                  "Update Sales"
                 ) : (
-                  "Create Fabric Sale"
+                  "Create Sales"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/fabric-sale");
+                  navigate("/sales");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >
@@ -588,11 +708,11 @@ const FabricSaleForm = () => {
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="fabric sub sale"
+        description="Sales Sub"
         handleDelete={handleDelete}
       />
     </Page>
   );
 };
 
-export default FabricSaleForm;
+export default SalesForm;

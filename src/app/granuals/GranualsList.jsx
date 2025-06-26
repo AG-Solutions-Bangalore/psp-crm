@@ -3,7 +3,10 @@ import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
-import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -74,37 +77,43 @@ const GranualsList = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "granuals_date",
+      id: "Date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("granuals_date");
+        const date = row.getValue("Date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
 
     {
       accessorKey: "granuals_bill_ref",
+      id: "Bill Ref",
       header: "Bill Ref",
-      cell: ({ row }) => <div>{row.getValue("granuals_bill_ref")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Bill Ref")}</div>,
     },
     {
       accessorKey: "vendor_name",
+      id: "Vendor",
       header: "Vendor",
-      cell: ({ row }) => <div>{row.getValue("vendor_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Vendor")}</div>,
     },
     {
       accessorKey: "total_weights",
+      id: "Total Weight",
       header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weights")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
     },
     {
       accessorKey: "total_bags",
+      id: "Total Bags",
       header: "Total Bags",
-      cell: ({ row }) => <div>{row.getValue("total_bags")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Bags")}</div>,
     },
 
     {
@@ -197,6 +206,7 @@ const GranualsList = () => {
         toast({
           title: "Success",
           description: data.message,
+          variant: "success",
         });
         refetch();
       } else if (data.code == 400) {

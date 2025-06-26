@@ -15,8 +15,11 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Logo from "../common/Logo";
+import { PANEL_SEND_PASSWORD } from "@/api";
+import apiClient from "@/api/axios";
 
-export default function ForgotPassword() {
+export default function ForgotPassword({ setForgot }) {
   const [email, setEmail] = useState("");
   const [username, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +50,7 @@ export default function ForgotPassword() {
     };
   }, [isLoading]);
 
-  const handleSubmit = async (event) => {
+  const handleReset = async (event) => {
     event.preventDefault();
     setIsLoading(true);
 
@@ -58,29 +61,26 @@ export default function ForgotPassword() {
     try {
       console.log("Submitting forgot password request...");
 
-      const res = await axios.post(
-        `${BASE_URL}/api/panel-send-password`,
-        formData
-      );
+      const res = await apiClient.post(`${PANEL_SEND_PASSWORD}`, formData);
 
       if (res.status === 200) {
         const response = res.data;
 
-        if (response.code === 200) {
+        if (response.code === 201) {
           toast({
             title: "Success",
-            description: response.msg,
+            description: response.message,
           });
         } else if (response.code === 400) {
           toast({
             title: "Duplicate Entry",
-            description: response.msg,
+            description: response.message,
             variant: "destructive",
           });
         } else {
           toast({
             title: "Unexpected Response",
-            description: response.msg,
+            description: response.message,
             variant: "destructive",
           });
         }
@@ -103,110 +103,77 @@ export default function ForgotPassword() {
   };
 
   return (
-    <motion.div
-      className="relative flex flex-col justify-center items-center min-h-screen bg-gray-100"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.div
-        initial={{ opacity: 1, x: 0 }}
-        exit={{
-          opacity: 0,
-          x: -window.innerWidth,
-          transition: { duration: 0.3, ease: "easeInOut" },
-        }}
-      >
-        <Card className="w-80 max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center text-[#1f7a57]">
-              Forgot Password
-            </CardTitle>
-            <CardDescription className="text-center">
-              Enter your username and Email Id to Reset Password
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </motion.div>
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="username">UserName</Label>
-                  </div>
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Input
-                      id="username"
-                      type="text"
-                      placeholder="Enter your UserName"
-                      value={username}
-                      onChange={(e) => setUserName(e.target.value)}
-                      required
-                    />
-                  </motion.div>
-                </div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Button
-                    type="submit"
-                    className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center w-full`}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="flex items-center justify-center"
-                      >
-                        <motion.span
-                          key={loadingMessage}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="text-sm"
-                        >
-                          {loadingMessage}
-                        </motion.span>
-                      </motion.span>
-                    ) : (
-                      "Reset Password"
-                    )}
-                  </Button>
-                </motion.div>
-              </div>
-            </form>
-            <CardDescription
-              className="cursor-pointer flex justify-end mt-4 underline"
-              onClick={() => navigate("/")}
+    <>
+      <Card className="bg-white backdrops-blur-lg rounded-lg shadow-lg  md:p-6">
+        <CardHeader className="text-center space-y-2 p-3">
+          <Logo />
+          {/* <CardTitle className="text-xl font-bold text-start">
+                    Forgot Password
+                  </CardTitle> */}
+          <CardDescription className="text-sm text-gray-600">
+            Enter your email to receive a reset link
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleReset} className="space-y-6">
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your Username"
+                  value={username}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                />
+              </motion.div>
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </motion.div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className={`${ButtonConfig.backgroundColor}  ${ButtonConfig.textColor} relative w-full overflow-hidden px-6 py-2 rounded-md transition-all duration-700 ease-in-out group`}
             >
-              Sign In
-            </CardDescription>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </motion.div>
+              <span className="relative z-10">
+                {isLoading ? loadingMessage : "Reset Password"}
+              </span>
+              <span className="absolute left-0 top-0 h-full w-0 bg-[#82b8a4] transition-all duration-700 ease-in-out group-hover:w-full z-0"></span>
+            </Button>
+          </form>
+          <div className="flex justify-center mt-4">
+            <span
+              className=" text-blue-600 hover:underline cursor-pointer text-sm"
+              onClick={() => setForgot(false)}
+            >
+              Back to Login
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </>
+    //   </motion.div>
+    // </motion.div>
   );
 }

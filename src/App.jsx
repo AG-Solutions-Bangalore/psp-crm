@@ -1,4 +1,3 @@
-
 import { useSelector } from "react-redux";
 import AppRoutes from "./components/common/AppRoutes";
 import SessionTimeoutTracker from "./components/SessionTimeoutTracker/SessionTimeoutTracker";

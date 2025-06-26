@@ -79,32 +79,39 @@ const RawMaterialList = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "raw_material_date",
+      id: "Date",
+
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("raw_material_date");
+        const date = row.getValue("Date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
 
     {
       accessorKey: "vendor_name",
+      id: "Vendor",
       header: "Vendor",
-      cell: ({ row }) => <div>{row.getValue("vendor_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Vendor")}</div>,
     },
     {
       accessorKey: "total_weight",
+      id: "Total Weight",
+
       header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
     },
     {
       accessorKey: "total_items",
+      id: "Total Items",
       header: "Total Items",
-      cell: ({ row }) => <div>{row.getValue("total_items")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Items")}</div>,
     },
 
     {

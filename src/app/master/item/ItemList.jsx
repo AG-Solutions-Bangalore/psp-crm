@@ -31,7 +31,10 @@ import { useNavigate } from "react-router-dom";
 import { ITEM_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateItem from "./CreateItem";
 import EditItem from "./EditItem";
@@ -65,11 +68,13 @@ const ItemList = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "item_name",
+      id: "Item",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -79,7 +84,7 @@ const ItemList = () => {
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("item_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Item")}</div>,
     },
 
     {
@@ -90,7 +95,7 @@ const ItemList = () => {
 
         return (
           <span
-            className={`px-2 py-1 rounded text-xs ${
+            className={`px-2 py-1 rounded text-xs capitalize ${
               status == "Active"
                 ? "bg-green-100 text-green-800"
                 : "bg-gray-100 text-gray-800"
@@ -157,7 +162,6 @@ const ItemList = () => {
         </div>
 
         <div className="flex items-center py-4">
-
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input

@@ -92,17 +92,12 @@ export function AppSidebar({ ...props }) {
         isActive: false,
       },
       {
-        title: "Yarn",
-        url: "/yarn",
+        title: "Sales",
+        url: "/sales",
         icon: NotebookText,
         isActive: false,
       },
-      {
-        title: "Fabric Sale",
-        url: "/fabric-sale",
-        icon: NotebookText,
-        isActive: false,
-      },
+
       {
         title: "Raw Materil Production",
         url: "/raw-material-production",

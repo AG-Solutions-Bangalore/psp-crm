@@ -78,11 +78,13 @@ const VendorList = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "vendor_name",
+      id: "Name",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -92,27 +94,33 @@ const VendorList = () => {
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("vendor_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Name")}</div>,
     },
     {
       accessorKey: "vendor_state_name",
+      id: "Vendor State",
+
       header: "Vendor State",
-      cell: ({ row }) => <div>{row.getValue("vendor_state_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Vendor State")}</div>,
     },
     {
       accessorKey: "vendor_type",
+      id: "Vendor Type",
       header: "Vendor Type",
-      cell: ({ row }) => <div>{row.getValue("vendor_type")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Vendor Type")}</div>,
     },
     {
       accessorKey: "vendor_contact_name",
+      id: "Vendor Contact Name",
       header: "Vendor Contact Name",
-      cell: ({ row }) => <div>{row.getValue("vendor_contact_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Vendor Contact Name")}</div>,
     },
     {
       accessorKey: "vendor_contact_mobile",
+      id: "Vendor Contact Mobile",
+
       header: "Mobile",
-      cell: ({ row }) => <div>{row.getValue("vendor_contact_mobile")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Vendor Contact Mobile")}</div>,
     },
 
     {
@@ -123,7 +131,7 @@ const VendorList = () => {
 
         return (
           <span
-            className={`px-2 py-1 rounded text-xs ${
+            className={`px-2 py-1 rounded text-xs capitalize ${
               status == "Active"
                 ? "bg-green-100 text-green-800"
                 : "bg-gray-100 text-gray-800"

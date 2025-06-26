@@ -66,11 +66,14 @@ const WebsiteEnquiry = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "contact_name",
+      id: "Contact Name",
+
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -80,22 +83,25 @@ const WebsiteEnquiry = () => {
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("contact_name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Contact Name")}</div>,
     },
     {
       accessorKey: "contact_mobile",
+      id: "Mobile",
       header: "Mobile",
-      cell: ({ row }) => <div>{row.getValue("contact_mobile")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Mobile")}</div>,
     },
     {
       accessorKey: "contact_email",
+      id: "Email",
       header: "Email",
-      cell: ({ row }) => <div>{row.getValue("contact_email")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Email")}</div>,
     },
     {
       accessorKey: "contact_message",
+      id: "Message",
       header: "Message",
-      cell: ({ row }) => <div>{row.getValue("contact_message")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Message")}</div>,
     },
   ];
 

@@ -246,6 +246,7 @@ const GranualsForm = () => {
         toast({
           title: "Success",
           description: response.data.message,
+          variant: "success",
         });
         navigate("/granuals");
       } else {

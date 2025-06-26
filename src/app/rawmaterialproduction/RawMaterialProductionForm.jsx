@@ -341,7 +341,7 @@ const RawMaterialProductionForm = () => {
         ...formData,
         subs: invoiceData,
 
-        ...(isEdit || hasValidGranualsData ? { subs1: invoiceDataOne } : {}),
+        ...(isEdit || hasValidGranualsData ? { subs: invoiceDataOne } : {}),
       };
 
       const url = editId

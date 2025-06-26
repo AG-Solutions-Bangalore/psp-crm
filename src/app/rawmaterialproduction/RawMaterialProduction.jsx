@@ -3,7 +3,10 @@ import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
-import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -76,32 +79,37 @@ const RawMaterialProduction = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "raw_material_to_p_date",
+      id: "Date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("raw_material_to_p_date");
+        const date = row.getValue("Date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
 
     {
       accessorKey: "total_weight",
+      id: "Total Weight",
       header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
     },
     {
       accessorKey: "totalCount",
+      id: "Count",
       header: "Count",
-      cell: ({ row }) => <div>{row.getValue("totalCount")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Count")}</div>,
     },
     {
       accessorKey: "productionCount",
+      id: "Production Count",
       header: "Production Count",
-      cell: ({ row }) => <div>{row.getValue("productionCount")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Production Count")}</div>,
     },
 
     {

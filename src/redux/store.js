@@ -5,28 +5,39 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "./slices/AuthSlice";
 import sidebarReducer from "./slices/sidebarSlice";
 import versionReducer from "./slices/versionSlice";
-const encryptor = encryptTransform({
-  secretKey: import.meta.env.VITE_SECRET_KEY || "",
-  onError: (error) => console.error("Encryption Error:", error),
-});
+
+const secretKey = import.meta.env.VITE_SECRET_KEY;
+
+let transforms = [];
+
+if (!secretKey) {
+  console.warn(
+    "❌ Missing SECRET_KEY — AppInitializer will handle redirection."
+  );
+} else {
+  transforms.push(
+    encryptTransform({
+      secretKey,
+      onError: (error) => console.error("Encryption Error:", error),
+    })
+  );
+}
+
 const persistConfig = {
   key: "root",
   storage,
   whitelist: ["auth", "columnVisibility"],
-  transforms: [encryptor],
+  transforms,
 };
 
-// Root reducer
 const rootReducer = combineReducers({
   auth: authReducer,
   sidebar: sidebarReducer,
   version: versionReducer,
 });
 
-// Persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Configure store
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>

@@ -3,7 +3,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbList
+  BreadcrumbList,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -12,17 +12,17 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 export default function Page({ children }) {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const handleBackClick = (e) => {
     e.preventDefault();
     navigate(-1);
   };
-
+  console.log(location.pathname);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -33,16 +33,18 @@ export default function Page({ children }) {
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink
-                    href="#"
-                    onClick={handleBackClick}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-[#1f7a57]"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    <span>Back</span>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
+                {location.pathname !== "/home" && (
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink
+                      href="#"
+                      onClick={handleBackClick}
+                      className="flex items-center gap-2 text-muted-foreground hover:text-[#1f7a57]"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span>Back</span>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

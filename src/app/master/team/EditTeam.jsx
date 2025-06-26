@@ -79,10 +79,21 @@ const EditTeam = ({ teamId }) => {
   }, [open]);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+
+    let formattedValue = value;
+
+    if (type === "tel") {
+      formattedValue = value.replace(/\D/g, "");
+    }
+
+    if (type === "email") {
+      formattedValue = value.toLowerCase().trim();
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: formattedValue,
     }));
   };
 
@@ -179,7 +190,8 @@ const EditTeam = ({ teamId }) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            Edit Team - <span className="text-2xl">{formData.name}</span>
+            Edit Team -{" "}
+            <span className="text-2xl capitalize">{formData.name}</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -194,9 +206,12 @@ const EditTeam = ({ teamId }) => {
               <Input
                 id="mobile"
                 name="mobile"
+                type="tel"
                 value={formData.mobile}
                 onChange={handleInputChange}
                 placeholder="Enter mobile"
+                pattern="^\d{10}$"
+                maxLength="10"
               />
             </div>
 
@@ -241,7 +256,7 @@ const EditTeam = ({ teamId }) => {
                 Updating...
               </>
             ) : (
-              "Update Bank"
+              "Update Team"
             )}
           </Button>
         </DialogFooter>
