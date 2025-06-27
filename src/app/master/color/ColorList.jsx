@@ -38,9 +38,11 @@ import {
 import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateColor from "./CreateColor";
 import EditColor from "./EditColor";
+import { useSelector } from "react-redux";
 
 const ColorList = () => {
   const token = usetoken();
+  const userType = useSelector((state) => state.auth.user_type);
 
   const {
     data: color,
@@ -105,19 +107,24 @@ const ColorList = () => {
         );
       },
     },
-    {
-      id: "actions",
-      header: "Action",
-      cell: ({ row }) => {
-        const customdescriptionId = row.original.id;
 
-        return (
-          <div className="flex flex-row">
-            <EditColor customdescriptionId={customdescriptionId} />
-          </div>
-        );
-      },
-    },
+    ...(userType != 1
+      ? [
+          {
+            id: "actions",
+            header: "Action",
+            cell: ({ row }) => {
+              const customdescriptionId = row.original.id;
+
+              return (
+                <div className="flex flex-row">
+                  <EditColor customdescriptionId={customdescriptionId} />
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   // Create the table instance
@@ -195,8 +202,7 @@ const ColorList = () => {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <CreateColor />
+          {userType != 1 && <CreateColor />}
         </div>
         {/* table  */}
         <div className="rounded-md border">

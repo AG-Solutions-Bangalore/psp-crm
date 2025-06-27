@@ -4,7 +4,7 @@ import usetoken from "@/api/usetoken";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
   WithoutErrorComponent,
-  WithoutLoaderComponent
+  WithoutLoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,9 +43,11 @@ import {
 import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const GranualsList = () => {
   const token = usetoken();
+  const userType = useSelector((state) => state.auth.user_type);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
@@ -143,23 +145,25 @@ const GranualsList = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleDeleteRow(id)}
-                    className="text-red-500"
-                    type="button"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Delete Granuals</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {userType !== 1 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleDeleteRow(id)}
+                      className="text-red-500"
+                      type="button"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete Granuals</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         );
       },

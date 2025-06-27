@@ -336,7 +336,9 @@ const GranualsForm = () => {
               </div>
             </div>{" "} */}
             <PageHeaders
-              title={editId ? "Update Granuals" : "Create Granuals"}
+              title={
+                editId ? "Update Granual Purchase" : "Create Granual Purchase"
+              }
               subtitle="granuals"
               progress={progress}
               mode={editId ? "edit" : "create"}
@@ -551,9 +553,9 @@ const GranualsForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Granuals"
+                  "Update Granual Purchase"
                 ) : (
-                  "Create Granuals"
+                  "Create Granual Purchase"
                 )}{" "}
               </Button>
 

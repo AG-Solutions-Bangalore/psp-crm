@@ -9,6 +9,12 @@ const initialState = {
   token_expire_time: null,
   version: null,
   companyname: null,
+  company_address: null,
+  company_email: null,
+  company_gst: null,
+  company_mobile: null,
+  company_state_code: null,
+  company_state_name: null,
 };
 
 const authSlice = createSlice({
@@ -24,6 +30,12 @@ const authSlice = createSlice({
       state.token_expire_time = action.payload.token_expire_time;
       state.version = action.payload.version;
       state.companyname = action.payload.companyname;
+      state.company_address = action.payload.company_address;
+      state.company_email = action.payload.company_email;
+      state.company_gst = action.payload.company_gst;
+      state.company_mobile = action.payload.company_mobile;
+      state.company_state_code = action.payload.company_state_code;
+      state.company_state_name = action.payload.company_state_name;
     },
     logout: () => {
       return initialState;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -25,67 +25,106 @@ const TabbedTableYarnToFabricWorkProduction = ({
   deleteRowFabric,
   colorData,
 }) => {
+  const [activeTab, setActiveTab] = useState("first");
+  const isInput = activeTab === "first";
+
+  const totalInputWeight = YarnRows.reduce(
+    (acc, row) => acc + (parseFloat(row.yarn_to_fwp_weight) || 0),
+    0
+  );
+
+  const totalOutputWeight = FabricRows.reduce(
+    (acc, row) => acc + (parseFloat(row.fabric_from_wp_weight) || 0),
+    0
+  );
+
+  const estimatedWaste =
+    totalInputWeight > 0
+      ? (
+          ((totalInputWeight - totalOutputWeight) / totalInputWeight) *
+          100
+        ).toFixed(2)
+      : "0.00";
   return (
-    <Tabs defaultValue="first">
-      <div className="flex justify-center w-full my-4">
-        <TabsList className="w-full flex justify-center bg-gray-100 p-1 rounded-md">
-          <TabsTrigger
-            value="first"
-            className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
-          >
-            Yarn
-          </TabsTrigger>
-          <TabsTrigger
-            value="second"
-            className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
-          >
-            Fabric Work
-          </TabsTrigger>
-        </TabsList>
+    <>
+      <Tabs defaultValue="first" onValueChange={setActiveTab}>
+        <div className="flex justify-center w-full my-4">
+          <TabsList className="w-full flex justify-center bg-gray-100 p-1 rounded-md">
+            <TabsTrigger
+              value="first"
+              className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
+            >
+              Yarn
+            </TabsTrigger>
+            <TabsTrigger
+              value="second"
+              className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
+            >
+              Fabric Work
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="first">
+          <TableSection
+            rows={YarnRows}
+            itemData={colorData}
+            addRow={addYarnRow}
+            removeRow={removeYarnRow}
+            deleteRow={deleteRowYarn}
+            handleChange={handleChange}
+            fields={[
+              "yarn_to_fwp_sub_color_id",
+              "yarn_to_fwp_thickness",
+              "yarn_to_fwp_weight",
+            ]}
+            labels={["Color", "Thickness", "Weight"]}
+            placeholders={["Select Color", "Enter Thickness", "Enter Weight"]}
+          />
+        </TabsContent>
+
+        <TabsContent value="second">
+          <TableSection
+            rows={FabricRows}
+            itemData={colorData}
+            addRow={addFabricRow}
+            removeRow={removeFabricRow}
+            deleteRow={deleteRowFabric}
+            handleChange={handleChange}
+            fields={[
+              "fabric_from_wp_color_id",
+              "fabric_from_wp_mtr",
+              "fabric_from_wp_weight",
+              "fabric_from_wp_thickness",
+            ]}
+            labels={["Color", "Meter", "Weight", "Thickness"]}
+            placeholders={[
+              "Select Color",
+              "Enter Meter",
+              "Enter Weight",
+              "Enter Thickness",
+            ]}
+          />
+        </TabsContent>
+      </Tabs>
+      <div className="text-right mt-6 pr-4 text-sm font-medium">
+        <div>
+          Total {isInput ? "Input" : "Output"} Weight:{" "}
+          {(isInput ? totalInputWeight : totalOutputWeight).toFixed(2)} kg
+        </div>
+        <div
+          className={`${
+            parseFloat(estimatedWaste) < 0 || parseFloat(estimatedWaste) >= 40
+              ? "text-red-800"
+              : parseFloat(estimatedWaste) < 20
+              ? "text-green-800"
+              : "text-orange-800"
+          }`}
+        >
+          Estimated Waste: {`${estimatedWaste}%`}
+        </div>
       </div>
-
-      <TabsContent value="first">
-        <TableSection
-          rows={YarnRows}
-          itemData={colorData}
-          addRow={addYarnRow}
-          removeRow={removeYarnRow}
-          deleteRow={deleteRowYarn}
-          handleChange={handleChange}
-          fields={[
-            "yarn_to_fwp_sub_color_id",
-            "yarn_to_fwp_thickness",
-            "yarn_to_fwp_weight",
-          ]}
-          labels={["Color", "Thickness", "Weight"]}
-          placeholders={["Select Color", "Enter Thickness", "Enter Weight"]}
-        />
-      </TabsContent>
-
-      <TabsContent value="second">
-        <TableSection
-          rows={FabricRows}
-          itemData={colorData}
-          addRow={addFabricRow}
-          removeRow={removeFabricRow}
-          deleteRow={deleteRowFabric}
-          handleChange={handleChange}
-          fields={[
-            "fabric_from_wp_color_id",
-            "fabric_from_wp_mtr",
-            "fabric_from_wp_weight",
-            "fabric_from_wp_thickness",
-          ]}
-          labels={["Color", "Meter", "Weight", "Thickness"]}
-          placeholders={[
-            "Select Color",
-            "Enter Meter",
-            "Enter Weight",
-            "Enter Thickness",
-          ]}
-        />
-      </TabsContent>
-    </Tabs>
+    </>
   );
 };
 

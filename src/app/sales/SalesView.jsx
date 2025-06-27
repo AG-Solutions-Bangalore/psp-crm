@@ -1,16 +1,66 @@
-import html2pdf from "html2pdf.js";
-import { Loader, Printer } from "lucide-react";
-import { useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
-// import logo from "../../../public/v3.png";
-// import stamplogo from "../../../public/stamplogo.png";
+import { SALES_LIST } from "@/api";
+import apiClient from "@/api/axios";
+import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
+import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import { ButtonConfig } from "@/config/ButtonConfig";
+import { decryptId } from "@/utils/encyrption/Encyrption";
+import { Loader, Printer } from "lucide-react";
+import { toWords } from "number-to-words";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
+
 const SalesView = () => {
+  const { id } = useParams();
+  let decryptedId = null;
+  const isEdit = Boolean(id);
+
+  if (isEdit) {
+    try {
+      const rawId = decodeURIComponent(id);
+      decryptedId = decryptId(rawId);
+    } catch (err) {
+      console.error("Failed to decrypt ID:", err.message);
+    }
+  }
   const containerRef = useRef();
   const [printloading, setPrintLoading] = useState(false);
+  const [formData, setFormData] = useState({});
+  const token = usetoken();
+  const [isLoading, setIsLoading] = useState(false);
+  const companyname = useSelector((state) => state.auth.companyname);
+  const gst = useSelector((state) => state.auth.company_gst);
+  const address = useSelector((state) => state.auth.company_address);
+  const statename = useSelector((state) => state.auth.company_state_name);
+  useEffect(() => {
+    const fetchRawMaterialById = async () => {
+      setIsLoading(true);
+      try {
+        const response = await apiClient.get(`${SALES_LIST}/${decryptedId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
+        const raw = response?.data;
+
+        if (raw) {
+          setFormData(raw?.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch raw material by ID:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id && token) {
+      fetchRawMaterialById();
+    }
+  }, [id, token]);
   const handlePrintPdf = useReactToPrint({
     content: () => containerRef.current,
     documentTitle: "INVOICE",
@@ -43,72 +93,26 @@ const SalesView = () => {
       setPrintLoading(false);
     },
   });
-  const handleSaveAsPdf = () => {
-    const element = containerRef.current;
 
-    const images = element.getElementsByTagName("img");
-    let loadedImages = 0;
 
-    if (images.length === 0) {
-      generatePdf(element);
-      return;
-    }
+  let quantityInWords = "";
+  const totalAmount = Number(formData?.sales_total_amount);
 
-    Array.from(images).forEach((img) => {
-      if (img.complete) {
-        loadedImages++;
-        if (loadedImages === images.length) {
-          generatePdf(element);
-        }
-      } else {
-        img.onload = () => {
-          loadedImages++;
-          if (loadedImages === images.length) {
-            generatePdf(element);
-          }
-        };
-      }
-    });
-  };
+  if (!isNaN(totalAmount)) {
+    const [whole, decimal = "00"] = totalAmount.toFixed(2).split(".");
 
-  const generatePdf = (element) => {
-    const options = {
-      margin: [0, 0, 0, 0],
-      filename: "INVOICE.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        windowHeight: element.scrollHeight,
-        scrollY: 0,
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-      },
-      pagebreak: { mode: "avoid" },
-    };
+    const rupeesInWords = toWords(Number(whole)).toUpperCase();
+    const paiseInWords = toWords(Number(decimal)).toLowerCase();
 
-    html2pdf()
-      .from(element)
-      .set(options)
-      .toPdf()
-      .get("pdf")
-      .then((pdf) => {})
-      .save();
-  };
-
+    quantityInWords = `${rupeesInWords} Rupees ${paiseInWords} paise`;
+  }
+  if (isLoading) {
+    return <LoaderComponent name="Sales" />;
+  }
   return (
     <Page>
       <div className="flex justify-end">
-        {/* <button
-          onClick={handleSaveAsPdf}
-          className=" bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 flex items-center"
-        >
-          <File className="w-4 h-4 mr-2" />
-          PDF
-        </button> */}
+  
 
         <Button
           className={`mt-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
@@ -131,18 +135,16 @@ const SalesView = () => {
               </h3>
               <div className="mx-auto border border-black">
                 <div className=" border-b border-black">
-                  <p className="ml-1">GSTIN: 33BBUPB0222M1ZT</p>
+                  <p className="ml-1">GSTIN: {gst || ""}</p>
                   <div className="flex flex-col items-center text-center gap-1">
                     <strong className="text-xl  uppercase tracking-widest font-black">
-                      PAVANSHREE PLASTIC INDUSTRIES
+                      {/* PAVANSHREE PLASTIC INDUSTRIES */}
+                      {companyname || ""}
                     </strong>
                     <p className="text-sm">
-                      No. 52A, Therashanagar, Thanthonimalai, Karur - 639005,
-                      Tamilnadu
-                    </p>
-                    <p className="text-sm">
-                      No. 53, Therashanagar, Thanthonimalai, Karur - 639005,
-                      Tamilnadu
+                      {/* No. 52A, Therashanagar, Thanthonimalai, Karur - 639005,
+                      Tamilnadu */}
+                      {address || ""}
                     </p>
                   </div>
                 </div>
@@ -151,25 +153,32 @@ const SalesView = () => {
                   <div className="p-2 font-bold">
                     <span className="underline">To</span>
                     <div className="ml-8">
-                      <p className="underline">S S V ROPE & POLYMERS</p>
-                      <p className="underline">
-                        No. 11/20A, NEAR BHARATH PETROLE
+                      <p className="underline uppercase">
+                        {formData?.vendor_name}
                       </p>
-                      <p className="underline">BUNK, RATHINAVAL GOUNDER KADU</p>
-                      <p className="underline">
-                        ATTAYAMAPATTI, SALEM - 637 501
+                      <p className="underline uppercase">
+                        {formData?.vendor_address || ""}
                       </p>
-                      <p className="underline">TAMIL NADU</p>
+
+                      <p className="underline">{formData?.vendor_state_name}</p>
                     </div>
                   </div>
 
                   <div className="border-l border-black p-2">
                     <p className="font-bold">
-                      INVOICE NO. <span className="underline">00022</span>
+                      INVOICE NO.{" "}
+                      <span className="underline">
+                        {" "}
+                        {formData?.sales_no || ""}
+                      </span>
                     </p>
                     <p>Party's</p>
-                    <p className="font-bold">GSTIN : 33APYPT2612J1ZF</p>
-                    <p className="font-bold">Date : 31-05-2025</p>
+                    <p className="font-bold">
+                      GSTIN : {formData?.vendor_gst || ""}
+                    </p>
+                    <p className="font-bold">
+                      Date : {formData?.sales_date || ""}
+                    </p>
                     <p>Time of Sale :</p>
                     <p>RR/LR</p>
                   </div>
@@ -182,7 +191,7 @@ const SalesView = () => {
                       <p className="leading-relaxed px-1 m-1">
                         <p>Order Confirmation No. </p>
                         <strong className="ml-10 underline">
-                          Mob: 9385612264
+                          Mob: {formData?.vendor_contact_mobile || ""}
                         </strong>{" "}
                         <br />
                         Date :
@@ -195,14 +204,14 @@ const SalesView = () => {
                       <div className="w-full">
                         <h3>Despatched Thru</h3>
                         <strong className="underline">
-                          Vehicle No. TN78-MA4891
+                          {formData?.sales_dispatched}
                         </strong>{" "}
                       </div>
                     </div>
                     <div className=" w-full px-1 ">
                       <div className="w-full">
                         <h3>Document Thru</h3>
-                        <p className="min-h-4"></p>
+                        <p className="min-h-4"> {formData?.sales_document}</p>
                       </div>
                     </div>
                   </div>
@@ -246,17 +255,16 @@ const SalesView = () => {
                         <th className="border-r border-black px-2 py-1 text-center">
                           Kgs/Mts
                         </th>
-                        <th className="border-r border-black px-2 py-1 text-center">
+                        <th
+                          className="border-r border-black px-2 py-1 text-center"
+                          colSpan="2"
+                        >
                           Rs.
-                        </th>
-                        <th className="border-r border-black px-2 py-1 text-center">
-                          Ps
                         </th>
 
-                        <th className="border-r border-black px-2 py-1 text-center">
+                        <th className=" px-2 py-1 text-center" colSpan="2">
                           Rs.
                         </th>
-                        <th className=" px-2 py-1 text-center">Ps</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -265,56 +273,88 @@ const SalesView = () => {
                           1
                         </td>
                         <td className="border-r border-black p-1 font-semibold">
-                          <p>HDPE REPROCESSED </p>
-                          <p>MONOFILAMENT YARN</p>
-                          <p>2nd Quality 'B'</p>
-                          <p>Grade HSN Code: 5404</p>
+                          {formData?.sales_description}
                         </td>
                         <td className="border-r border-black p-1 text-center font-semibold">
-                          250
+                          {formData?.sales_quantity}
                         </td>
-                        <td className="border-r border-black p-1 text-end font-semibold">
-                          80
+                        <td
+                          className="border-r border-black p-1 text-end font-semibold"
+                          colSpan={2}
+                        >
+                          {formData?.sales_rate || "0"}
                         </td>
-                        <td className="p-1 text-end border-r border-black">
-                          00
+                        <td className="p-1 text-center" colSpan={2}>
+                          {formData?.sales_amount || "0"}{" "}
                         </td>
-                        <td className="p-1 text-center border-r border-black">
-                          20000
-                        </td>
-                        <td className="p-1 text-end font-semibold">00</td>
                       </tr>
 
                       <tr className="border-b border-black">
                         <td className="border-r border-black p-1 text-left"></td>
-                        <td className="border-r text-end border-black p-1 font-bold"></td>
                         <td className="border-r border-black p-1 text-center"></td>
+                        <td
+                          className="border-r  border-black  p-1 font-bold"
+                          colSpan={2}
+                        />
                         <td className="border-r border-black p-1 text-end ">
                           {" "}
                           <p> Sub Total</p>
                           <p>
-                            ICGST <span className="font-semibold">12%</span>
+                            CGST{" "}
+                            <span className="font-semibold">
+                              {statename === formData?.vendor_state_name
+                                ? `${formData?.sales_cgst} % `
+                                : "0%"}
+                            </span>
                           </p>
                           <p>
-                            CGST <span className="font-semibold">6%</span>
+                            SGST{" "}
+                            <span className="font-semibold">
+                              {statename === formData?.vendor_state_name
+                                ? `${formData?.sales_sgst} % `
+                                : "0%"}
+                            </span>
                           </p>
                           <p>
-                            SGST <span className="font-semibold">6% </span>
+                            ICGST{" "}
+                            <span className="font-semibold">
+                              {statename == formData?.vendor_state_name
+                                ? "0%"
+                                : `${formData?.sales_igst} % `}
+                            </span>
                           </p>
                         </td>
-                        <td className="border-r text-end border-black p-1 font-bold"></td>
-                        <td className="border-r  border-black p-1 font-bold text-right">
+                        <td className="p-1 font-bold text-right" colSpan={2}>
                           {" "}
-                          <p> 20,000 00</p>
-                          <p></p>
-                          <p>1,200 00</p>
-                          <p>1,200 00</p>
-                        </td>{" "}
-                        <td className=" text-end  p-1 font-bold">
-                          <p> 00</p>
-                          <p></p>
-                          <p>00</p>
-                          <p>00</p>
+                          <p>{formData?.sales_amount || "0"}</p>
+                          <p>
+                            {statename === formData?.vendor_state_name
+                              ? `${(
+                                  (Number(formData?.sales_amount || 0) *
+                                    Number(formData?.sales_cgst || 0)) /
+                                  100
+                                ).toFixed(2)}`
+                              : "0"}
+                          </p>
+                          <p>
+                            {" "}
+                            {statename === formData?.vendor_state_name
+                              ? `${(
+                                  (Number(formData?.sales_amount || 0) *
+                                    Number(formData?.sales_sgst || 0)) /
+                                  100
+                                ).toFixed(2)}`
+                              : "0"}
+                          </p>
+                          <p>
+                            {statename == formData?.vendor_state_name
+                              ? "0"
+                              : `${(
+                                  (Number(formData?.sales_amount || 0) *
+                                    Number(formData?.sales_igst || 0)) /
+                                  100
+                                ).toFixed(2)}`}
+                          </p>
                         </td>{" "}
                       </tr>
                       <tr className="border-b border-black">
@@ -330,10 +370,9 @@ const SalesView = () => {
                         >
                           Grand Total
                         </td>
-                        <td className="border-r border-black p-2 text-end font-semibold">
-                          1,267.400 KG
+                        <td className="px-1 text-end font-semibold">
+                          {formData?.sales_total_amount}
                         </td>
-                        <td className=" text-end  p-2 font-bold">00</td>
                       </tr>
                     </tbody>
                   </table>
@@ -344,27 +383,25 @@ const SalesView = () => {
                   <div className="flex justify-between"></div>
                   <h2 className="font-bold px-1 text-sm underline">
                     {" "}
-                    Rupees Twenty Two Thousand Four Hundred Only
+                    {quantityInWords ? quantityInWords.toUpperCase() : ""}
                   </h2>
                 </div>
                 <div className=" mb-1">
                   <div className="flex justify-end">
                     <h2 className="px-1 text-sm ">
                       {" "}
-                      For PAVANSHREE PLASTIC INDUSTRIES
+                      For {companyname.toUpperCase() || ""}
                     </h2>
                   </div>
 
                   <div className="min-h-6"> </div>
-                  <div className="grid grid-cols-3">
-                    <p></p>
-                    <p></p>
-                    <p className="text-center">Manager</p>
-                  </div>
+
                   <div className="min-h-6"> </div>
 
-                  <div className="px-1">
-                    <p>Party Signature</p>
+                  <div className="grid grid-cols-3">
+                    <p className="px-1">Party Signature</p>
+                    <p></p>
+                    <p className="text-center">Manager</p>
                   </div>
                 </div>
               </div>

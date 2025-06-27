@@ -38,9 +38,11 @@ import {
 import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateItem from "./CreateItem";
 import EditItem from "./EditItem";
+import { useSelector } from "react-redux";
 
 const ItemList = () => {
   const token = usetoken();
+  const userType = useSelector((state) => state.auth.user_type);
 
   const {
     data: item,
@@ -106,19 +108,23 @@ const ItemList = () => {
         );
       },
     },
-    {
-      id: "actions",
-      header: "Action",
-      cell: ({ row }) => {
-        const customdescriptionId = row.original.id;
+    ...(userType != 1
+      ? [
+          {
+            id: "actions",
+            header: "Action",
+            cell: ({ row }) => {
+              const customdescriptionId = row.original.id;
 
-        return (
-          <div className="flex flex-row">
-            <EditItem customdescriptionId={customdescriptionId} />
-          </div>
-        );
-      },
-    },
+              return (
+                <div className="flex flex-row">
+                  <EditItem customdescriptionId={customdescriptionId} />
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   // Create the table instance
@@ -146,7 +152,6 @@ const ItemList = () => {
     },
   });
 
-  // Render loading state
   if (isLoading) {
     return <LoaderComponent name="Item Data" />;
   }
@@ -197,8 +202,7 @@ const ItemList = () => {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <CreateItem />
+          {userType != 1 && <CreateItem />}
         </div>
         {/* table  */}
         <div className="rounded-md border">

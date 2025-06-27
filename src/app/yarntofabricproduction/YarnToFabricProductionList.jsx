@@ -45,9 +45,12 @@ import {
 import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const YarnToFabricProductionList = () => {
   const token = usetoken();
+  const userType = useSelector((state) => state.auth.user_type);
+
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
@@ -143,23 +146,25 @@ const YarnToFabricProductionList = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleDeleteRow(id)}
-                    className="text-red-500"
-                    type="button"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Delete Fabric Production</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {userType !== 1 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleDeleteRow(id)}
+                      className="text-red-500"
+                      type="button"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete Fabric Production</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
