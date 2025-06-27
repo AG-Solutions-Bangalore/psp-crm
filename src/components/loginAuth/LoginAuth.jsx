@@ -80,6 +80,7 @@ export default function LoginAuth() {
 
     try {
       const res = await apiClient.post(PANEL_LOGIN, formData);
+      console.log(res);
       if (res.data.code === 200 && res.data.UserInfo?.token) {
         const { UserInfo } = res.data;
         dispatch(
@@ -92,6 +93,12 @@ export default function LoginAuth() {
             token_expire_time: UserInfo.token_expires_at,
             version: res?.data?.version?.version_panel,
             companyname: res?.data?.company_detils?.company_name,
+            company_address: res?.data?.company_detils?.company_address,
+            company_email: res?.data?.company_detils?.company_email,
+            company_gst: res?.data?.company_detils?.company_gst,
+            company_mobile: res?.data?.company_detils?.company_mobile,
+            company_state_code: res?.data?.company_detils?.company_state_code,
+            company_state_name: res?.data?.company_detils?.company_state_name,
           })
         );
         navigate("/home");

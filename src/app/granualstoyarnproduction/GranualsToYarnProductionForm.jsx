@@ -491,10 +491,10 @@ const GranualsToYarnProductionForm = () => {
             <PageHeaders
               title={
                 editId
-                  ? "Update Granual To Yarn Production"
-                  : "Create Granual To Yarn Production"
+                  ? "Update Granual Production"
+                  : "Create Granual Production"
               }
-              subtitle="granual to yarn  production"
+              subtitle="granual production"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -546,9 +546,9 @@ const GranualsToYarnProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Granual To Yarn Production"
+                  "Update Granual Production"
                 ) : (
-                  "Create Granual To Yarn Production"
+                  "Create Granual Production"
                 )}{" "}
               </Button>
 

@@ -50,13 +50,14 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const SalesList = () => {
   const token = usetoken();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
-  console.log(token);
+  const userType = useSelector((state) => state.auth.user_type);
   const {
     data: sales,
     isLoading,
@@ -178,23 +179,25 @@ const SalesList = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleDeleteRow(id)}
-                    className="text-red-500"
-                    type="button"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Delete Sales</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {userType !== 1 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleDeleteRow(id)}
+                      className="text-red-500"
+                      type="button"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete Sales</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         );
       },

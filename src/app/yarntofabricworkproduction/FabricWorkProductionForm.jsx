@@ -269,7 +269,7 @@ const FabricWorkProductionForm = () => {
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
             <PageHeaders
-              title={"Create Production Fabric Work"}
+              title={"Create Fabric Work Production"}
               subtitle="fabric"
               progress={progress}
             />

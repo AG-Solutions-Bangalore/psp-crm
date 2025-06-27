@@ -490,10 +490,10 @@ const YarnToFabricWorkProductionForm = () => {
             <PageHeaders
               title={
                 editId
-                  ? "Update Yarn To Fabric Work Production"
-                  : "Create Yarn To Fabric Work Production"
+                  ? "Update Fabric Work Production"
+                  : "Create Fabric Work Production"
               }
-              subtitle="yarn to fabric  work production"
+              subtitle="fabric work production"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -545,9 +545,9 @@ const YarnToFabricWorkProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Yarn To Fabric Production"
+                  "Update Fabric Production"
                 ) : (
-                  "Create Yarn To Fabric Production"
+                  "Create Fabric Production"
                 )}{" "}
               </Button>
 

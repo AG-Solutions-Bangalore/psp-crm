@@ -477,7 +477,7 @@ const YarnToFabricProductionForm = () => {
     }
   };
   if (isFetching || loadingcolor) {
-    return <LoaderComponent name="Yarn To Fabric Production" />;
+    return <LoaderComponent name="Fabric Production" />;
   }
   return (
     <Page>
@@ -487,10 +487,10 @@ const YarnToFabricProductionForm = () => {
             <PageHeaders
               title={
                 editId
-                  ? "Update Yarn To Fabric Production"
-                  : "Create Yarn To Fabric Production"
+                  ? "Update Fabric Production"
+                  : "Create Fabric Production"
               }
-              subtitle="yarn to fabric  production"
+              subtitle="fabric  production"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -542,9 +542,9 @@ const YarnToFabricProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Yarn To Fabric Production"
+                  "Fabric Production"
                 ) : (
-                  "Create Yarn To Fabric Production"
+                  "Fabric Production"
                 )}{" "}
               </Button>
 

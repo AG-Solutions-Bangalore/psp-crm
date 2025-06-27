@@ -8,7 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 export function SalesTabs() {
   const dispatch = useDispatch();
-  const activeTab = useSelector((state) => state.salestab.salesTab);
+  const activeTab = useSelector(
+    (state) => state.salestab.salesTab || "yarnstock"
+  );
 
   const handleTabChange = (value) => {
     dispatch(setSalesTab(value));

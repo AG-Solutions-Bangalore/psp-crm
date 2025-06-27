@@ -9,7 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 export function YarnTabs() {
   const dispatch = useDispatch();
-  const activeTab = useSelector((state) => state.yarntab.yarnTab);
+  const activeTab = useSelector(
+    (state) => state.yarntab.yarnTab || "yarntofabric"
+  );
 
   const handleTabChange = (value) => {
     dispatch(setYarnTab(value));
