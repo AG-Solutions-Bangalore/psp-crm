@@ -12,6 +12,8 @@ export const PANEL_SEND_PASSWORD = `/api/panel-send-password`;
 export const PANEL_CHANGE_PASSWORD = `/api/panel-change-password`;
 //PROFILE
 export const PROFILE = `/api/panel-fetch-profile`;
+//DashBoard
+export const DASHBOARD = `/api/dashboard`;
 export const EDIT_PROFILE = `/api/panel-update-profile`;
 //TEAM_LIST
 export const TEAM_LIST = `/api/panel-fetch-team-list`;
@@ -61,3 +63,9 @@ export const YARN_STOCK = `/api/yarnstock`;
 export const FABRIC_STOCK = `/api/fabricstock`;
 //WEBSITE_ENQUIRY
 export const WEBSITE_ENQUIRY = `/api/panel-fetch-website-contact`;
+//SALES_FABRIC_REPORT
+export const SALES_FABRIC_REPORT = `/api/salesreport`;
+//RAW_MATERIAL_PURCHASE_REPORT
+export const RAW_MATERIAL_PURCHASE_REPORT = `/api/rawmaterialpurchasereport`;
+//GRANUALS_PURCHASE_REPORT
+export const GRANUALS_PURCHASE_REPORT = `/api/granualspurchasereport`;

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -93,6 +94,7 @@ export default function LoginAuth() {
             token_expire_time: UserInfo.token_expires_at,
             version: res?.data?.version?.version_panel,
             companyname: res?.data?.company_detils?.company_name,
+            companystatename: res?.data?.company_detils?.company_state_name,
             company_address: res?.data?.company_detils?.company_address,
             company_email: res?.data?.company_detils?.company_email,
             company_gst: res?.data?.company_detils?.company_gst,

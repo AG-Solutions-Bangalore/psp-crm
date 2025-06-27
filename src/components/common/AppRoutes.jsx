@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Login from "@/app/auth/Login";
 import Dashboard from "@/app/dashboard/Dashboard";
 import NotFound from "@/app/errors/NotFound";
@@ -39,6 +40,11 @@ import { RawMaterialTabs } from "@/app/Tabs/RawMaterialTabs/RawMaterialTabs";
 import { GranualsTabs } from "@/app/Tabs/GranualsTabs/GranualsTabs";
 import { SalesTabs } from "@/app/Tabs/SalesTabs/SalesTabs";
 import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
+import SalesReport from "@/app/report/sales/SalesYarnReport";
+import SalesFabricReport from "@/app/report/sales/SalesFabricReport";
+import SalesYarnReport from "@/app/report/sales/SalesYarnReport";
+import PurchaseRawMaterialReport from "@/app/report/purchase/PurchaseRawMaterialReport";
+import PurchaseGranualsReport from "@/app/report/purchase/PurchaseGranualsReport";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -137,6 +143,14 @@ const AppRoutes = () => {
       <Route path="/report/granuals" element={<GranualsStockReport />} />
       <Route path="/report/yarn" element={<YarnStockReport />} />
       <Route path="/report/fabric" element={<FabricStockReport />} />
+
+
+      <Route path="/report/sales-fabric" element={<SalesFabricReport />} />
+      <Route path="/report/sales-yarn" element={<SalesYarnReport />} />
+
+
+      <Route path="/report/purchase-raw-material" element={<PurchaseRawMaterialReport />} />
+      <Route path="/report/purchase-granuals" element={<PurchaseGranualsReport />} />
       {/* //Website enquiryt */}
       <Route path="/website-enquiry" element={<WebsiteEnquiry />} />
       <Route path="/report-tax-invoice" element={<TaxInvoice />} />
