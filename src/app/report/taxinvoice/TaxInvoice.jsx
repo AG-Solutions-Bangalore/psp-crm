@@ -360,8 +360,7 @@ const TaxInvoice = () => {
                         </td>
                         <td className="p-1 text-end font-semibold">5,662.50</td>
                       </tr>
-                    
-                   
+
                       <tr>
                         <td className="p-1 text-end border-r border-black" />
                         <td className="p-1 text-end border-r border-black" />
@@ -439,10 +438,16 @@ const TaxInvoice = () => {
                   <thead className="leading-tight">
                     {" "}
                     <tr>
-                      <th className="border-r border-black px-2 py-0.5 text-center">
+                      <th
+                        className="border-r border-black px-2 py-0.5 text-center"
+                        rowSpan={2}
+                      >
                         HSN/SAC
                       </th>
-                      <th className="border-r border-black px-2  py-0.5 text-center">
+                      <th
+                        className="border-r border-black px-2  py-0.5 text-center"
+                        rowSpan={2}
+                      >
                         Taxable Value
                       </th>
                       <th
@@ -457,13 +462,11 @@ const TaxInvoice = () => {
                       >
                         State Tax
                       </th>
-                      <th className="px-2 py-0.5 text-center">
+                      <th className="px-2 py-0.5 text-center" rowSpan={2}>
                         Total Tax Amount
                       </th>
                     </tr>
                     <tr className="border-b border-black">
-                      <th className="border-r border-black px-2 py-0.5 text-center"></th>
-                      <th className="border-r border-black px-2 py-0.5 text-center"></th>
                       <th className="border-r border-black px-2 py-1 text-center">
                         Rate
                       </th>
@@ -476,7 +479,6 @@ const TaxInvoice = () => {
                       <th className="border-r border-black px-2 py-1 text-center">
                         Amount
                       </th>
-                      <th className="px-2 py-0.5 text-center"></th>
                     </tr>
                   </thead>
 

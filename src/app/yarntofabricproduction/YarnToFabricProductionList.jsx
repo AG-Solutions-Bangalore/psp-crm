@@ -3,7 +3,11 @@ import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
-import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -76,32 +80,37 @@ const YarnToFabricProductionList = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "yarn_to_fp_date",
+      id: "Date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("yarn_to_fp_date");
+        const date = row.getValue("Date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
 
     {
       accessorKey: "total_weight",
+      id: "Total Weight",
       header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
     },
     {
       accessorKey: "totalCount",
+      id: "Count",
       header: "Count",
-      cell: ({ row }) => <div>{row.getValue("totalCount")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Count")}</div>,
     },
     {
       accessorKey: "productionCount",
+      id: "Production Count",
       header: "Production Count",
-      cell: ({ row }) => <div>{row.getValue("productionCount")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Production Count")}</div>,
     },
 
     {
@@ -249,30 +258,26 @@ const YarnToFabricProductionList = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Yarn To Fabric Data" />;
+    return <WithoutLoaderComponent name="Fabric Production" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent
-        message="Error Fetching Yarn To Fabric Production"
+      <WithoutErrorComponent
+        message="Error Fetching Fabric Production"
         refetch={refetch}
       />
     );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Yarn To Fabric Production List
-        </div>
-
+    <>
+      <div className="w-full">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Yarn To Fabric..."
+              placeholder="Search Fabric Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -312,7 +317,7 @@ const YarnToFabricProductionList = () => {
               navigate("/yarn-fabric-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Yarn To Fabric Production
+            <SquarePlus className="h-4 w-4 " /> Fabric Production
           </Button>
         </div>
         {/* table  */}
@@ -372,7 +377,7 @@ const YarnToFabricProductionList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Yarn To Fabric Production : &nbsp;
+            Total Fabric Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -402,7 +407,7 @@ const YarnToFabricProductionList = () => {
         description="Yarn To Fabric Production"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

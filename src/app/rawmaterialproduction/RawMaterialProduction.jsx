@@ -1,9 +1,11 @@
 import { RAW_MATERIAL_PRODUCTION_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
-import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -76,32 +78,37 @@ const RawMaterialProduction = () => {
   const columns = [
     {
       accessorKey: "index",
+      id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
       accessorKey: "raw_material_to_p_date",
+      id: "Date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("raw_material_to_p_date");
+        const date = row.getValue("Date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
 
     {
       accessorKey: "total_weight",
+      id: "Total Weight",
       header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
     },
     {
       accessorKey: "totalCount",
+      id: "Count",
       header: "Count",
-      cell: ({ row }) => <div>{row.getValue("totalCount")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Count")}</div>,
     },
     {
       accessorKey: "productionCount",
+      id: "Production Count",
       header: "Production Count",
-      cell: ({ row }) => <div>{row.getValue("productionCount")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Production Count")}</div>,
     },
 
     {
@@ -249,30 +256,23 @@ const RawMaterialProduction = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Raw Material Production Data" />;
+    return <WithoutLoaderComponent name="Production Data" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent
-        message="Error Fetching Raw Material Production"
-        refetch={refetch}
-      />
+      <WithoutErrorComponent message="Production Data" refetch={refetch} />
     );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Raw Material Production List
-        </div>
-
+    <>
+      <div className="w-full">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Raw Material Production..."
+              placeholder="Search Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -312,7 +312,7 @@ const RawMaterialProduction = () => {
               navigate("/raw-material-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Raw Material Production
+            <SquarePlus className="h-4 w-4 " /> Production
           </Button>
         </div>
         {/* table  */}
@@ -372,7 +372,7 @@ const RawMaterialProduction = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Raw Material Production : &nbsp;
+            Total Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -402,7 +402,7 @@ const RawMaterialProduction = () => {
         description="Raw Material Production"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

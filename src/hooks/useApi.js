@@ -48,8 +48,8 @@ export const useFetchItem = () => {
 export const useFetchColor = () => {
   return useQuery(createQueryConfig(["colors"], "/api/color/active"));
 };
-
-
-
-
-
+export const useFetchProduct = () => {
+  return useQuery(
+    createQueryConfig(["products"], "/api/panel-fetch-product-default")
+  );
+};

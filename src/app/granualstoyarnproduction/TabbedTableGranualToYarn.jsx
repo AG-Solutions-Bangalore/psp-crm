@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -25,67 +25,96 @@ const TabbedTableGranualToYarn = ({
   deleteRowYarn,
   colorData,
 }) => {
+  const [activeTab, setActiveTab] = useState("first");
+  const isInput = activeTab === "first";
+
+  const totalInputWeight = granualsRows.reduce(
+    (acc, row) => acc + (parseFloat(row.granuals_to_yp_weight) || 0),
+    0
+  );
+
+  const totalOutputWeight = YarnRows.reduce(
+    (acc, row) => acc + (parseFloat(row.yarn_from_p_weight) || 0),
+    0
+  );
+
+  const estimatedPercentage =
+    totalInputWeight > 0
+      ? ((totalOutputWeight / totalInputWeight) * 100).toFixed(2)
+      : "0.00";
+
   return (
-    <Tabs defaultValue="first">
-      <div className="flex justify-center w-full my-4">
-        <TabsList className="w-full flex justify-center bg-gray-100 p-1 rounded-md">
-          <TabsTrigger
-            value="first"
-            className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
-          >
-            Granuals
-          </TabsTrigger>
-          <TabsTrigger
-            value="second"
-            className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
-          >
-            Yarn
-          </TabsTrigger>
-        </TabsList>
+    <>
+      <Tabs defaultValue="first" onValueChange={setActiveTab}>
+        <div className="flex justify-center w-full my-4">
+          <TabsList className="w-full flex justify-center bg-gray-100 p-1 rounded-md">
+            <TabsTrigger
+              value="first"
+              className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
+            >
+              Granuals
+            </TabsTrigger>
+            <TabsTrigger
+              value="second"
+              className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
+            >
+              Yarn
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="first">
+          <TableSection
+            rows={granualsRows}
+            itemData={colorData}
+            addRow={addGranualsRow}
+            removeRow={removeGranualsRow}
+            deleteRow={deleteRowGranuals}
+            handleChange={handleChange}
+            fields={[
+              "granuals_to_yp_sub_color_id",
+              "granuals_to_yp_bags",
+              "granuals_to_yp_weight",
+            ]}
+            labels={["Color", "Bags", "Weight"]}
+            placeholders={["Select Color", "Enter Bags", "Enter Weight"]}
+          />
+        </TabsContent>
+
+        <TabsContent value="second">
+          <TableSection
+            rows={YarnRows}
+            itemData={colorData}
+            addRow={addYarnRow}
+            removeRow={removeYarnRow}
+            deleteRow={deleteRowYarn}
+            handleChange={handleChange}
+            fields={[
+              "yarn_from_p_color_id",
+              "yarn_from_p_bags",
+              "yarn_from_p_weight",
+              "yarn_from_p_thickness",
+            ]}
+            labels={["Color", "Bags", "Weight", "Thickness"]}
+            placeholders={[
+              "Select Color",
+              "Enter Bags",
+              "Enter Weight",
+              "Enter Thickness",
+            ]}
+          />
+        </TabsContent>
+      </Tabs>
+      <div className="text-right mt-6 pr-4 text-sm font-medium">
+        <div>
+          Total {isInput ? "Input" : "Output"} Weight:{" "}
+          {(isInput ? totalInputWeight : totalOutputWeight).toFixed(2)} kg
+        </div>
+        <div className="text-green-700">
+          Estimated Yield: {isInput ? "-" : `${estimatedPercentage}%`}
+        </div>
       </div>
-
-      <TabsContent value="first">
-        <TableSection
-          rows={granualsRows}
-          itemData={colorData}
-          addRow={addGranualsRow}
-          removeRow={removeGranualsRow}
-          deleteRow={deleteRowGranuals}
-          handleChange={handleChange}
-          fields={[
-            "granuals_to_yp_sub_color_id",
-            "granuals_to_yp_bags",
-            "granuals_to_yp_weight",
-          ]}
-          labels={["Color", "Bags", "Weight"]}
-          placeholders={["Select Item", "Enter Bags", "Enter Weight"]}
-        />
-      </TabsContent>
-
-      <TabsContent value="second">
-        <TableSection
-          rows={YarnRows}
-          itemData={colorData}
-          addRow={addYarnRow}
-          removeRow={removeYarnRow}
-          deleteRow={deleteRowYarn}
-          handleChange={handleChange}
-          fields={[
-            "yarn_from_p_color_id",
-            "yarn_from_p_bags",
-            "yarn_from_p_weight",
-            "yarn_from_p_thickness",
-          ]}
-          labels={["Color", "Bags", "Weight", "Thickness"]}
-          placeholders={[
-            "Select Color",
-            "Enter Bags",
-            "Enter Weight",
-            "Enter Thickness",
-          ]}
-        />
-      </TabsContent>
-    </Tabs>
+    </>
   );
 };
 

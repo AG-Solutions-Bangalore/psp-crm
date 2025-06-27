@@ -32,7 +32,7 @@ export const RAW_MATERIAL_LIST = `/api/rawmaterial`;
 //GRANUALS_LIST
 export const GRANUALS_LIST = `/api/granuals`;
 //YARN_LIST
-export const YARN_LIST = `/api/yarnsale`;
+export const SALES_LIST = `/api/sales`;
 //YARN_LIST
 export const FABRIC_SALE_LIST = `/api/fabricsale`;
 //RAW_MATERIAL_PRODUCTION_LIST

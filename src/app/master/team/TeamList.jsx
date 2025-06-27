@@ -67,8 +67,9 @@ const TeamList = () => {
   const columns = [
     {
       accessorKey: "id",
+      id: "ID",
       header: "ID",
-      cell: ({ row }) => <div>{row.getValue("id")}</div>,
+      cell: ({ row }) => <div>{row.getValue("ID")}</div>,
     },
     {
       accessorKey: "name",
@@ -86,8 +87,9 @@ const TeamList = () => {
 
     {
       accessorKey: "user_type",
+      id: "User Type",
       header: "User Type",
-      cell: ({ row }) => <div>{row.getValue("user_type")}</div>,
+      cell: ({ row }) => <div>{row.getValue("User Type")}</div>,
     },
 
     {

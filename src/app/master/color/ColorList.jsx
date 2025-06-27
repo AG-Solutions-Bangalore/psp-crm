@@ -31,7 +31,10 @@ import { useNavigate } from "react-router-dom";
 import { COLOR_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import CreateColor from "./CreateColor";
 import EditColor from "./EditColor";
@@ -66,6 +69,7 @@ const ColorList = () => {
     {
       accessorKey: "index",
       header: "Sl No",
+      id: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
@@ -90,7 +94,7 @@ const ColorList = () => {
 
         return (
           <span
-            className={`px-2 py-1 rounded text-xs ${
+            className={`px-2 py-1 rounded text-xs  capitalize ${
               status == "Active"
                 ? "bg-green-100 text-green-800"
                 : "bg-gray-100 text-gray-800"

@@ -38,10 +38,11 @@ const EditItem = ({ customdescriptionId }) => {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     item_name: "",
-    status: "active",
+    status: "",
   });
   const [originalData, setOriginalData] = useState(null);
-
+  console.log(originalData, "originalData");
+  console.log(formData, "formData");
   // Fetch state data
   const fetchStateData = async () => {
     setIsFetching(true);
@@ -55,11 +56,11 @@ const EditItem = ({ customdescriptionId }) => {
       const customDescriptionData = response?.data?.data;
       setFormData({
         item_name: customDescriptionData.item_name || "",
-        status: customDescriptionData.status || "active",
+        status: customDescriptionData.status || "",
       });
       setOriginalData({
-        color: customDescriptionData.color || "",
-        status: customDescriptionData.status || "active",
+        item_name: customDescriptionData.item_name || "",
+        status: customDescriptionData.status || "",
       });
     } catch (error) {
       toast({

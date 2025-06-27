@@ -6,20 +6,23 @@ import App from "./App.jsx";
 import "./index.css";
 import { Provider } from "react-redux";
 import store from "./redux/store.js";
+import { TooltipProvider } from "./components/ui/tooltip.jsx";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <Provider store={store}>
-      <BrowserRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <QueryClientProvider client={queryClient}>
-          {" "}
+  <TooltipProvider>
+    <StrictMode>
+      <Provider store={store}>
+        <BrowserRouter
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <QueryClientProvider client={queryClient}>
+            {" "}
             <App />
-        </QueryClientProvider>
-      </BrowserRouter>
-    </Provider>
-  </StrictMode>
+          </QueryClientProvider>
+        </BrowserRouter>
+      </Provider>
+    </StrictMode>
+  </TooltipProvider>
 );
