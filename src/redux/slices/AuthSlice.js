@@ -9,6 +9,7 @@ const initialState = {
   token_expire_time: null,
   version: null,
   companyname: null,
+  companystatename: null,
 };
 
 const authSlice = createSlice({
@@ -24,6 +25,7 @@ const authSlice = createSlice({
       state.token_expire_time = action.payload.token_expire_time;
       state.version = action.payload.version;
       state.companyname = action.payload.companyname;
+      state.companystatename = action.payload.companystatename;
     },
     logout: () => {
       return initialState;

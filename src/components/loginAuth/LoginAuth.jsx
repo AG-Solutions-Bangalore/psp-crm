@@ -92,6 +92,7 @@ export default function LoginAuth() {
             token_expire_time: UserInfo.token_expires_at,
             version: res?.data?.version?.version_panel,
             companyname: res?.data?.company_detils?.company_name,
+            companystatename: res?.data?.company_detils?.company_state_name,
           })
         );
         navigate("/home");

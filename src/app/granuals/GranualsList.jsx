@@ -49,6 +49,7 @@ const GranualsList = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const { toast } = useToast();
+
   const {
     data: granuals,
     isLoading,

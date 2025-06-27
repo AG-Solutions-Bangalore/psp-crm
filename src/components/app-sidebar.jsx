@@ -128,6 +128,41 @@ export function AppSidebar({ ...props }) {
         isActive: false,
         icon: Settings2,
         items: [
+        
+          {
+            title: "Purchase",
+            url: "#",
+            isActive: false,
+            icon: Settings2,
+            items: [
+              {
+                title: "Raw Material",
+                url: "/report/purchase-raw-material",
+              },
+              {
+                title: "Granuals",
+                url: "/report/purchase-granuals",
+              },
+              
+            ],
+          },
+          {
+            title: "Sales",
+            url: "#",
+            isActive: false,
+            icon: Settings2,
+            items: [
+              {
+                title: "Fabric",
+                url: "/report/sales-fabric",
+              },
+              {
+                title: "Yarn",
+                url: "/report/sales-yarn",
+              },
+              
+            ],
+          },
           {
             title: "Stock",
             url: "#",
