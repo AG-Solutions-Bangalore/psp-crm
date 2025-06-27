@@ -67,5 +67,5 @@ export const WEBSITE_ENQUIRY = `/api/panel-fetch-website-contact`;
 export const SALES_FABRIC_REPORT = `/api/salesreport`;
 //RAW_MATERIAL_PURCHASE_REPORT
 export const RAW_MATERIAL_PURCHASE_REPORT = `/api/rawmaterialpurchasereport`;
-//GRANUALS_PURCHASE_REPORT
-export const GRANUALS_PURCHASE_REPORT = `/api/granualspurchasereport`;
+//GRANULS_PURCHASE_REPORT
+export const GRANULS_PURCHASE_REPORT = `/api/granualspurchasereport`;

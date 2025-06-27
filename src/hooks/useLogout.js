@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { PANEL_LOGOUT } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
@@ -11,14 +12,14 @@ const useLogout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const token = usetoken();
+  // const token = usetoken();
   const handleLogout = async () => {
     try {
-      await apiClient.post(`${PANEL_LOGOUT}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // await apiClient.post(`${PANEL_LOGOUT}`, null, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
 
       // 2. Clear Redux + localStorage
       await persistor.flush();

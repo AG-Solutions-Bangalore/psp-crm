@@ -172,6 +172,36 @@ export function AppSidebar({ ...props }) {
             ],
           },
           {
+            title: "Production",
+            url: "#",
+            isActive: false,
+            icon: Settings2,
+            items: [
+              {
+                title: "Raw Material",
+                url: "/report/production-raw-material",
+              },
+              {
+                title: "Granuals",
+                url: "/report/production-granuals",
+              },
+           
+              {
+                title: "Yarn",
+                url: "/report/production-yarn",
+              },
+              {
+                title: "Fabric",
+                url: "/report/production-fabric",
+              },
+              {
+                title: "Fabric Work",
+                url: "/report/production-fabric-work",
+              },
+              
+            ],
+          },
+          {
             title: "Stock",
             url: "#",
             isActive: false,

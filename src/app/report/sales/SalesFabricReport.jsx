@@ -3,7 +3,7 @@ import { SALES_FABRIC_REPORT } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
-import downloadExcel from "@/components/common/downloadExcel";
+
 // import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ import { useReactToPrint } from "react-to-print";
 import { Label } from "@/components/ui/label";
 
 import { useSelector } from "react-redux";
+import moment from "moment";
+import downloadExcelMultiRow from "@/components/common/downloadExcelMultiRow";
 
 const SalesFabricReport = () => {
   const containerRef = useRef();
@@ -189,71 +191,308 @@ const SalesFabricReport = () => {
 
 
 
-  const downloadCSV = async (data, toast, setExcelLoading) => {
-    if (!data || data.length === 0) {
-      toast?.({
+
+
+const downloadAllCSV = async (data, toast, setExcelLoading, companyStateName) => {
+  if (!data || data.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setExcelLoading(true);
+
+  try {
+    const headers = [
+      "Sales Date",
+      "Sales No",
+      "Vendor Name",
+      "Vendor GST",
+      "Quantity",
+      "Amount",
+      "CGST",
+      "SGST",
+      "IGST",
+      "Total Amount"
+    ];
+
+    const getRowData = (item) => {
+      const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
+      return [
+        moment(item.sales_date).format("DD-MM-YYYY"),
+        item.sales_no || "",
+        item.vendor_name || "",
+        item.vendor_gst || "-",
+        Number(item.sales_quantity || 0),
+        Number(item.sales_amount || 0).toFixed(2),
+        cgst,
+        sgst,
+        igst,
+        Number(item.sales_total_amount || 0).toFixed(2)
+      ];
+    };
+
+    await downloadExcelMultiRow({
+      data: data,
+      sheetName: "Fabric Sales Report",
+      headers,
+      getRowData,
+      fileNamePrefix: "fabric_sales_report",
+      toast,
+      emptyDataCallback: () => ({
         title: "No Data",
         description: "No data available to export",
         variant: "destructive",
-      });
-      return;
-    }
+      }),
+    });
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
 
-    setExcelLoading(true);
-
-    try {
-      const headers = [
-        "Sales No",
+const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading, companyStateName, allTotals) => {
+  const allData = [];
+  Object.entries(monthlyData).forEach(([month, items]) => {
+   
+    allData.push({
+      isHeader: true,
+      values: [new Date(`${month}-01`).toLocaleString('default', { month: 'long', year: 'numeric' })]
+    });
+    
+ 
+    allData.push({
+      values: [
         "Sales Date",
+        "Sales No",
+        "Vendor Name",
         "Quantity",
         "Amount",
-        "CGST (%)",
-        "SGST (%)",
-        "IGST (%)",
-        "Total Amount",
-        "Vendor Name",
-        "Vendor GST"
-      ];
+        "CGST",
+        "SGST",
+        "IGST",
+        "Total Amount"
+      ]
+    });
 
-      const getRowData = (item) => [
-        item.sales_no || "",
-        item.sales_date || "",
-        Number(item.sales_quantity || 0),
-        Number(item.sales_amount || 0).toFixed(2),
-        Number(item.sales_cgst || 0),
-        Number(item.sales_sgst || 0),
-        Number(item.sales_igst || 0),
-        Number(item.sales_total_amount || 0).toFixed(2),
-        item.vendor_name || "",
-        item.vendor_gst || ""
-      ];
-
-      await downloadExcel({
-        data: data,
-        sheetName: "Fabric Sales Report",
-        headers,
-        getRowData,
-        fileNamePrefix: "fabric_sales_report",
-        toast,
-        emptyDataCallback: () => ({
-          title: "No Data",
-          description: "No data available to export",
-          variant: "destructive",
-        }),
+    
+    items.forEach(item => {
+      const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
+      allData.push({
+        values: [
+          moment(item.sales_date).format("DD-MM-YYYY"),
+          item.sales_no || "",
+          item.vendor_name || "",
+          Number(item.sales_quantity || 0),
+          Number(item.sales_amount || 0).toFixed(2),
+          cgst,
+          sgst,
+          igst,
+          Number(item.sales_total_amount || 0).toFixed(2)
+        ]
       });
-    } catch (error) {
-      toast?.({
-        title: "Error",
-        description: "Failed to export Excel file",
+    });
+
+    
+    const monthTotals = calculateTotals(items);
+    allData.push({
+      isFooter: true,
+      values: [
+        "Monthly Total",
+        "",
+        "",
+        monthTotals.quantity,
+        monthTotals.amount.toFixed(2),
+        monthTotals.cgst.toFixed(2),
+        monthTotals.sgst.toFixed(2),
+        monthTotals.igst.toFixed(2),
+        monthTotals.total.toFixed(2)
+      ]
+    });
+
+   
+    allData.push({ values: [] });
+  });
+
+ 
+  allData.push({
+    isFooter: true,
+    values: [
+      "Grand Total",
+      "",
+      "",
+      allTotals.quantity,
+      allTotals.amount.toFixed(2),
+      allTotals.cgst.toFixed(2),
+      allTotals.sgst.toFixed(2),
+      allTotals.igst.toFixed(2),
+      allTotals.total.toFixed(2)
+    ]
+  });
+
+  if (allData.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setExcelLoading(true);
+
+  try {
+    await downloadExcelMultiRow({
+      data: allData,
+      sheetName: "Monthwise Fabric Sales",
+      fileNamePrefix: "monthwise_fabric_sales",
+      toast,
+      customFormat: true,
+      emptyDataCallback: () => ({
+        title: "No Data",
+        description: "No data available to export",
         variant: "destructive",
+      }),
+    });
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
+
+const downloadVendorwiseCSV = async (vendorData, toast, setExcelLoading, companyStateName, allTotals) => {
+  const allData = [];
+  Object.entries(vendorData).forEach(([vendor, items]) => {
+    const vendorGst = items[0]?.vendor_gst || '';
+    
+
+    allData.push({
+      isHeader: true,
+      values: [`${vendor} ${vendorGst ? `- ${vendorGst}` : ''}`]
+    });
+    
+   
+    allData.push({
+      values: [
+        "Sales Date",
+        "Sales No",
+        "Quantity",
+        "Amount",
+        "CGST",
+        "SGST",
+        "IGST",
+        "Total Amount"
+      ]
+    });
+
+   
+    items.forEach(item => {
+      const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
+      allData.push({
+        values: [
+          moment(item.sales_date).format("DD-MM-YYYY"),
+          item.sales_no || "",
+          Number(item.sales_quantity || 0),
+          Number(item.sales_amount || 0).toFixed(2),
+          cgst,
+          sgst,
+          igst,
+          Number(item.sales_total_amount || 0).toFixed(2)
+        ]
       });
-      console.error("Excel export error:", error);
-    } finally {
-      setTimeout(() => {
-        setExcelLoading(false);
-      }, 300);
-    }
-  };
+    });
+
+   
+    const vendorTotals = calculateTotals(items);
+    allData.push({
+      isFooter: true,
+      values: [
+        "Vendor Total",
+        "",
+        vendorTotals.quantity,
+        vendorTotals.amount.toFixed(2),
+        vendorTotals.cgst.toFixed(2),
+        vendorTotals.sgst.toFixed(2),
+        vendorTotals.igst.toFixed(2),
+        vendorTotals.total.toFixed(2)
+      ]
+    });
+
+  
+    allData.push({ values: [] });
+  });
+
+
+  allData.push({
+    isFooter: true,
+    values: [
+      "Grand Total",
+      "",
+      allTotals.quantity,
+      allTotals.amount.toFixed(2),
+      allTotals.cgst.toFixed(2),
+      allTotals.sgst.toFixed(2),
+      allTotals.igst.toFixed(2),
+      allTotals.total.toFixed(2)
+    ]
+  });
+
+  if (allData.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setExcelLoading(true);
+
+  try {
+    await downloadExcelMultiRow({
+      data: allData,
+      sheetName: "Vendorwise Fabric Sales",
+      fileNamePrefix: "vendorwise_fabric_sales",
+      toast,
+      customFormat: true,
+      emptyDataCallback: () => ({
+        title: "No Data",
+        description: "No data available to export",
+        variant: "destructive",
+      }),
+    });
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
 
   const monthlyData = groupByMonth();
   const vendorData = groupByVendor();
@@ -361,7 +600,7 @@ const SalesFabricReport = () => {
                     variant="outline"
                     disabled={excelloading}
                     className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
-                    onClick={() => downloadCSV(fabricData, toast, setExcelLoading)}
+                    onClick={() => downloadAllCSV(fabricData, toast, setExcelLoading, companyStateName)}
                   >
                     {excelloading ? (
                       <Loader className="animate-spin h-3 w-3" />
@@ -398,7 +637,7 @@ const SalesFabricReport = () => {
                         const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
                         return (
                           <tr key={index} className="hover:bg-gray-50">
-                            <td className="border border-black px-2 py-2">{item.sales_date}</td>
+                            <td className="border border-black px-2 py-2">{moment(item.sales_date).format("DD-MM-YYYY")}</td>
                             <td className="border border-black px-2 py-2">{item.sales_no}</td>
                             <td className="border border-black px-2 py-2">{item.vendor_name}</td>
                             <td className="border border-black px-2 py-2">{item.vendor_gst}</td>
@@ -459,7 +698,7 @@ const SalesFabricReport = () => {
       variant="outline"
       disabled={excelloading}
       className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
-      onClick={() => downloadCSV(fabricData, toast, setExcelLoading)}
+      onClick={() => downloadMonthwiseCSV(monthlyData, toast, setExcelLoading, companyStateName, allTotals)}
     >
       {excelloading ? (
         <Loader className="animate-spin h-3 w-3" />
@@ -502,7 +741,7 @@ const SalesFabricReport = () => {
   const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
   return (
     <tr key={`${month}-${index}`} className="hover:bg-gray-50">
-      <td className="border border-black px-2 py-2">{item.sales_date}</td>
+      <td className="border border-black px-2 py-2">{moment(item.sales_date).format('DD-MM-YYYY')}</td>
       <td className="border border-black px-2 py-2">{item.sales_no}</td>
       <td className="border border-black px-2 py-2">{item.vendor_name}</td>
       <td className="border border-black px-2 py-2 text-right">{item.sales_quantity}</td>
@@ -578,7 +817,7 @@ const SalesFabricReport = () => {
       variant="outline"
       disabled={excelloading}
       className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
-      onClick={() => downloadCSV(fabricData, toast, setExcelLoading)}
+      onClick={() => downloadVendorwiseCSV(vendorData, toast, setExcelLoading, companyStateName, allTotals)}
     >
       {excelloading ? (
         <Loader className="animate-spin h-3 w-3" />
@@ -620,7 +859,7 @@ const SalesFabricReport = () => {
   const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
   return (
     <tr key={`${vendor}-${index}`} className="hover:bg-gray-50">
-      <td className="border border-black px-2 py-2">{item.sales_date}</td>
+      <td className="border border-black px-2 py-2">{moment(item.sales_date).format("DD-MM-YYYY")}</td>
       <td className="border border-black px-2 py-2">{item.sales_no}</td>
       <td className="border border-black px-2 py-2 text-right">{item.sales_quantity}</td>
       <td className="border border-black px-2 py-2 text-right">{Number(item.sales_amount || 0).toFixed(2)}</td>
