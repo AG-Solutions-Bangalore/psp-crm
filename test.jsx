@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import {  RAW_MATERIAL_PURCHASE_REPORT } from "@/api";
+import {  RAW_MATERIAL_PRODUCTION_REPORT } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
@@ -54,7 +54,7 @@ const PurchaseRawMaterialReport = () => {
 
       try {
         const response = await apiClient.post(
-            RAW_MATERIAL_PURCHASE_REPORT,
+            RAW_MATERIAL_PRODUCTION_REPORT,
           { from_date: searchParams.fromDate, to_date: searchParams.toDate },
           {
             headers: {
@@ -215,8 +215,8 @@ const PurchaseRawMaterialReport = () => {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             {/* Title Section */}
             <div className="w-[30%] shrink-0">
-              <h1 className="text-xl font-bold text-gray-800 truncate">Raw Material purchase Report</h1>
-              <p className="text-xs text-gray-600">View raw material purchase data</p>
+              <h1 className="text-xl font-bold text-gray-800 truncate">Raw Material Production Report</h1>
+              <p className="text-xs text-gray-600">View raw material production data</p>
             </div>
 
             {/* Form Section */}
@@ -321,7 +321,7 @@ const PurchaseRawMaterialReport = () => {
               </div>
               <div className="overflow-x-auto text-[11px] grid grid-cols-1" ref={containerRef}>
                 <h1 className={`text-center text-2xl font-semibold mb-3 print:block`}>
-                  Raw Material Purchase Report
+                  Raw Material Production Report
                 </h1>
                 <table className="w-full border-collapse border border-black">
                   <thead className="bg-gray-100">
@@ -393,7 +393,7 @@ const PurchaseRawMaterialReport = () => {
               </div>
               <div className="overflow-x-auto text-[11px] grid grid-cols-1" ref={containerRef}>
                 <h1 className={`text-center text-2xl font-semibold mb-3 print:block`}>
-                  Raw Material Purchase Report (Monthwise)
+                  Raw Material Production Report (Monthwise)
                 </h1>
                 {Object.keys(monthlyData).length > 0 ? (
                   Object.entries(monthlyData).map(([month, items]) => {

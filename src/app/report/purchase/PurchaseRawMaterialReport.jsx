@@ -3,7 +3,7 @@ import { RAW_MATERIAL_PURCHASE_REPORT } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
-import downloadExcel from "@/components/common/downloadExcel";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,8 @@ import { ArrowDownToLine, FileSpreadsheet, Loader, Printer, Search } from "lucid
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { Label } from "@/components/ui/label";
+import moment from "moment";
+import downloadExcelMultiRow from "@/components/common/downloadExcelMultiRow";
 
 const PurchaseRawMaterialReport = () => {
   const containerRef = useRef();
@@ -153,7 +155,7 @@ const PurchaseRawMaterialReport = () => {
     },
   });
 
-  const downloadCSV = async (data, toast, setExcelLoading) => {
+  const downloadAllCSV = async (data, toast, setExcelLoading) => {
     if (!data || data.length === 0) {
       toast?.({
         title: "No Data",
@@ -162,9 +164,9 @@ const PurchaseRawMaterialReport = () => {
       });
       return;
     }
-
+  
     setExcelLoading(true);
-
+  
     try {
       const headers = [
         "Purchase Date",
@@ -175,24 +177,202 @@ const PurchaseRawMaterialReport = () => {
         "Total Weight",
         "Total Items"
       ];
-
+  
       const getRowData = (item) => [
-        item.raw_material_date || "",
+        moment(item.raw_material_date).format("DD-MM-YYYY"),
         item.raw_material_ref || "",
         item.raw_material_bill_ref || "",
         item.vendor_name || "",
-        item.vendor_gst || "",
+        item.vendor_gst || "-",
         Number(item.total_weight || 0).toFixed(2),
         Number(item.total_items || 0)
       ];
-
-      await downloadExcel({
+  
+      await downloadExcelMultiRow({
         data: data,
         sheetName: "Raw Material Purchase Report",
         headers,
         getRowData,
         fileNamePrefix: "raw_material_purchase_report",
         toast,
+        emptyDataCallback: () => ({
+          title: "No Data",
+          description: "No data available to export",
+          variant: "destructive",
+        }),
+      });
+    } catch (error) {
+      toast?.({
+        title: "Error",
+        description: "Failed to export Excel file",
+        variant: "destructive",
+      });
+      console.error("Excel export error:", error);
+    } finally {
+      setTimeout(() => {
+        setExcelLoading(false);
+      }, 300);
+    }
+  };
+  
+  const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading) => {
+    const allData = [];
+    Object.entries(monthlyData).forEach(([month, items]) => {
+ 
+      allData.push({
+        isHeader: true,
+        values: [new Date(`${month}-01`).toLocaleString('default', { month: 'long', year: 'numeric' })]
+      });
+      
+
+      allData.push({
+        values: [
+          "Purchase Date",
+          "Vendor Name",
+          "Vendor GST",
+          "Bill Ref",
+          "Total Weight",
+          "Total Items"
+        ]
+      });
+  
+
+      items.forEach(item => {
+        allData.push({
+          values: [
+            moment(item.raw_material_date).format("DD-MM-YYYY"),
+            item.vendor_name || "",
+            item.vendor_gst || "-",
+            item.raw_material_bill_ref || "",
+            Number(item.total_weight || 0).toFixed(2),
+            Number(item.total_items || 0)
+          ]
+        });
+      });
+  
+  
+      const monthTotals = calculateTotals(items);
+      allData.push({
+        isFooter: true,
+        values: [
+          "Monthly Total",
+          "",
+          "",
+          "",
+          monthTotals.totalWeight.toFixed(2),
+          monthTotals.totalItems
+        ]
+      });
+  
+    
+      allData.push({ values: [] });
+    });
+  
+    if (allData.length === 0) {
+      toast?.({
+        title: "No Data",
+        description: "No data available to export",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    setExcelLoading(true);
+  
+    try {
+      await downloadExcelMultiRow({
+        data: allData,
+        sheetName: "Monthwise Purchase Report",
+        fileNamePrefix: "monthwise_raw_material_purchase",
+        toast,
+        customFormat: true,
+        emptyDataCallback: () => ({
+          title: "No Data",
+          description: "No data available to export",
+          variant: "destructive",
+        }),
+      });
+    } catch (error) {
+      toast?.({
+        title: "Error",
+        description: "Failed to export Excel file",
+        variant: "destructive",
+      });
+      console.error("Excel export error:", error);
+    } finally {
+      setTimeout(() => {
+        setExcelLoading(false);
+      }, 300);
+    }
+  };
+  
+  const downloadVendorwiseCSV = async (vendorData, toast, setExcelLoading) => {
+    const allData = [];
+    Object.entries(vendorData).forEach(([vendor, items]) => {
+      const vendorGst = items[0]?.vendor_gst || '';
+      
+    
+      allData.push({
+        isHeader: true,
+        values: [`${vendor} ${vendorGst ? `- ${vendorGst}` : ''}`]
+      });
+      
+      
+      allData.push({
+        values: [
+          "Purchase Date",
+          "Bill Ref",
+          "Total Weight",
+          "Total Items"
+        ]
+      });
+  
+    
+      items.forEach(item => {
+        allData.push({
+          values: [
+            moment(item.raw_material_date).format("DD-MM-YYYY"),
+            item.raw_material_bill_ref || "",
+            Number(item.total_weight || 0).toFixed(2),
+            Number(item.total_items || 0)
+          ]
+        });
+      });
+  
+     
+      const vendorTotals = calculateTotals(items);
+      allData.push({
+        isFooter: true,
+        values: [
+          "Vendor Total",
+          "",
+          vendorTotals.totalWeight.toFixed(2),
+          vendorTotals.totalItems
+        ]
+      });
+  
+ 
+      allData.push({ values: [] });
+    });
+  
+    if (allData.length === 0) {
+      toast?.({
+        title: "No Data",
+        description: "No data available to export",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    setExcelLoading(true);
+  
+    try {
+      await downloadExcelMultiRow({
+        data: allData,
+        sheetName: "Vendorwise Purchase Report",
+        fileNamePrefix: "vendorwise_raw_material_purchase",
+        toast,
+        customFormat: true,
         emptyDataCallback: () => ({
           title: "No Data",
           description: "No data available to export",
@@ -318,7 +498,7 @@ const PurchaseRawMaterialReport = () => {
                   variant="outline"
                   disabled={excelloading}
                   className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
-                  onClick={() => downloadCSV(rawMaterialData, toast, setExcelLoading)}
+                  onClick={() => downloadAllCSV(rawMaterialData, toast, setExcelLoading)}
                 >
                   {excelloading ? (
                     <Loader className="animate-spin h-3 w-3" />
@@ -336,7 +516,7 @@ const PurchaseRawMaterialReport = () => {
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="border border-black px-2 py-2 text-center">Purchase Date</th>
-                      <th className="border border-black px-2 py-2 text-center">Reference No</th>
+              
                       <th className="border border-black px-2 py-2 text-center">Bill Ref</th>
                       <th className="border border-black px-2 py-2 text-center">Vendor Name</th>
                       <th className="border border-black px-2 py-2 text-center">Vendor GST</th>
@@ -348,8 +528,8 @@ const PurchaseRawMaterialReport = () => {
                     {rawMaterialData.length > 0 ? (
                       rawMaterialData.map((item, index) => (
                         <tr key={index} className="hover:bg-gray-50">
-                          <td className="border border-black px-2 py-2">{item.raw_material_date}</td>
-                          <td className="border border-black px-2 py-2">{item.raw_material_ref}</td>
+                          <td className="border border-black px-2 py-2">{moment(item.raw_material_date).format("DD-MM-YYYY")}</td>
+                          
                           <td className="border border-black px-2 py-2">{item.raw_material_bill_ref}</td>
                           <td className="border border-black px-2 py-2">{item.vendor_name}</td>
                           <td className="border border-black px-2 py-2">{item.vendor_gst || "-"}</td>
@@ -367,7 +547,7 @@ const PurchaseRawMaterialReport = () => {
                   </tbody>
                   <tfoot>
                     <tr className="bg-gray-200 font-bold">
-                      <td className="border border-black px-2 py-2" colSpan="5">Total</td>
+                      <td className="border border-black px-2 py-2" colSpan="4">Total</td>
                       <td className="border border-black px-2 py-2 text-right">{allTotals.totalWeight.toFixed(2)}</td>
                       <td className="border border-black px-2 py-2 text-right">{allTotals.totalItems}</td>
                     </tr>
@@ -399,7 +579,7 @@ const PurchaseRawMaterialReport = () => {
                   variant="outline"
                   disabled={excelloading}
                   className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
-                  onClick={() => downloadCSV(rawMaterialData, toast, setExcelLoading)}
+                  onClick={() => downloadMonthwiseCSV(monthlyData, toast, setExcelLoading)}
                 >
                   {excelloading ? (
                     <Loader className="animate-spin h-3 w-3" />
@@ -425,7 +605,8 @@ const PurchaseRawMaterialReport = () => {
                           <thead className="bg-gray-100">
                             <tr>
                               <th className="border border-black px-2 py-2 text-center">Purchase Date</th>
-                              <th className="border border-black px-2 py-2 text-center">Reference No</th>
+                              <th className="border border-black px-2 py-2 text-center">Vendor Name</th>
+                      <th className="border border-black px-2 py-2 text-center">Vendor GST</th>
                               <th className="border border-black px-2 py-2 text-center">Bill Ref</th>
                               <th className="border border-black px-2 py-2 text-center">Total Weight</th>
                               <th className="border border-black px-2 py-2 text-center">Total Items</th>
@@ -434,8 +615,9 @@ const PurchaseRawMaterialReport = () => {
                           <tbody>
                             {items.map((item, index) => (
                               <tr key={`${month}-${index}`} className="hover:bg-gray-50">
-                                <td className="border border-black px-2 py-2">{item.raw_material_date}</td>
-                                <td className="border border-black px-2 py-2">{item.raw_material_ref}</td>
+                                <td className="border border-black px-2 py-2">{moment(item.raw_material_date).format("DD-MM-YYYY")}</td>
+                                <td className="border border-black px-2 py-2">{item.vendor_name}</td>
+                                <td className="border border-black px-2 py-2">{item.vendor_gst || "-"}</td>
                                 <td className="border border-black px-2 py-2">{item.raw_material_bill_ref}</td>
                                 <td className="border border-black px-2 py-2 text-right">{Number(item.total_weight || 0).toFixed(2)}</td>
                                 <td className="border border-black px-2 py-2 text-right">{item.total_items}</td>
@@ -444,7 +626,7 @@ const PurchaseRawMaterialReport = () => {
                           </tbody>
                           <tfoot>
                             <tr className="bg-gray-100 font-bold">
-                              <td className="border border-black px-2 py-2" colSpan="3">Monthly Total</td>
+                              <td className="border border-black px-2 py-2" colSpan="4">Monthly Total</td>
                               <td className="border border-black px-2 py-2 text-right">{monthTotals.totalWeight.toFixed(2)}</td>
                               <td className="border border-black px-2 py-2 text-right">{monthTotals.totalItems}</td>
                             </tr>
@@ -461,7 +643,7 @@ const PurchaseRawMaterialReport = () => {
                   <table className="w-full border-collapse border border-black mt-4">
                     <tfoot>
                       <tr className="bg-gray-200 font-bold">
-                        <td className="border border-black px-2 py-2" colSpan="3">Grand Total</td>
+                        <td className="border border-black px-2 py-2" colSpan="4">Grand Total</td>
                         <td className="border border-black px-2 py-2 text-right">{allTotals.totalWeight.toFixed(2)}</td>
                         <td className="border border-black px-2 py-2 text-right">{allTotals.totalItems}</td>
                       </tr>
@@ -494,7 +676,7 @@ const PurchaseRawMaterialReport = () => {
                   variant="outline"
                   disabled={excelloading}
                   className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
-                  onClick={() => downloadCSV(rawMaterialData, toast, setExcelLoading)}
+                  onClick={() => downloadVendorwiseCSV(vendorData, toast, setExcelLoading)}
                 >
                   {excelloading ? (
                     <Loader className="animate-spin h-3 w-3" />
@@ -521,7 +703,7 @@ const PurchaseRawMaterialReport = () => {
                           <thead className="bg-gray-100">
                             <tr>
                               <th className="border border-black px-2 py-2 text-center">Purchase Date</th>
-                              <th className="border border-black px-2 py-2 text-center">Reference No</th>
+                          
                               <th className="border border-black px-2 py-2 text-center">Bill Ref</th>
                               <th className="border border-black px-2 py-2 text-center">Total Weight</th>
                               <th className="border border-black px-2 py-2 text-center">Total Items</th>
@@ -530,8 +712,8 @@ const PurchaseRawMaterialReport = () => {
                           <tbody>
                             {items.map((item, index) => (
                               <tr key={`${vendor}-${index}`} className="hover:bg-gray-50">
-                                <td className="border border-black px-2 py-2">{item.raw_material_date}</td>
-                                <td className="border border-black px-2 py-2">{item.raw_material_ref}</td>
+                                <td className="border border-black px-2 py-2">{moment(item.raw_material_date).format("DD-MM-YYYY")}</td>
+                          
                                 <td className="border border-black px-2 py-2">{item.raw_material_bill_ref}</td>
                                 <td className="border border-black px-2 py-2 text-right">{Number(item.total_weight || 0).toFixed(2)}</td>
                                 <td className="border border-black px-2 py-2 text-right">{item.total_items}</td>
@@ -540,7 +722,7 @@ const PurchaseRawMaterialReport = () => {
                           </tbody>
                           <tfoot>
                             <tr className="bg-gray-100 font-bold">
-                              <td className="border border-black px-2 py-2" colSpan="3">Vendor Total</td>
+                              <td className="border border-black px-2 py-2" colSpan="2">Vendor Total</td>
                               <td className="border border-black px-2 py-2 text-right">{vendorTotals.totalWeight.toFixed(2)}</td>
                               <td className="border border-black px-2 py-2 text-right">{vendorTotals.totalItems}</td>
                             </tr>
@@ -557,7 +739,7 @@ const PurchaseRawMaterialReport = () => {
                   <table className="w-full border-collapse border border-black mt-4">
                     <tfoot>
                       <tr className="bg-gray-200 font-bold">
-                        <td className="border border-black px-2 py-2" colSpan="3">Grand Total</td>
+                        <td className="border border-black px-2 py-2" colSpan="2">Grand Total</td>
                         <td className="border border-black px-2 py-2 text-right">{allTotals.totalWeight.toFixed(2)}</td>
                         <td className="border border-black px-2 py-2 text-right">{allTotals.totalItems}</td>
                       </tr>

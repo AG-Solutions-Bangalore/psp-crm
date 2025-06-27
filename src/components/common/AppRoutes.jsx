@@ -45,6 +45,11 @@ import SalesFabricReport from "@/app/report/sales/SalesFabricReport";
 import SalesYarnReport from "@/app/report/sales/SalesYarnReport";
 import PurchaseRawMaterialReport from "@/app/report/purchase/PurchaseRawMaterialReport";
 import PurchaseGranualsReport from "@/app/report/purchase/PurchaseGranualsReport";
+import ProductionRawMaterialReport from "@/app/report/production/ProductionRawMaterialReport";
+import ProductionGranualsReport from "@/app/report/production/ProductionGranualsReport";
+import ProductionYarnReport from "@/app/report/production/ProductionYarnReport";
+import ProductionFabricReport from "@/app/report/production/ProductionFabricReport";
+import ProductionFabricWorkReport from "@/app/report/production/ProductionFabricWorkReport";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -151,6 +156,12 @@ const AppRoutes = () => {
 
       <Route path="/report/purchase-raw-material" element={<PurchaseRawMaterialReport />} />
       <Route path="/report/purchase-granuals" element={<PurchaseGranualsReport />} />
+
+      <Route path="/report/production-raw-material" element={<ProductionRawMaterialReport />} />
+      <Route path="/report/production-granuals" element={<ProductionGranualsReport />} />
+      <Route path="/report/production-yarn" element={<ProductionYarnReport />} />
+      <Route path="/report/production-fabric" element={<ProductionFabricReport />} />
+      <Route path="/report/production-fabric-work" element={<ProductionFabricWorkReport />} />
       {/* //Website enquiryt */}
       <Route path="/website-enquiry" element={<WebsiteEnquiry />} />
       <Route path="/report-tax-invoice" element={<TaxInvoice />} />
