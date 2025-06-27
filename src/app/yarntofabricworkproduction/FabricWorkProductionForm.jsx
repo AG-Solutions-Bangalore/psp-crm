@@ -240,7 +240,7 @@ const FabricWorkProductionForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/yarn-fabric-work-production");
+        navigate("/yarn-fabric-production");
       } else {
         toast({
           title: "Error",
@@ -486,7 +486,7 @@ const FabricWorkProductionForm = () => {
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/yarn-fabric-work-production");
+                  navigate("/yarn-fabric-production");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >

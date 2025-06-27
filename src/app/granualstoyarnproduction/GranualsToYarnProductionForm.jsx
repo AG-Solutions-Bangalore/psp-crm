@@ -342,7 +342,6 @@ const GranualsToYarnProductionForm = () => {
       const payload = {
         ...formData,
         subs: invoiceData,
-        // subs1: invoiceDataOne,
         ...(isEdit || hasValidGranualsData ? { subs1: invoiceDataOne } : {}),
       };
 
@@ -361,7 +360,7 @@ const GranualsToYarnProductionForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/granual-yarn-production");
+        navigate("/granuals");
       } else {
         toast({
           title: "Error",
@@ -556,7 +555,7 @@ const GranualsToYarnProductionForm = () => {
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/granual-yarn-production");
+                  navigate("/granuals");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >

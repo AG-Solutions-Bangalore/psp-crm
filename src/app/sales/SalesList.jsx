@@ -1,11 +1,10 @@
 import { SALES_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
-  ErrorComponent,
-  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,7 +40,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, Edit, Search, SquarePlus, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  Edit,
+  Search,
+  SquarePlus,
+  Trash2,
+  View,
+} from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -94,7 +100,7 @@ const SalesList = () => {
       id: "Date",
       header: "Date",
       cell: ({ row }) => {
-        const date = row.getValue("sales_date");
+        const date = row.getValue("Date");
         return <div>{moment(date).format("DD-MM-YYYY")}</div>;
       },
     },
@@ -132,6 +138,26 @@ const SalesList = () => {
 
         return (
           <div className="flex flex-row">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      navigate(
+                        `/sales-view/${encodeURIComponent(encryptId(id))}`
+                      );
+                    }}
+                  >
+                    <View />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View Sales</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>{" "}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -242,20 +268,18 @@ const SalesList = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Sales" />;
+    return <WithoutLoaderComponent name="Sales" />;
   }
 
   if (isError) {
-    return <ErrorComponent message="Error Fetching Sales" refetch={refetch} />;
+    return (
+      <WithoutErrorComponent message="Error Fetching Sales" refetch={refetch} />
+    );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Sales List
-        </div>
-
+    <>
+      <div className="w-full">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
@@ -390,7 +414,7 @@ const SalesList = () => {
         description="Sales"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

@@ -1,11 +1,10 @@
 import { YARN_TO_FABRIC_WORK_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
-  ErrorComponent,
-  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -260,30 +259,26 @@ const YarnToFabricWorkProductionList = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Yarn To Fabric Work Production" />;
+    return <WithoutLoaderComponent name="Fabric Work Production" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent
-        message="Error Fetching Yarn To Fabric Work Production"
+      <WithoutErrorComponent
+        message="Error Fetching Fabric Work Production"
         refetch={refetch}
       />
     );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Yarn To Fabric Work Production List
-        </div>
-
+    <>
+      <div className="w-full">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Yarn To Fabric Work..."
+              placeholder="Search Fabric Work Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -323,7 +318,7 @@ const YarnToFabricWorkProductionList = () => {
               navigate("/yarn-fabric-work-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Yarn To Fabric Work Production
+            <SquarePlus className="h-4 w-4 " /> Fabric Work Production
           </Button>
         </div>
         {/* table  */}
@@ -383,7 +378,7 @@ const YarnToFabricWorkProductionList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Yarn To Fabric Work Production : &nbsp;
+            Total Fabric Work Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -413,7 +408,7 @@ const YarnToFabricWorkProductionList = () => {
         description="Yarn To Fabric Work Production"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

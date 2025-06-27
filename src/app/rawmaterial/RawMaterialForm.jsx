@@ -85,7 +85,7 @@ const RawMaterialForm = () => {
       const raw = rawMaterialById.data;
       setFormData({
         raw_material_date: raw.raw_material_date || "",
-        raw_material_bill_ref: raw.raw_material_ref || "",
+        raw_material_bill_ref: raw.raw_material_bill_ref || "",
         raw_material_vendor_id: raw.raw_material_vendor_id || "",
       });
 

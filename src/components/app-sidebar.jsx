@@ -98,30 +98,30 @@ export function AppSidebar({ ...props }) {
         isActive: false,
       },
 
+      // {
+      //   title: "Raw Material Production",
+      //   url: "/raw-material-production",
+      //   icon: NotebookText,
+      //   isActive: false,
+      // },
+      // {
+      //   title: "Granuals To Yarn Production",
+      //   url: "/granual-yarn-production",
+      //   icon: NotebookText,
+      //   isActive: false,
+      // },
       {
-        title: "Raw Materil Production",
-        url: "/raw-material-production",
-        icon: NotebookText,
-        isActive: false,
-      },
-      {
-        title: "Granuals To Yarn Production",
-        url: "/granual-yarn-production",
-        icon: NotebookText,
-        isActive: false,
-      },
-      {
-        title: "Yarn To Fabric Production",
+        title: "Fabric",
         url: "/yarn-fabric-production",
         icon: NotebookText,
         isActive: false,
       },
-      {
-        title: "Yarn To Fabric Work Production",
-        url: "/yarn-fabric-work-production",
-        icon: NotebookText,
-        isActive: false,
-      },
+      // {
+      //   title: "Yarn To Fabric Work Production",
+      //   url: "/yarn-fabric-work-production",
+      //   icon: NotebookText,
+      //   isActive: false,
+      // },
       {
         title: "Report",
         url: "#",

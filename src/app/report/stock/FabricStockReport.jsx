@@ -4,7 +4,12 @@ import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
 import downloadExcel from "@/components/common/downloadExcel";
 import { ReportPageHeader } from "@/components/common/ReportPageHeader";
-import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,9 +32,12 @@ import {
   Printer,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 
 const FabricStockReport = () => {
+  const location = useLocation();
+
   const containerRef = useRef();
   const token = usetoken();
   const formatDate = (date) => {
@@ -290,30 +298,27 @@ const FabricStockReport = () => {
     ) || { aggregatedData: {}, total: {} };
 
   if (isLoading || loadingitem) {
-    return <LoaderComponent name="Fabric" />;
+    return location.pathname === "/report/fabric" ? (
+      <LoaderComponent name="Stock Data" />
+    ) : (
+      <WithoutLoaderComponent name="Stock Data" />
+    );
   }
 
   if (isError) {
-    return (
-      <Page>
-        <Card className="w-full max-w-md mx-auto mt-10">
-          <CardHeader>
-            <CardTitle className="text-destructive">
-              Error Fetching Fabric
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => refetch()} variant="outline">
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
-      </Page>
+    return location.pathname === "/report/fabric" ? (
+      <ErrorComponent message="Error Fetching Stock Data" refetch={refetch} />
+    ) : (
+      <WithoutErrorComponent
+        message="Error Fetching Stock Data"
+        refetch={refetch}
+      />
     );
   }
-  return (
-    <Page>
-      <div className="p-0 md:p-4">
+
+  const content = (
+    <>
+      <div>
         <ReportPageHeader
           title="Fabric Stock"
           subtitle="View Fabric stock"
@@ -539,7 +544,12 @@ const FabricStockReport = () => {
           </table>
         </div>
       </div>
-    </Page>
+    </>
+  );
+  return location.pathname == "/report/fabric" ? (
+    <Page>{content}</Page>
+  ) : (
+    content
   );
 };
 

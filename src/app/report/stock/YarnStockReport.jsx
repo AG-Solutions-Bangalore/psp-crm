@@ -2,10 +2,15 @@ import { YARN_STOCK } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
+import downloadExcel from "@/components/common/downloadExcel";
 import { ReportPageHeader } from "@/components/common/ReportPageHeader";
-import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
+import {
+  ErrorComponent,
+  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -15,22 +20,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ButtonConfig } from "@/config/ButtonConfig";
+import { useToast } from "@/hooks/use-toast";
 import { useFetchColor } from "@/hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
+import html2pdf from "html2pdf.js";
 import {
   ArrowDownToLine,
-  File,
   FileSpreadsheet,
   Loader,
   Printer,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
-import html2pdf from "html2pdf.js";
-import { useToast } from "@/hooks/use-toast";
-import downloadExcel from "@/components/common/downloadExcel";
 
 const YarnStockReport = () => {
+  const location = useLocation();
+
   const containerRef = useRef();
   const token = usetoken();
   const formatDate = (date) => {
@@ -302,30 +308,26 @@ const YarnStockReport = () => {
     ) || { aggregatedData: {}, total: {} };
 
   if (isLoading || loadingitem) {
-    return <LoaderComponent name="Yarn" />;
+    return location.pathname === "/report/yarn" ? (
+      <LoaderComponent name="Stock Data" />
+    ) : (
+      <WithoutLoaderComponent name="Stock Data" />
+    );
   }
 
   if (isError) {
-    return (
-      <Page>
-        <Card className="w-full max-w-md mx-auto mt-10">
-          <CardHeader>
-            <CardTitle className="text-destructive">
-              Error Fetching Yarn
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => refetch()} variant="outline">
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
-      </Page>
+    return location.pathname === "/report/yarn" ? (
+      <ErrorComponent message="Error Fetching Stock Data" refetch={refetch} />
+    ) : (
+      <WithoutErrorComponent
+        message="Error Fetching Stock Data"
+        refetch={refetch}
+      />
     );
   }
-  return (
-    <Page>
-      <div className="p-0 md:p-4">
+  const content = (
+    <>
+      <div>
         <ReportPageHeader
           title="Yarn Stock"
           subtitle="View Yarn stock"
@@ -557,8 +559,9 @@ const YarnStockReport = () => {
           </table>
         </div>
       </div>
-    </Page>
+    </>
   );
+  return location.pathname == "/report/yarn" ? <Page>{content}</Page> : content;
 };
 
 export default YarnStockReport;

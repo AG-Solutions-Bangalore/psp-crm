@@ -1,11 +1,10 @@
 import { RAW_MATERIAL_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
-  ErrorComponent,
-  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -237,27 +236,26 @@ const RawMaterialList = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Raw Material Data" />;
+    return <WithoutLoaderComponent name="Purchase Data" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent message="Error Fetching Raw Material" refetch={refetch} />
+      <WithoutErrorComponent
+        message="Error Fetching Purchase Data"
+        refetch={refetch}
+      />
     );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Raw Material List
-        </div>
-
+    <>
+      <div className="w-full">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Raw Material..."
+              placeholder="Search Purchase..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -297,7 +295,7 @@ const RawMaterialList = () => {
               navigate("/raw-material-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Raw Material
+            <SquarePlus className="h-4 w-4 " /> Purchase
           </Button>
         </div>
         {/* table  */}
@@ -357,7 +355,7 @@ const RawMaterialList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Raw Material : &nbsp;
+            Total Purchase : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -387,7 +385,7 @@ const RawMaterialList = () => {
         description="Raw Material"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

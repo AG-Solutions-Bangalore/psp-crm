@@ -1,11 +1,10 @@
 import { GRANUALS_LIST } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
-  ErrorComponent,
-  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent
 } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -238,27 +237,26 @@ const GranualsList = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Granuals" />;
+    return <WithoutLoaderComponent name="Purchase Data" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent message="Error Fetching Granuals" refetch={refetch} />
+      <WithoutErrorComponent
+        message="Error Fetching Purchase Data"
+        refetch={refetch}
+      />
     );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Granuals List
-        </div>
-
+    <>
+      <div className="w-ful">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Granuals..."
+              placeholder="Search Purchase..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -298,7 +296,7 @@ const GranualsList = () => {
               navigate("/granuals-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Granuals
+            <SquarePlus className="h-4 w-4 " /> Purchase
           </Button>
         </div>
         {/* table  */}
@@ -358,7 +356,7 @@ const GranualsList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Granuals : &nbsp;
+            Total Purchase : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -388,7 +386,7 @@ const GranualsList = () => {
         description="Granuals"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

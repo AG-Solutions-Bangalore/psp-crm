@@ -236,7 +236,7 @@ const GranualProductForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/raw-material-production");
+        navigate("/raw-material");
       } else {
         toast({
           title: "Error",
@@ -453,7 +453,7 @@ const GranualProductForm = () => {
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/raw-material-production");
+                  navigate("/raw-material");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >

@@ -237,7 +237,7 @@ const YarnProductionForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/granual-yarn-production");
+        navigate("/granuals");
       } else {
         toast({
           title: "Error",
@@ -482,7 +482,7 @@ const YarnProductionForm = () => {
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/granual-yarn-production");
+                  navigate("/granuals");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >

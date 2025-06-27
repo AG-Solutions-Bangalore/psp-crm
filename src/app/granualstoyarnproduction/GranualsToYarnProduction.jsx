@@ -1,11 +1,10 @@
 import { GRANUALS_TO_YARN_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
-  ErrorComponent,
-  LoaderComponent,
+  WithoutErrorComponent,
+  WithoutLoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -255,30 +254,23 @@ const GranualsToYarnProduction = () => {
     }
   };
   if (isLoading) {
-    return <LoaderComponent name="Granuals To Yarn  Data" />;
+    return <WithoutLoaderComponent name="Production Data" />;
   }
 
   if (isError) {
     return (
-      <ErrorComponent
-        message="Error Fetching Granuals To Yarn Production"
-        refetch={refetch}
-      />
+      <WithoutErrorComponent message="Production Data" refetch={refetch} />
     );
   }
 
   return (
-    <Page>
-      <div className="w-full p-4">
-        <div className="flex text-left text-2xl text-gray-800 font-[400]">
-          Granuals To Yarn Production List
-        </div>
-
+    <>
+      <div className="w-full">
         <div className="flex items-center py-4">
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Granuals To Yarn..."
+              placeholder="Search Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -318,7 +310,7 @@ const GranualsToYarnProduction = () => {
               navigate("/granual-yarn-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Granuals To Yarn Production
+            <SquarePlus className="h-4 w-4 " /> Production
           </Button>
         </div>
         {/* table  */}
@@ -378,7 +370,7 @@ const GranualsToYarnProduction = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Granual To Yarn Production : &nbsp;
+            Total Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -408,7 +400,7 @@ const GranualsToYarnProduction = () => {
         description="Granuals To Yarn Production"
         handleDelete={confirmDelete}
       />
-    </Page>
+    </>
   );
 };
 

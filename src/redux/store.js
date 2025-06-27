@@ -5,7 +5,10 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "./slices/AuthSlice";
 import sidebarReducer from "./slices/sidebarSlice";
 import versionReducer from "./slices/versionSlice";
-
+import tabReducer from "./slices/rawtabSlice";
+import granualtabReducer from "./slices/granualstabSlice";
+import salestabReducer from "./slices/salestabsSlice";
+import yarntabReducer from "./slices/yarntabSlice";
 const secretKey = import.meta.env.VITE_SECRET_KEY;
 
 let transforms = [];
@@ -34,6 +37,10 @@ const rootReducer = combineReducers({
   auth: authReducer,
   sidebar: sidebarReducer,
   version: versionReducer,
+  tab: tabReducer,
+  granualtab: granualtabReducer,
+  salestab: salestabReducer,
+  yarntab: yarntabReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

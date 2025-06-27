@@ -3,7 +3,7 @@ import Dashboard from "@/app/dashboard/Dashboard";
 import NotFound from "@/app/errors/NotFound";
 import GranualsForm from "@/app/granuals/GranualsForm";
 import GranualsList from "@/app/granuals/GranualsList";
-import GranualProductForm from "@/app/granualsproduction/GranualProductForm";
+import GranualProductForm from "@/app/rawmaterialproduction/GranualProductForm";
 import GranualsToYarnProduction from "@/app/granualstoyarnproduction/GranualsToYarnProduction";
 import GranualsToYarnProductionForm from "@/app/granualstoyarnproduction/GranualsToYarnProductionForm";
 import YarnProductionForm from "@/app/granualstoyarnproduction/YarnProductionForm";
@@ -35,6 +35,10 @@ import { Route, Routes } from "react-router-dom";
 import ForgotPassword from "../ForgotPassword/ForgotPassword";
 import Maintenance from "./Maintenance";
 import SalesList from "@/app/sales/SalesList";
+import { RawMaterialTabs } from "@/app/Tabs/RawMaterialTabs/RawMaterialTabs";
+import { GranualsTabs } from "@/app/Tabs/GranualsTabs/GranualsTabs";
+import { SalesTabs } from "@/app/Tabs/SalesTabs/SalesTabs";
+import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -51,15 +55,18 @@ const AppRoutes = () => {
       <Route path="/master/vendor/create-vendor" element={<CreateVendor />} />
       <Route path="/master/vendor/edit-vendor/:id" element={<VendorEdit />} />
       {/* //RAWMATERIAL */}
-      <Route path="/raw-material" element={<RawMaterialList />} />
+      {/* <Route path="/raw-material" element={<RawMaterialList />} /> */}
+      <Route path="/raw-material" element={<RawMaterialTabs />} />
       <Route path="/raw-material-create" element={<RawMaterialForm />} />
       <Route path="/raw-material-update/:id" element={<RawMaterialForm />} />
       {/* //GRANUALS */}
-      <Route path="/granuals" element={<GranualsList />} />
+      {/* <Route path="/granuals" element={<GranualsList />} /> */}
+      <Route path="/granuals" element={<GranualsTabs />} />
       <Route path="/granuals-create" element={<GranualsForm />} />
       <Route path="/granuals-update/:id" element={<GranualsForm />} />
       {/* //Yarn */}
-      <Route path="/sales" element={<SalesList />} />
+      {/* <Route path="/sales" element={<SalesList />} /> */}
+      <Route path="/sales" element={<SalesTabs />} />
       <Route path="/sales-create" element={<SalesForm />} />
       <Route path="/sales-update/:id" element={<SalesForm />} />
       <Route path="/sales-view/:id" element={<SalesView />} />
@@ -94,10 +101,7 @@ const AppRoutes = () => {
       <Route path="/yarn-production/:id" element={<YarnProductionForm />} />
       {/* //YARN_TO_FABRIC PRODUCTION_LIST */}
 
-      <Route
-        path="/yarn-fabric-production"
-        element={<YarnToFabricProductionList />}
-      />
+      <Route path="/yarn-fabric-production" element={<YarnTabs />} />
 
       <Route
         path="/yarn-fabric-production-create"
