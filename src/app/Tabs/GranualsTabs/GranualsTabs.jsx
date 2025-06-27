@@ -8,7 +8,9 @@ import GranualsStockReport from "../../report/stock/GranualsStockReport";
 
 export function GranualsTabs() {
   const dispatch = useDispatch();
-  const activeTab = useSelector((state) => state.granualtab.granualsTab); // Correct reducer path
+  const activeTab = useSelector(
+    (state) => state.granualtab?.granualsTab || "stock"
+  );
 
   const handleTabChange = (value) => {
     dispatch(setGranualsTab(value));

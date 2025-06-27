@@ -38,11 +38,13 @@ const TabbedTableGranualToYarn = ({
     0
   );
 
-  const estimatedPercentage =
+  const estimatedWaste =
     totalInputWeight > 0
-      ? ((totalOutputWeight / totalInputWeight) * 100).toFixed(2)
+      ? (
+          ((totalInputWeight - totalOutputWeight) / totalInputWeight) *
+          100
+        ).toFixed(2)
       : "0.00";
-
   return (
     <>
       <Tabs defaultValue="first" onValueChange={setActiveTab}>
@@ -110,8 +112,16 @@ const TabbedTableGranualToYarn = ({
           Total {isInput ? "Input" : "Output"} Weight:{" "}
           {(isInput ? totalInputWeight : totalOutputWeight).toFixed(2)} kg
         </div>
-        <div className="text-green-700">
-          Estimated Yield: {isInput ? "-" : `${estimatedPercentage}%`}
+        <div
+          className={`${
+            parseFloat(estimatedWaste) < 0 || parseFloat(estimatedWaste) >= 40
+              ? "text-red-800"
+              : parseFloat(estimatedWaste) < 20
+              ? "text-green-800"
+              : "text-orange-800"
+          }`}
+        >
+          Estimated Waste: {`${estimatedWaste}%`}
         </div>
       </div>
     </>

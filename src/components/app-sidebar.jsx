@@ -24,6 +24,7 @@ export function AppSidebar({ ...props }) {
   const nameL = useSelector((state) => state.auth.name);
   const emailL = useSelector((state) => state.auth.email);
   const companyName = useSelector((state) => state.auth.companyname);
+  const userType = useSelector((state) => state.auth.user_type);
 
   const initialData = {
     user: {
@@ -55,30 +56,37 @@ export function AppSidebar({ ...props }) {
         icon: Frame,
         isActive: false,
       },
+
       {
         title: "Master",
         url: "#",
         isActive: false,
         icon: Settings2,
         items: [
+          ...(userType === 3
+            ? [
+                {
+                  title: "Team",
+                  url: "/master/team",
+                },
+              ]
+            : []),
           {
-            title: "Team",
-            url: "/master/team",
+            title: "Item",
+            url: "/master/item",
           },
           {
             title: "Color",
             url: "/master/color",
           },
-          {
-            title: "Item",
-            url: "/master/item",
-          },
+
           {
             title: "Vendor",
             url: "/master/vendor",
           },
         ],
       },
+
       {
         title: "Raw Material",
         url: "/raw-material",
@@ -188,12 +196,12 @@ export function AppSidebar({ ...props }) {
             ],
           },
 
-          {
-            title: "Tax Invoice",
-            url: "/report-tax-invoice",
-            icon: NotebookText,
-            isActive: false,
-          },
+          // {
+          //   title: "Tax Invoice",
+          //   url: "/report-tax-invoice",
+          //   icon: NotebookText,
+          //   isActive: false,
+          // },
         ],
       },
       {

@@ -1,10 +1,8 @@
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import { useQuery } from "@tanstack/react-query";
-
 const STALE_TIME = 5 * 60 * 1000;
 const CACHE_TIME = 30 * 60 * 1000;
-
 const fetchData = async (endpoint, token) => {
   if (!token) throw new Error("No authentication token found");
 
@@ -17,7 +15,6 @@ const fetchData = async (endpoint, token) => {
 
   return response.data;
 };
-
 const createQueryConfig = (queryKey, endpoint, options = {}) => {
   const token = usetoken();
 

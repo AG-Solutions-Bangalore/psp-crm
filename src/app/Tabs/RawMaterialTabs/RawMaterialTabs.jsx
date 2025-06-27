@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 export function RawMaterialTabs() {
   const dispatch = useDispatch();
 
-  const activeTab = useSelector((state) => state.tab.rawMaterialTab);
+  const activeTab = useSelector((state) => state.tab.rawMaterialTab || "stock");
 
   const handleTabChange = (value) => {
     dispatch(setRawMaterialTab(value));
