@@ -386,7 +386,7 @@ const RawMaterialForm = () => {
                   <Table className="border border-gray-300 rounded-lg shadow-sm">
                     <TableHeader>
                       <TableRow className="bg-gray-100">
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[40%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Item
@@ -396,7 +396,7 @@ const RawMaterialForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[40%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Weight
@@ -406,7 +406,7 @@ const RawMaterialForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[10%]">
                           <div className="flex justify-center items-center gap-2">
                             Action
                             <PlusCircle

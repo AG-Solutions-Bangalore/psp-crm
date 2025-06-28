@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -26,60 +26,99 @@ const TabbedTable = ({
   deleteRow1,
   colorData,
 }) => {
+  const [activeTab, setActiveTab] = useState("first");
+  const isInput = activeTab === "first";
+
+  const totalInputWeight = rawMaterialRows.reduce(
+    (acc, row) => acc + (parseFloat(row.raw_material_sub_to_p_weight) || 0),
+    0
+  );
+
+  const totalOutputWeight = granualsRows.reduce(
+    (acc, row) => acc + (parseFloat(row.granuals_from_p_weight) || 0),
+    0
+  );
+
+  const estimatedWaste =
+    totalInputWeight > 0
+      ? (
+          ((totalInputWeight - totalOutputWeight) / totalInputWeight) *
+          100
+        ).toFixed(2)
+      : "0.00";
   return (
-    <Tabs defaultValue="first">
-      <div className="flex justify-center w-full my-4">
-        <TabsList className="w-full flex justify-center bg-gray-100 p-1 rounded-md">
-          <TabsTrigger
-            value="first"
-            className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
-          >
-            Raw Material
-          </TabsTrigger>
-          <TabsTrigger
-            value="second"
-            className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
-          >
-            Granuals
-          </TabsTrigger>
-        </TabsList>
+    <>
+      <Tabs defaultValue="first" onValueChange={setActiveTab}>
+        <div className="flex justify-center w-full my-4">
+          <TabsList className="w-full flex justify-center bg-gray-100 p-1 rounded-md">
+            <TabsTrigger
+              value="first"
+              className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
+            >
+              Raw Material
+            </TabsTrigger>
+            <TabsTrigger
+              value="second"
+              className="w-full data-[state=active]:bg-[#1f7a57] data-[state=active]:text-white rounded-md transition-colors"
+            >
+              Granuals
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="first">
+          <TableSection
+            rows={rawMaterialRows}
+            itemData={itemData}
+            addRow={addRawRow}
+            removeRow={removeRawRow}
+            deleteRow={deleteRow}
+            handleChange={handleChange}
+            fields={[
+              "raw_material_sub_to_p_item_id",
+              "raw_material_sub_to_p_weight",
+            ]}
+            labels={["Item", "Weight"]}
+            placeholders={["Select Item", "Enter Weight"]}
+          />
+        </TabsContent>
+
+        <TabsContent value="second">
+          <TableSection
+            rows={granualsRows}
+            itemData={colorData}
+            addRow={addGranualsRow}
+            removeRow={removeGranualsRow}
+            deleteRow={deleteRow1}
+            handleChange={handleChange}
+            fields={[
+              "granuals_from_p_color_id",
+              "granuals_from_p_bags",
+              "granuals_from_p_weight",
+            ]}
+            labels={["Color", "Bags", "Weight"]}
+            placeholders={["Select Color", "Enter Bags", "Enter Weight"]}
+          />
+        </TabsContent>
+      </Tabs>
+      <div className="text-right mt-6 pr-4 text-sm font-medium">
+        <div>
+          Total {isInput ? "Input" : "Output"} Weight:{" "}
+          {(isInput ? totalInputWeight : totalOutputWeight).toFixed(2)} kg
+        </div>
+        <div
+          className={`${
+            parseFloat(estimatedWaste) < 0 || parseFloat(estimatedWaste) >= 40
+              ? "text-red-800"
+              : parseFloat(estimatedWaste) < 20
+              ? "text-green-800"
+              : "text-orange-500"
+          }`}
+        >
+          Estimated Waste: {`${estimatedWaste}%`}
+        </div>
       </div>
-
-      <TabsContent value="first">
-        <TableSection
-          rows={rawMaterialRows}
-          itemData={itemData}
-          addRow={addRawRow}
-          removeRow={removeRawRow}
-          deleteRow={deleteRow}
-          handleChange={handleChange}
-          fields={[
-            "raw_material_sub_to_p_item_id",
-            "raw_material_sub_to_p_weight",
-          ]}
-          labels={["Item", "Weight"]}
-          placeholders={["Select Item", "Enter Weight"]}
-        />
-      </TabsContent>
-
-      <TabsContent value="second">
-        <TableSection
-          rows={granualsRows}
-          itemData={colorData}
-          addRow={addGranualsRow}
-          removeRow={removeGranualsRow}
-          deleteRow={deleteRow1}
-          handleChange={handleChange}
-          fields={[
-            "granuals_from_p_color_id",
-            "granuals_from_p_bags",
-            "granuals_from_p_weight",
-          ]}
-          labels={["Color", "Bags", "Weight"]}
-          placeholders={["Select Color", "Enter Bags", "Enter Weight"]}
-        />
-      </TabsContent>
-    </Tabs>
+    </>
   );
 };
 
@@ -107,12 +146,12 @@ const TableSection = ({
                 {label}
               </TableHead>
             ))}
-            <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+            <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[10%]">
               <div className="flex justify-center items-center gap-2">
                 Action
                 <PlusCircle
                   onClick={addRow}
-                  className="cursor-pointer text-blue-500 hover:text-gray-800 h-4 w-4"
+                  className="cursor-pointer text-blue-500 hover:text-gray-800 h-4 w-4 "
                 />
               </div>
             </TableHead>
@@ -126,7 +165,10 @@ const TableSection = ({
               className="border-t border-gray-200 hover:bg-gray-50"
             >
               {fields.map((field, fieldIndex) => (
-                <TableCell key={fieldIndex} className="px-4 py-3 align-top">
+                <TableCell
+                  key={fieldIndex}
+                  className="px-4 py-3 align-top w-[30%]"
+                >
                   {field.includes("id") ? (
                     <MemoizedProductSelect
                       value={row[field]}
@@ -141,7 +183,7 @@ const TableSection = ({
                     />
                   ) : (
                     <Input
-                      className="bg-white border border-gray-300 rounded-lg"
+                      className="bg-white border border-gray-300 rounded-lg "
                       value={row[field] || ""}
                       placeholder={placeholders[fieldIndex]}
                       onChange={(e) => handleChange(e, rowIndex, field)}
