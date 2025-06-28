@@ -308,7 +308,7 @@ const GranualProductForm = () => {
                   <Table className="border border-gray-300 rounded-lg shadow-sm">
                     <TableHeader>
                       <TableRow className="bg-gray-100">
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[30%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Color
@@ -318,7 +318,7 @@ const GranualProductForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[30%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Bags
@@ -328,7 +328,7 @@ const GranualProductForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[30%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Weight
@@ -338,7 +338,7 @@ const GranualProductForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[10%]">
                           <div className="flex justify-center items-center gap-2">
                             Action
                             <PlusCircle

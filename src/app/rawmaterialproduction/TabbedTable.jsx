@@ -146,12 +146,12 @@ const TableSection = ({
                 {label}
               </TableHead>
             ))}
-            <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+            <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[10%]">
               <div className="flex justify-center items-center gap-2">
                 Action
                 <PlusCircle
                   onClick={addRow}
-                  className="cursor-pointer text-blue-500 hover:text-gray-800 h-4 w-4"
+                  className="cursor-pointer text-blue-500 hover:text-gray-800 h-4 w-4 "
                 />
               </div>
             </TableHead>
@@ -165,7 +165,10 @@ const TableSection = ({
               className="border-t border-gray-200 hover:bg-gray-50"
             >
               {fields.map((field, fieldIndex) => (
-                <TableCell key={fieldIndex} className="px-4 py-3 align-top">
+                <TableCell
+                  key={fieldIndex}
+                  className="px-4 py-3 align-top w-[30%]"
+                >
                   {field.includes("id") ? (
                     <MemoizedProductSelect
                       value={row[field]}
@@ -180,7 +183,7 @@ const TableSection = ({
                     />
                   ) : (
                     <Input
-                      className="bg-white border border-gray-300 rounded-lg"
+                      className="bg-white border border-gray-300 rounded-lg "
                       value={row[field] || ""}
                       placeholder={placeholders[fieldIndex]}
                       onChange={(e) => handleChange(e, rowIndex, field)}

@@ -158,7 +158,7 @@ const GranualsToYarnProductionForm = () => {
   );
   const removeRowOne = useCallback(
     (index) => {
-      if (invoiceData.length > 1) {
+      if (invoiceDataOne.length > 1) {
         setInvoiceDataOne((prev) => prev.filter((_, i) => i !== index));
       }
     },
