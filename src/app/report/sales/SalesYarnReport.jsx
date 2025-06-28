@@ -190,36 +190,43 @@ const SalesYarnReport = () => {
   });
 
 
+const downloadAllCSV = async (data, toast, setExcelLoading, companyStateName) => {
+  if (!data || data.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
 
-  const downloadAllCSV = async (data, toast, setExcelLoading, companyStateName) => {
-    if (!data || data.length === 0) {
-      toast?.({
-        title: "No Data",
-        description: "No data available to export",
-        variant: "destructive",
-      });
-      return;
-    }
-  
-    setExcelLoading(true);
-  
-    try {
-      const headers = [
-        "Sales Date",
-        "Sales No",
-        "Vendor Name",
-        "Vendor GST",
-        "Quantity",
-        "Amount",
-        "CGST",
-        "SGST",
-        "IGST",
-        "Total Amount"
-      ];
-  
-      const getRowData = (item) => {
-        const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
-        return [
+  setExcelLoading(true);
+
+  try {
+    const headers = [
+      "Sales Date",
+      "Sales No",
+      "Vendor Name",
+      "Vendor GST",
+      "Quantity",
+      "Amount",
+      "CGST",
+      "SGST",
+      "IGST",
+      "Total Amount"
+    ];
+
+    const allData = [];
+    const totals = calculateTotals(data);
+    
+   
+    allData.push({ values: headers });
+    
+ 
+    data.forEach(item => {
+      const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
+      allData.push({
+        values: [
           moment(item.sales_date).format("DD-MM-YYYY"),
           item.sales_no || "",
           item.vendor_name || "",
@@ -230,36 +237,52 @@ const SalesYarnReport = () => {
           sgst,
           igst,
           Number(item.sales_total_amount || 0).toFixed(2)
-        ];
-      };
-  
-      await downloadExcelMultiRow({
-        data: data,
-        sheetName: "Yarn Sales Report",
-        headers,
-        getRowData,
-        fileNamePrefix: "yarn_sales_report",
-        toast,
-        emptyDataCallback: () => ({
-          title: "No Data",
-          description: "No data available to export",
-          variant: "destructive",
-        }),
+        ]
       });
-    } catch (error) {
-      toast?.({
-        title: "Error",
-        description: "Failed to export Excel file",
+    });
+    
+   
+    allData.push({
+      isFooter: true,
+      values: [
+        "Grand Total",
+        "",
+        "",
+        "",
+        totals.quantity,
+        totals.amount.toFixed(2),
+        totals.cgst.toFixed(2),
+        totals.sgst.toFixed(2),
+        totals.igst.toFixed(2),
+        totals.total.toFixed(2)
+      ]
+    });
+
+    await downloadExcelMultiRow({
+      data: allData,
+      sheetName: "Yarn Sales Report",
+      fileNamePrefix: "yarn_sales_report",
+      toast,
+      customFormat: true,
+      emptyDataCallback: () => ({
+        title: "No Data",
+        description: "No data available to export",
         variant: "destructive",
-      });
-      console.error("Excel export error:", error);
-    } finally {
-      setTimeout(() => {
-        setExcelLoading(false);
-      }, 300);
-    }
-  };
-  
+      }),
+    });
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
   const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading, companyStateName, allTotals) => {
     const allData = [];
     Object.entries(monthlyData).forEach(([month, items]) => {

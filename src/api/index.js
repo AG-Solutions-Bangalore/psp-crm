@@ -63,9 +63,24 @@ export const YARN_STOCK = `/api/yarnstock`;
 export const FABRIC_STOCK = `/api/fabricstock`;
 //WEBSITE_ENQUIRY
 export const WEBSITE_ENQUIRY = `/api/panel-fetch-website-contact`;
+
 //SALES_FABRIC_REPORT
 export const SALES_FABRIC_REPORT = `/api/salesreport`;
+
+
 //RAW_MATERIAL_PURCHASE_REPORT
 export const RAW_MATERIAL_PURCHASE_REPORT = `/api/rawmaterialpurchasereport`;
 //GRANULS_PURCHASE_REPORT
 export const GRANULS_PURCHASE_REPORT = `/api/granualspurchasereport`;
+
+
+//RAW_MATERIAL_PRODUCTION_REPORT
+export const RAW_MATERIAL_PRODUCTION_REPORT = `/api/rawmaterialproductionreport`;
+//GRANULS_PRODUCTION_REPORT
+export const GRANULS_PRODUCTION_REPORT = `/api/granualsproductionreport`;
+//YARN_PRODUCTION_REPORT
+export const YARN_PRODUCTION_REPORT = `/api/yarnsproductionreport`;
+//FABRIC_PRODUCTION_REPORT
+export const FABRIC_PRODUCTION_REPORT = `/api/fabricproductionreport`;
+//FABRIC_WORK_PRODUCTION_REPORT
+export const FABRIC_WORK_PRODUCTION_REPORT = `/api/fabricworkproductionreport`;
