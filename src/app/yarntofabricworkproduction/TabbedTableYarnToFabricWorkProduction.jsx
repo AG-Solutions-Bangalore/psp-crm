@@ -147,12 +147,12 @@ const TableSection = ({
             {labels.map((label, index) => (
               <TableHead
                 key={index}
-                className="text-sm font-semibold text-gray-600 px-4 py-3"
+                className="text-sm font-semibold text-gray-600 px-4 py-3 w-[25%]"
               >
                 {label}
               </TableHead>
             ))}
-            <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+            <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[10%]">
               <div className="flex justify-center items-center gap-2">
                 Action
                 <PlusCircle

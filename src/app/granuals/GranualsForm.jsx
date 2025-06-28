@@ -326,15 +326,6 @@ const GranualsForm = () => {
       <div className="p-0">
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
-            {/* <div
-              className={`flex sticky top-0 z-10 border border-gray-200 rounded-lg justify-between items-start gap-8 mb-2 ${ButtonConfig.cardheaderColor} p-4 shadow-sm`}
-            >
-              <div className="flex-1">
-                <h1 className="text-lg font-bold text-gray-800">
-                  {editId ? "Update Granuals" : "Create Granuals"}
-                </h1>
-              </div>
-            </div>{" "} */}
             <PageHeaders
               title={
                 editId ? "Update Granual Purchase" : "Create Granual Purchase"
@@ -404,7 +395,7 @@ const GranualsForm = () => {
                   <Table className="border border-gray-300 rounded-lg shadow-sm">
                     <TableHeader>
                       <TableRow className="bg-gray-100">
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[30%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Color
@@ -414,7 +405,7 @@ const GranualsForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[30%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Bags
@@ -424,7 +415,7 @@ const GranualsForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 w-[30%]">
                           <div className="flex items-center justify-between">
                             <span>
                               Weight
@@ -434,7 +425,7 @@ const GranualsForm = () => {
                             </span>
                           </div>
                         </TableHead>
-                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-1/6">
+                        <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3 text-center w-[10%]">
                           <div className="flex justify-center items-center gap-2">
                             Action
                             <PlusCircle

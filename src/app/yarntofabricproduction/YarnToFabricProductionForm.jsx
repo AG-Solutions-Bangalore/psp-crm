@@ -159,7 +159,7 @@ const YarnToFabricProductionForm = () => {
   );
   const removeRowOne = useCallback(
     (index) => {
-      if (invoiceData.length > 1) {
+      if (invoiceDataOne.length > 1) {
         setInvoiceDataOne((prev) => prev.filter((_, i) => i !== index));
       }
     },
@@ -486,9 +486,7 @@ const YarnToFabricProductionForm = () => {
           <form onSubmit={handleSubmit} className="w-full ">
             <PageHeaders
               title={
-                editId
-                  ? "Update Fabric Production"
-                  : "Create Fabric Production"
+                editId ? "Update Fabric Production" : "Create Fabric Production"
               }
               subtitle="fabric  production"
               progress={progress}
