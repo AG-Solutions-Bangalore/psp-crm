@@ -12,7 +12,6 @@ import moment from "moment";
 
 const Dashboard = () => {
     const token = usetoken();
-    console.log("ghh",token)
     const {
         data: dashboard,
         isLoading,

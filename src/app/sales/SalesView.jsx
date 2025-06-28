@@ -6,7 +6,8 @@ import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { decryptId } from "@/utils/encyrption/Encyrption";
-import { Loader, Printer } from "lucide-react";
+import html2pdf from "html2pdf.js";
+import { ArrowDownToLine, Loader, Printer } from "lucide-react";
 import { toWords } from "number-to-words";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -28,6 +29,7 @@ const SalesView = () => {
   }
   const containerRef = useRef();
   const [printloading, setPrintLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
   const token = usetoken();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,7 +73,7 @@ const SalesView = () => {
     }
     @media print {
       body {
-        font-size: 10px;
+        font-size: 13px;
         margin: 0mm;
         padding: 0mm;
       }
@@ -94,6 +96,32 @@ const SalesView = () => {
     },
   });
 
+  const handleSaveAsPdf = () => {
+    if (!containerRef.current) {
+      console.error("Element not found");
+      return;
+    }
+
+    setLoading(true);
+
+    html2pdf()
+      .from(containerRef.current)
+      .set({
+        margin: 10,
+        filename: "Invoice.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      })
+      .save()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("PDF generation error:", err);
+        setLoading(false);
+      });
+  };
 
   let quantityInWords = "";
   const totalAmount = Number(formData?.sales_total_amount);
@@ -111,9 +139,7 @@ const SalesView = () => {
   }
   return (
     <Page>
-      <div className="flex justify-end">
-  
-
+      <div className="flex justify-end space-x-2">
         <Button
           className={`mt-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
           onClick={handlePrintPdf}
@@ -125,12 +151,23 @@ const SalesView = () => {
           )}{" "}
           Print
         </Button>
+        <Button
+          className={`mt-2 ${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} `}
+          onClick={handleSaveAsPdf}
+        >
+          {loading ? (
+            <Loader className="animate-spin h-3 w-3" />
+          ) : (
+            <ArrowDownToLine className="h-3 w-3" />
+          )}{" "}
+          PDF
+        </Button>
       </div>
       <div ref={containerRef} className="font-normal text-[13px]">
         <>
-          <div className="p-8 font-normal text-[13px]  mr-[5mm] ml-[5mm]">
+          <div className="font-normal text-[13px] print:p-8">
             <div className="max-w-3xl mx-auto ">
-              <h3 className="text-xl font-bold flex justify-center p-1">
+              <h3 className="text-xl font-bold flex justify-center px-1 mb-2">
                 INVOICE
               </h3>
               <div className="mx-auto border border-black">
@@ -138,14 +175,9 @@ const SalesView = () => {
                   <p className="ml-1">GSTIN: {gst || ""}</p>
                   <div className="flex flex-col items-center text-center gap-1">
                     <strong className="text-xl  uppercase tracking-widest font-black">
-                      {/* PAVANSHREE PLASTIC INDUSTRIES */}
                       {companyname || ""}
                     </strong>
-                    <p className="text-sm">
-                      {/* No. 52A, Therashanagar, Thanthonimalai, Karur - 639005,
-                      Tamilnadu */}
-                      {address || ""}
-                    </p>
+                    <p className="text-sm mb-2">{address || ""}</p>
                   </div>
                 </div>
 
@@ -235,7 +267,7 @@ const SalesView = () => {
                         >
                           Particulars
                         </th>
-                        <th className="border-r border-b border-black px-2  py-1 text-center w-[16%]">
+                        <th className="border-r border-b border-black p-2 text-center w-[16%] ">
                           Quantity
                         </th>
                         <th
@@ -245,24 +277,24 @@ const SalesView = () => {
                           Rate Kgs/Mt
                         </th>
                         <th
-                          className="px-2 py-0.5 border-b border-black text-center w-[17%]"
+                          className="p-2 p border-b border-black text-center w-[17%]"
                           colSpan="2"
                         >
                           Amount
                         </th>
                       </tr>
                       <tr className="border-b border-black">
-                        <th className="border-r border-black px-2 py-1 text-center">
+                        <th className="border-r border-black p-2  text-center">
                           Kgs/Mts
                         </th>
                         <th
-                          className="border-r border-black px-2 py-1 text-center"
+                          className="border-r border-black p-2  text-center"
                           colSpan="2"
                         >
                           Rs.
                         </th>
 
-                        <th className=" px-2 py-1 text-center" colSpan="2">
+                        <th className=" p-2  text-center" colSpan="2">
                           Rs.
                         </th>
                       </tr>
@@ -398,7 +430,7 @@ const SalesView = () => {
 
                   <div className="min-h-6"> </div>
 
-                  <div className="grid grid-cols-3">
+                  <div className="grid grid-cols-3 mb-2">
                     <p className="px-1">Party Signature</p>
                     <p></p>
                     <p className="text-center">Manager</p>
