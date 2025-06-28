@@ -9,14 +9,14 @@ import VersionCheck from "./utils/VersionCheck";
 function App() {
   const time = useSelector((state) => state.auth.token_expire_time);
   const handleLogout = useLogout();
-
+  console.log(time, "tis");
   return (
     <>
       <ValidationWrapper>
         <VersionCheck />
         <Toaster />
         {/* <DisableRightClick /> */}
-        <SessionTimeoutTracker expiryTime={time} onLogout={handleLogout} />
+        <SessionTimeoutTracker expiryTime="2025-06-28 11:51:25" onLogout={handleLogout} />
         <AppRoutes />
       </ValidationWrapper>
     </>
