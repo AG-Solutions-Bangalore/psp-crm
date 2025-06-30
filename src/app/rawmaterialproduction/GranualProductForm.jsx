@@ -393,6 +393,7 @@ const GranualProductForm = () => {
                                     "granuals_from_p_bags"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -412,6 +413,7 @@ const GranualProductForm = () => {
                                     "granuals_from_p_weight"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>

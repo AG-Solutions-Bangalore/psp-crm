@@ -105,6 +105,7 @@ const CreateItem = () => {
                   item_name: e.target.value,
                 }))
               }
+              maxLength={50}
             />
 
             <Button

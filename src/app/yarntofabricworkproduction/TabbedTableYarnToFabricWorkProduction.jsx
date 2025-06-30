@@ -190,6 +190,7 @@ const TableSection = ({
                       value={row[field] || ""}
                       placeholder={placeholders[fieldIndex]}
                       onChange={(e) => handleChange(e, rowIndex, field)}
+                      maxLength={10}
                     />
                   )}
                 </TableCell>

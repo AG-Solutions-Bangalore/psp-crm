@@ -403,6 +403,7 @@ const FabricProductionForm = () => {
                                     "fabric_from_p_mtr"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -422,6 +423,7 @@ const FabricProductionForm = () => {
                                     "fabric_from_p_weight"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -441,6 +443,7 @@ const FabricProductionForm = () => {
                                     "fabric_from_p_thickness"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>

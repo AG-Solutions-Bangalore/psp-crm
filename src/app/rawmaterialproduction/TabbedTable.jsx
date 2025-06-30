@@ -186,6 +186,7 @@ const TableSection = ({
                       className="bg-white border border-gray-300 rounded-lg "
                       value={row[field] || ""}
                       placeholder={placeholders[fieldIndex]}
+                      maxLength={10}
                       onChange={(e) => handleChange(e, rowIndex, field)}
                     />
                   )}

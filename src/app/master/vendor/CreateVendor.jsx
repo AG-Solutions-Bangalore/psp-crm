@@ -114,26 +114,31 @@ const CreateVendor = () => {
     },
   });
 
-  const handleInputChange = (e, field) => {
-    const value = e.target.value;
+const handleInputChange = (e, field) => {
+  let value = e.target.value;
 
-    if (field === "vendor_state_name") {
-      const matchedState = stateData.data.find(
-        (state) => state.state_name === value
-      );
+  if (field === "vendor_contact_mobile") {
+    value = value.replace(/\D/g, "");
+  }
 
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-        vendor_state_code: matchedState ? matchedState.state_code : "",
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
-  };
+  if (field === "vendor_state_name") {
+    const matchedState = stateData.data.find(
+      (state) => state.state_name === value
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+      vendor_state_code: matchedState ? matchedState.state_code : "",
+    }));
+  } else {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+};
+
 
   useEffect(() => {
     const calculateProgress = () => {
@@ -200,14 +205,15 @@ const CreateVendor = () => {
                 <label
                   className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
                 >
-                  Vendor Address <span className="text-red-500">*</span>
+                  Address <span className="text-red-500">*</span>
                 </label>
                 <Textarea
                   className="bg-white"
                   value={formData.vendor_address}
                   onChange={(e) => handleInputChange(e, "vendor_address")}
-                  placeholder="Enter vendor address"
+                  placeholder="Enter address"
                   rows={5}
+                  maxLength={500}
                 />
               </div>
 
@@ -215,13 +221,14 @@ const CreateVendor = () => {
                 <label
                   className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
                 >
-                  Vendor Name <span className="text-red-500">*</span>
+                  Full Name <span className="text-red-500">*</span>
                 </label>
                 <Input
                   className="bg-white"
                   value={formData.vendor_name}
                   onChange={(e) => handleInputChange(e, "vendor_name")}
-                  placeholder="Enter vendor name"
+                  placeholder="Enter full name"
+                  maxLength={50}
                 />
               </div>
 
@@ -237,6 +244,7 @@ const CreateVendor = () => {
                   value={formData.vendor_email}
                   onChange={(e) => handleInputChange(e, "vendor_email")}
                   placeholder="Enter email"
+                  maxLength={50}
                 />
               </div>
 
@@ -251,6 +259,7 @@ const CreateVendor = () => {
                   value={formData.vendor_gst}
                   onChange={(e) => handleInputChange(e, "vendor_gst")}
                   placeholder="Enter GST number"
+                  maxLength={15}
                 />
               </div>
 
@@ -265,6 +274,7 @@ const CreateVendor = () => {
                   value={formData.vendor_contact_name}
                   onChange={(e) => handleInputChange(e, "vendor_contact_name")}
                   placeholder="Enter contact name"
+                  maxLength={50}
                 />
               </div>
 
@@ -281,6 +291,7 @@ const CreateVendor = () => {
                     handleInputChange(e, "vendor_contact_mobile")
                   }
                   placeholder="Enter mobile number"
+                  maxLength={10}
                 />
               </div>
 

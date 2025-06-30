@@ -103,15 +103,15 @@ const RawMaterialProduction = () => {
     },
     {
       accessorKey: "totalCount",
-      id: "Count",
-      header: "Count",
-      cell: ({ row }) => <div>{row.getValue("Count")}</div>,
+      id: "Material Total",
+      header: "Material Total",
+      cell: ({ row }) => <div>{row.getValue("Material Total")}</div>,
     },
     {
       accessorKey: "productionCount",
-      id: "Production Count",
-      header: "Production Count",
-      cell: ({ row }) => <div>{row.getValue("Production Count")}</div>,
+      id: "Production Total",
+      header: "Production Total",
+      cell: ({ row }) => <div>{row.getValue("Production Total")}</div>,
     },
 
     {

@@ -407,6 +407,7 @@ const FabricWorkProductionForm = () => {
                                     "fabric_from_wp_mtr"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -426,6 +427,7 @@ const FabricWorkProductionForm = () => {
                                     "fabric_from_wp_weight"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -445,6 +447,7 @@ const FabricWorkProductionForm = () => {
                                     "fabric_from_wp_thickness"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>

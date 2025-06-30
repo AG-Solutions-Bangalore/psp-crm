@@ -24,6 +24,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import ReactSelect, { components } from "react-select";
 import { ChevronsUpDown } from "lucide-react";
+import {
+  ErrorComponent,
+  LoaderComponent,
+} from "@/components/LoaderComponent/LoaderComponent";
 const DropdownIndicator = () => (
   <div className="p-2 flex items-center ">
     <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400" />
@@ -158,8 +162,8 @@ const VendorEdit = () => {
         vendor_contact_mobile: vendorDetails.data.vendor_contact_mobile || "",
         vendor_state_name: vendorDetails.data.vendor_state_name,
         vendor_state_code: vendorDetails.data.vendor_state_code,
-        vendor_type: vendorDetails.data.vendor_type || "1",
-        status: vendorDetails.data.status || "active",
+        vendor_type: vendorDetails.data.vendor_type || "",
+        status: vendorDetails.data.status || "",
       });
     }
   }, [vendorDetails]);
@@ -192,19 +196,25 @@ const VendorEdit = () => {
     },
   });
 
-  const handleInputChange = (e, field) => {
-    const value = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+const handleInputChange = (e, field) => {
+  let value = e.target.value;
+
+  if (field === "vendor_contact_mobile") {
+    value = value.replace(/\D/g, ""); 
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    [field]: value,
+  }));
+};
+
 
   const handleStateChange = (value) => {
     setFormData((prev) => ({
       ...prev,
       vendor_state_name: value,
-      // You might want to set state code here based on selected state
+     
     }));
   };
 
@@ -245,39 +255,14 @@ const VendorEdit = () => {
   };
 
   if (isLoading) {
-    return (
-      <Page>
-        <div className="flex justify-center items-center h-full">
-          <Button disabled>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Loading Vendor Data
-          </Button>
-        </div>
-      </Page>
-    );
+    return <LoaderComponent name="Purchase Data" />;
   }
 
   if (isError) {
     return (
-      <Page>
-        <Card className="w-full max-w-md mx-auto mt-10">
-          <CardContent>
-            <div className="text-destructive text-center">
-              Error Fetching Vendor Data
-            </div>
-            <Button
-              onClick={() => refetch()}
-              variant="outline"
-              className="mt-4"
-            >
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
-      </Page>
+      <ErrorComponent message=" Error Fetching Vendor Data" refetch={refetch} />
     );
   }
-
   return (
     <Page>
       <form onSubmit={handleSubmit} className="w-full p-0">
@@ -290,14 +275,15 @@ const VendorEdit = () => {
                 <label
                   className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
                 >
-                  Vendor Address <span className="text-red-500">*</span>
+                  Address <span className="text-red-500">*</span>
                 </label>
                 <Textarea
                   className="bg-white"
                   value={formData.vendor_address}
                   onChange={(e) => handleInputChange(e, "vendor_address")}
-                  placeholder="Enter vendor address"
+                  placeholder="Enter address"
                   rows={5}
+                  maxLength={500}
                 />
               </div>
 
@@ -305,13 +291,14 @@ const VendorEdit = () => {
                 <label
                   className={`block ${ButtonConfig.cardLabel} text-sm mb-2 font-medium`}
                 >
-                  Vendor Name <span className="text-red-500">*</span>
+                  Name <span className="text-red-500">*</span>
                 </label>
                 <Input
                   className="bg-white"
                   value={formData.vendor_name}
                   onChange={(e) => handleInputChange(e, "vendor_name")}
-                  placeholder="Enter vendor name"
+                  placeholder="Enter name"
+                  maxLength={50}
                 />
               </div>
 
@@ -327,6 +314,7 @@ const VendorEdit = () => {
                   value={formData.vendor_email}
                   onChange={(e) => handleInputChange(e, "vendor_email")}
                   placeholder="Enter email"
+                  maxLength={50}
                 />
               </div>
 
@@ -341,6 +329,7 @@ const VendorEdit = () => {
                   value={formData.vendor_gst}
                   onChange={(e) => handleInputChange(e, "vendor_gst")}
                   placeholder="Enter GST number"
+                  maxLength={15}
                 />
               </div>
 
@@ -355,6 +344,7 @@ const VendorEdit = () => {
                   value={formData.vendor_contact_name}
                   onChange={(e) => handleInputChange(e, "vendor_contact_name")}
                   placeholder="Enter contact name"
+                  maxLength={50}
                 />
               </div>
 
@@ -371,6 +361,7 @@ const VendorEdit = () => {
                     handleInputChange(e, "vendor_contact_mobile")
                   }
                   placeholder="Enter mobile number"
+                  maxLength={10}
                 />
               </div>
 

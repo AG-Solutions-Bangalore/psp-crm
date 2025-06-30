@@ -119,6 +119,7 @@ const ChangePassword = ({ open, setOpen }) => {
               onChange={handleInputChange}
               placeholder="Enter Old Password "
               type="password"
+              maxLength={30}
             />
           </div>
           <div className="grid gap-2">
@@ -130,6 +131,7 @@ const ChangePassword = ({ open, setOpen }) => {
               onChange={handleInputChange}
               placeholder="Enter New Password"
               type="password"
+              maxLength={30}
             />
           </div>
         </div>

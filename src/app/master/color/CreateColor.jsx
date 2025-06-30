@@ -105,6 +105,7 @@ const CreateColor = () => {
                   color: e.target.value,
                 }))
               }
+              maxLength={50}
             />
 
             <Button

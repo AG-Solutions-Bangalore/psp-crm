@@ -364,6 +364,7 @@ const GranualsForm = () => {
                       onChange={(e) =>
                         handleInputChange(e, "granuals_bill_ref")
                       }
+                      maxLength={50}
                     />
                   </div>
                   <div className="mb-4">
@@ -479,6 +480,7 @@ const GranualsForm = () => {
                                     "granuals_sub_bags"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -498,6 +500,7 @@ const GranualsForm = () => {
                                     "granuals_sub_weight"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>

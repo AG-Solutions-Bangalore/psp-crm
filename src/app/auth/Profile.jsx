@@ -143,6 +143,7 @@ const Profile = ({ open, setOpen }) => {
               value={formData?.email}
               onChange={handleInputChange}
               placeholder="Enter Email"
+              maxLength={50}
             />
           </div>
           <div className="grid gap-2">
