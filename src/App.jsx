@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
-import AppRoutes from "./components/common/AppRoutes";
+
 import SessionTimeoutTracker from "./components/SessionTimeoutTracker/SessionTimeoutTracker";
 import { Toaster } from "./components/ui/toaster";
 import useLogout from "./hooks/useLogout";
 import ValidationWrapper from "./utils/ValidationWrapper";
 import VersionCheck from "./utils/VersionCheck";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   const time = useSelector((state) => state.auth.token_expire_time);
