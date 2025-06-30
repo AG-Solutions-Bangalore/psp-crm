@@ -219,29 +219,54 @@ const downloadAllCSV = async (data, toast, setExcelLoading, companyStateName) =>
       "Total Amount"
     ];
 
-    const getRowData = (item) => {
+    const allData = [];
+    const totals = calculateTotals(data);
+    
+   
+    allData.push({ values: headers });
+    
+   
+    data.forEach(item => {
       const { cgst, sgst, igst } = calculateGSTValues(item, companyStateName);
-      return [
-        moment(item.sales_date).format("DD-MM-YYYY"),
-        item.sales_no || "",
-        item.vendor_name || "",
-        item.vendor_gst || "-",
-        Number(item.sales_quantity || 0),
-        Number(item.sales_amount || 0).toFixed(2),
-        cgst,
-        sgst,
-        igst,
-        Number(item.sales_total_amount || 0).toFixed(2)
-      ];
-    };
+      allData.push({
+        values: [
+          moment(item.sales_date).format("DD-MM-YYYY"),
+          item.sales_no || "",
+          item.vendor_name || "",
+          item.vendor_gst || "-",
+          Number(item.sales_quantity || 0),
+          Number(item.sales_amount || 0).toFixed(2),
+          cgst,
+          sgst,
+          igst,
+          Number(item.sales_total_amount || 0).toFixed(2)
+        ]
+      });
+    });
+    
+  
+    allData.push({
+      isFooter: true,
+      values: [
+        "Grand Total",
+        "",
+        "",
+        "",
+        totals.quantity,
+        totals.amount.toFixed(2),
+        totals.cgst.toFixed(2),
+        totals.sgst.toFixed(2),
+        totals.igst.toFixed(2),
+        totals.total.toFixed(2)
+      ]
+    });
 
     await downloadExcelMultiRow({
-      data: data,
+      data: allData,
       sheetName: "Fabric Sales Report",
-      headers,
-      getRowData,
       fileNamePrefix: "fabric_sales_report",
       toast,
+      customFormat: true,
       emptyDataCallback: () => ({
         title: "No Data",
         description: "No data available to export",

@@ -155,243 +155,293 @@ const PurchaseRawMaterialReport = () => {
     },
   });
 
-  const downloadAllCSV = async (data, toast, setExcelLoading) => {
-    if (!data || data.length === 0) {
-      toast?.({
+ const downloadAllCSV = async (data, toast, setExcelLoading) => {
+  if (!data || data.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setExcelLoading(true);
+
+  try {
+    const headers = [
+      "Purchase Date",
+      "Reference No",
+      "Bill Ref",
+      "Vendor Name",
+      "Vendor GST",
+      "Total Weight",
+      "Total Items"
+    ];
+
+
+    const totals = calculateTotals(data);
+
+    const getRowData = (item) => [
+      moment(item.raw_material_date).format("DD-MM-YYYY"),
+      item.raw_material_ref || "",
+      item.raw_material_bill_ref || "",
+      item.vendor_name || "",
+      item.vendor_gst || "-",
+      Number(item.total_weight || 0).toFixed(2),
+      Number(item.total_items || 0)
+    ];
+
+  
+    const excelData = [
+      { values: headers },
+      ...data.map(item => ({ values: getRowData(item) })),
+      { 
+        isFooter: true,
+        values: [
+          "TOTAL",
+          "",
+          "",
+          "",
+          "",
+          totals.totalWeight.toFixed(2),
+          totals.totalItems
+        ] 
+      }
+    ];
+
+    await downloadExcelMultiRow({
+      data: excelData,
+      sheetName: "Raw Material Purchase Report",
+      fileNamePrefix: "raw_material_purchase_report",
+      toast,
+      customFormat: true,
+      emptyDataCallback: () => ({
         title: "No Data",
         description: "No data available to export",
         variant: "destructive",
-      });
-      return;
-    }
-  
-    setExcelLoading(true);
-  
-    try {
-      const headers = [
+      }),
+    });
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
+
+const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading) => {
+  const allData = [];
+  let grandTotalWeight = 0;
+  let grandTotalItems = 0;
+
+  Object.entries(monthlyData).forEach(([month, items]) => {
+    allData.push({
+      isHeader: true,
+      values: [new Date(`${month}-01`).toLocaleString('default', { month: 'long', year: 'numeric' })]
+    });
+    
+    allData.push({
+      values: [
         "Purchase Date",
-        "Reference No",
-        "Bill Ref",
         "Vendor Name",
         "Vendor GST",
+        "Bill Ref",
         "Total Weight",
         "Total Items"
-      ];
-  
-      const getRowData = (item) => [
-        moment(item.raw_material_date).format("DD-MM-YYYY"),
-        item.raw_material_ref || "",
-        item.raw_material_bill_ref || "",
-        item.vendor_name || "",
-        item.vendor_gst || "-",
-        Number(item.total_weight || 0).toFixed(2),
-        Number(item.total_items || 0)
-      ];
-  
-      await downloadExcelMultiRow({
-        data: data,
-        sheetName: "Raw Material Purchase Report",
-        headers,
-        getRowData,
-        fileNamePrefix: "raw_material_purchase_report",
-        toast,
-        emptyDataCallback: () => ({
-          title: "No Data",
-          description: "No data available to export",
-          variant: "destructive",
-        }),
-      });
-    } catch (error) {
-      toast?.({
-        title: "Error",
-        description: "Failed to export Excel file",
-        variant: "destructive",
-      });
-      console.error("Excel export error:", error);
-    } finally {
-      setTimeout(() => {
-        setExcelLoading(false);
-      }, 300);
-    }
-  };
-  
-  const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading) => {
-    const allData = [];
-    Object.entries(monthlyData).forEach(([month, items]) => {
- 
-      allData.push({
-        isHeader: true,
-        values: [new Date(`${month}-01`).toLocaleString('default', { month: 'long', year: 'numeric' })]
-      });
-      
-
-      allData.push({
-        values: [
-          "Purchase Date",
-          "Vendor Name",
-          "Vendor GST",
-          "Bill Ref",
-          "Total Weight",
-          "Total Items"
-        ]
-      });
-  
-
-      items.forEach(item => {
-        allData.push({
-          values: [
-            moment(item.raw_material_date).format("DD-MM-YYYY"),
-            item.vendor_name || "",
-            item.vendor_gst || "-",
-            item.raw_material_bill_ref || "",
-            Number(item.total_weight || 0).toFixed(2),
-            Number(item.total_items || 0)
-          ]
-        });
-      });
-  
-  
-      const monthTotals = calculateTotals(items);
-      allData.push({
-        isFooter: true,
-        values: [
-          "Monthly Total",
-          "",
-          "",
-          "",
-          monthTotals.totalWeight.toFixed(2),
-          monthTotals.totalItems
-        ]
-      });
-  
-    
-      allData.push({ values: [] });
+      ]
     });
-  
-    if (allData.length === 0) {
-      toast?.({
+
+    items.forEach(item => {
+      allData.push({
+        values: [
+          moment(item.raw_material_date).format("DD-MM-YYYY"),
+          item.vendor_name || "",
+          item.vendor_gst || "-",
+          item.raw_material_bill_ref || "",
+          Number(item.total_weight || 0).toFixed(2),
+          Number(item.total_items || 0)
+        ]
+      });
+    });
+
+    const monthTotals = calculateTotals(items);
+    grandTotalWeight += monthTotals.totalWeight;
+    grandTotalItems += monthTotals.totalItems;
+    
+    allData.push({
+      isFooter: true,
+      values: [
+        "Monthly Total",
+        "",
+        "",
+        "",
+        monthTotals.totalWeight.toFixed(2),
+        monthTotals.totalItems
+      ]
+    });
+
+    allData.push({ values: [] }); 
+  });
+
+
+  if (Object.keys(monthlyData).length > 0) {
+    allData.push({
+      isFooter: true,
+      values: [
+        "GRAND TOTAL",
+        "",
+        "",
+        "",
+        grandTotalWeight.toFixed(2),
+        grandTotalItems
+      ]
+    });
+  }
+
+  if (allData.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setExcelLoading(true);
+
+  try {
+    await downloadExcelMultiRow({
+      data: allData,
+      sheetName: "Monthwise Purchase Report",
+      fileNamePrefix: "monthwise_raw_material_purchase",
+      toast,
+      customFormat: true,
+      emptyDataCallback: () => ({
         title: "No Data",
         description: "No data available to export",
         variant: "destructive",
-      });
-      return;
-    }
-  
-    setExcelLoading(true);
-  
-    try {
-      await downloadExcelMultiRow({
-        data: allData,
-        sheetName: "Monthwise Purchase Report",
-        fileNamePrefix: "monthwise_raw_material_purchase",
-        toast,
-        customFormat: true,
-        emptyDataCallback: () => ({
-          title: "No Data",
-          description: "No data available to export",
-          variant: "destructive",
-        }),
-      });
-    } catch (error) {
-      toast?.({
-        title: "Error",
-        description: "Failed to export Excel file",
-        variant: "destructive",
-      });
-      console.error("Excel export error:", error);
-    } finally {
-      setTimeout(() => {
-        setExcelLoading(false);
-      }, 300);
-    }
-  };
-  
-  const downloadVendorwiseCSV = async (vendorData, toast, setExcelLoading) => {
-    const allData = [];
-    Object.entries(vendorData).forEach(([vendor, items]) => {
-      const vendorGst = items[0]?.vendor_gst || '';
-      
-    
-      allData.push({
-        isHeader: true,
-        values: [`${vendor} ${vendorGst ? `- ${vendorGst}` : ''}`]
-      });
-      
-      
-      allData.push({
-        values: [
-          "Purchase Date",
-          "Bill Ref",
-          "Total Weight",
-          "Total Items"
-        ]
-      });
-  
-    
-      items.forEach(item => {
-        allData.push({
-          values: [
-            moment(item.raw_material_date).format("DD-MM-YYYY"),
-            item.raw_material_bill_ref || "",
-            Number(item.total_weight || 0).toFixed(2),
-            Number(item.total_items || 0)
-          ]
-        });
-      });
-  
-     
-      const vendorTotals = calculateTotals(items);
-      allData.push({
-        isFooter: true,
-        values: [
-          "Vendor Total",
-          "",
-          vendorTotals.totalWeight.toFixed(2),
-          vendorTotals.totalItems
-        ]
-      });
-  
- 
-      allData.push({ values: [] });
+      }),
     });
-  
-    if (allData.length === 0) {
-      toast?.({
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
+
+const downloadVendorwiseCSV = async (vendorData, toast, setExcelLoading) => {
+  const allData = [];
+  let grandTotalWeight = 0;
+  let grandTotalItems = 0;
+
+  Object.entries(vendorData).forEach(([vendor, items]) => {
+    const vendorGst = items[0]?.vendor_gst || '';
+    
+    allData.push({
+      isHeader: true,
+      values: [`${vendor} ${vendorGst ? `- ${vendorGst}` : ''}`]
+    });
+    
+    allData.push({
+      values: [
+        "Purchase Date",
+        "Bill Ref",
+        "Total Weight",
+        "Total Items"
+      ]
+    });
+
+    items.forEach(item => {
+      allData.push({
+        values: [
+          moment(item.raw_material_date).format("DD-MM-YYYY"),
+          item.raw_material_bill_ref || "",
+          Number(item.total_weight || 0).toFixed(2),
+          Number(item.total_items || 0)
+        ]
+      });
+    });
+
+    const vendorTotals = calculateTotals(items);
+    grandTotalWeight += vendorTotals.totalWeight;
+    grandTotalItems += vendorTotals.totalItems;
+    
+    allData.push({
+      isFooter: true,
+      values: [
+        "Vendor Total",
+        "",
+        vendorTotals.totalWeight.toFixed(2),
+        vendorTotals.totalItems
+      ]
+    });
+
+    allData.push({ values: [] }); 
+  });
+
+
+  if (Object.keys(vendorData).length > 0) {
+    allData.push({
+      isFooter: true,
+      values: [
+        "GRAND TOTAL",
+        "",
+        grandTotalWeight.toFixed(2),
+        grandTotalItems
+      ]
+    });
+  }
+
+  if (allData.length === 0) {
+    toast?.({
+      title: "No Data",
+      description: "No data available to export",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setExcelLoading(true);
+
+  try {
+    await downloadExcelMultiRow({
+      data: allData,
+      sheetName: "Vendorwise Purchase Report",
+      fileNamePrefix: "vendorwise_raw_material_purchase",
+      toast,
+      customFormat: true,
+      emptyDataCallback: () => ({
         title: "No Data",
         description: "No data available to export",
         variant: "destructive",
-      });
-      return;
-    }
-  
-    setExcelLoading(true);
-  
-    try {
-      await downloadExcelMultiRow({
-        data: allData,
-        sheetName: "Vendorwise Purchase Report",
-        fileNamePrefix: "vendorwise_raw_material_purchase",
-        toast,
-        customFormat: true,
-        emptyDataCallback: () => ({
-          title: "No Data",
-          description: "No data available to export",
-          variant: "destructive",
-        }),
-      });
-    } catch (error) {
-      toast?.({
-        title: "Error",
-        description: "Failed to export Excel file",
-        variant: "destructive",
-      });
-      console.error("Excel export error:", error);
-    } finally {
-      setTimeout(() => {
-        setExcelLoading(false);
-      }, 300);
-    }
-  };
+      }),
+    });
+  } catch (error) {
+    toast?.({
+      title: "Error",
+      description: "Failed to export Excel file",
+      variant: "destructive",
+    });
+    console.error("Excel export error:", error);
+  } finally {
+    setTimeout(() => {
+      setExcelLoading(false);
+    }, 300);
+  }
+};
 
   const monthlyData = groupByMonth();
   const vendorData = groupByVendor();
