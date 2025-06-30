@@ -194,6 +194,7 @@ const EditItem = ({ customdescriptionId }) => {
                       }))
                     }
                     className={hasChanges ? "pr-8 border-blue-200" : ""}
+                    maxLength={50}
                   />
                   {hasChanges &&
                     formData.item_name !== originalData.item_name && (

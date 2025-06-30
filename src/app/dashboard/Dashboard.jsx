@@ -55,7 +55,7 @@ const Dashboard = () => {
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Total Vendors</p>
+                                    <p className="text-sm font-medium text-muted-foreground">Vendors</p>
                                     <p className="text-2xl font-bold">{dashboard?.totalVendor || 0}</p>
                                 </div>
                                 <Users className="h-8 w-8 text-blue-600" />
@@ -67,7 +67,7 @@ const Dashboard = () => {
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Active Customers</p>
+                                    <p className="text-sm font-medium text-muted-foreground">Customers</p>
                                     <p className="text-2xl font-bold">{dashboard?.totalCustomer || 0}</p>
                                 </div>
                                 <ShoppingCart className="h-8 w-8 text-green-600" />

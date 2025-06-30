@@ -447,6 +447,7 @@ const SalesForm = () => {
                       className="bg-white"
                       value={formData.sales_dispatched}
                       onChange={(e) => handleInputChange(e, "sales_dispatched")}
+                      maxLength={50}
                     />
                   </div>
                   <div>
@@ -459,6 +460,7 @@ const SalesForm = () => {
                       className="bg-white"
                       value={formData.sales_document}
                       onChange={(e) => handleInputChange(e, "sales_document")}
+                      maxLength={50}
                     />
                   </div>
                   <div>
@@ -471,6 +473,7 @@ const SalesForm = () => {
                       className="bg-white"
                       value={formData.sales_quantity}
                       onChange={(e) => handleInputChange(e, "sales_quantity")}
+                      maxLength={50}
                     />
                   </div>
                   <div>
@@ -483,6 +486,7 @@ const SalesForm = () => {
                       className="bg-white"
                       value={formData.sales_rate}
                       onChange={(e) => handleInputChange(e, "sales_rate")}
+                      maxLength={50}
                     />
                   </div>
                   <div>
@@ -509,6 +513,7 @@ const SalesForm = () => {
                     className="bg-white"
                     value={formData.sales_description}
                     onChange={(e) => handleInputChange(e, "sales_description")}
+                    maxLength={500}
                   />
                 </div>
                 <div className="mt-4 grid grid-cols-1">
@@ -603,6 +608,7 @@ const SalesForm = () => {
                                     "sales_sub_thickness"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -621,6 +627,7 @@ const SalesForm = () => {
                                     "sales_sub_weight"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>
@@ -639,6 +646,7 @@ const SalesForm = () => {
                                     "sales_sub_mtr"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>

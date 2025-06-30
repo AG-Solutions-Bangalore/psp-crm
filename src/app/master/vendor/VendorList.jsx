@@ -98,10 +98,9 @@ const VendorList = () => {
     },
     {
       accessorKey: "vendor_state_name",
-      id: "Vendor State",
-
-      header: "Vendor State",
-      cell: ({ row }) => <div>{row.getValue("Vendor State")}</div>,
+      id: "State",
+      header: "State",
+      cell: ({ row }) => <div>{row.getValue("State")}</div>,
     },
     {
       accessorKey: "vendor_type",
@@ -129,16 +128,15 @@ const VendorList = () => {
     },
     {
       accessorKey: "vendor_contact_name",
-      id: "Vendor Contact Name",
-      header: "Vendor Contact Name",
-      cell: ({ row }) => <div>{row.getValue("Vendor Contact Name")}</div>,
+      id: "Contact Name",
+      header: "Contact Name",
+      cell: ({ row }) => <div>{row.getValue("Contact Name")}</div>,
     },
     {
       accessorKey: "vendor_contact_mobile",
-      id: "Vendor Contact Mobile",
-
+      id: "Contact Mobile",
       header: "Mobile",
-      cell: ({ row }) => <div>{row.getValue("Vendor Contact Mobile")}</div>,
+      cell: ({ row }) => <div>{row.getValue("Contact Mobile")}</div>,
     },
 
     {

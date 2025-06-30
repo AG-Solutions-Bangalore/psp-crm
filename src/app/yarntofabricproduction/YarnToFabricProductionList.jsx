@@ -105,15 +105,15 @@ const YarnToFabricProductionList = () => {
     },
     {
       accessorKey: "totalCount",
-      id: "Count",
-      header: "Count",
-      cell: ({ row }) => <div>{row.getValue("Count")}</div>,
+      id: "Fabric Total",
+      header: "Fabric Total",
+      cell: ({ row }) => <div>{row.getValue("Fabric Total")}</div>,
     },
     {
       accessorKey: "productionCount",
-      id: "Production Count",
-      header: "Production Count",
-      cell: ({ row }) => <div>{row.getValue("Production Count")}</div>,
+      id: "Production Total",
+      header: "Production Total",
+      cell: ({ row }) => <div>{row.getValue("Production Total")}</div>,
     },
 
     {

@@ -355,6 +355,7 @@ const RawMaterialForm = () => {
                       onChange={(e) =>
                         handleInputChange(e, "raw_material_bill_ref")
                       }
+                      maxLength={50}
                     />
                   </div>
                   <div className="mb-4">
@@ -462,6 +463,7 @@ const RawMaterialForm = () => {
                                     "raw_material_sub_weight"
                                   )
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </TableCell>

@@ -1,30 +1,30 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { loginSuccess } from "@/redux/slices/AuthSlice";
-import apiClient from "@/api/axios";
 import { PANEL_LOGIN } from "@/api";
-import { useToast } from "@/hooks/use-toast";
+import apiClient from "@/api/axios";
+import fabric from "@/assets/img/fabric.jpg";
+import rawmaterial from "@/assets/img/raw-material.jpg";
+import yarn from "@/assets/img/yarn.jpg";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { AnimatePresence, motion } from "framer-motion";
-import { Typewriter } from "react-simple-typewriter";
-import Logo from "../common/Logo";
-import ForgotPassword from "../ForgotPassword/ForgotPassword";
 import { ButtonConfig } from "@/config/ButtonConfig";
-import rawmaterial from "@/assets/img/raw-material.jpg";
-import fabric from "@/assets/img/fabric.jpg";
-import yarn from "@/assets/img/yarn.jpg";
+import { useToast } from "@/hooks/use-toast";
+import { loginSuccess } from "@/redux/slices/AuthSlice";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import LoginCarsol from "../common/LoginCarsol";
+import Logo from "../common/Logo";
+import { Eye, EyeOff } from "lucide-react";
+import ForgotPassword from "../ForgotPassword/ForgotPassword";
 const images = [
   {
     src: rawmaterial,
@@ -46,6 +46,7 @@ export default function LoginAuth() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
   const loadingMessages = [
     "Authenticating...",
@@ -81,7 +82,6 @@ export default function LoginAuth() {
 
     try {
       const res = await apiClient.post(PANEL_LOGIN, formData);
-      console.log(res);
       if (res.data.code === 200 && res.data.UserInfo?.token) {
         const { UserInfo } = res.data;
         dispatch(
@@ -105,7 +105,12 @@ export default function LoginAuth() {
         );
         navigate("/home");
       } else {
-        toast.error("Login Failed: Unexpected response.");
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description:
+            res.data.message || "Login Failed: Unexpected response cc.",
+        });
       }
     } catch (error) {
       toast({
@@ -170,8 +175,10 @@ export default function LoginAuth() {
                           type="text"
                           value={email}
                           placeholder="Enter your username"
-                          onChange={() => setEmail(event.target.value)}
+                          onChange={(event) => setEmail(event.target.value)}
                           required
+                          autoComplete="username"
+                          maxLength={30}
                         />
                       </motion.div>
                     </div>
@@ -182,14 +189,32 @@ export default function LoginAuth() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.5 }}
                       >
-                        <Input
-                          id="password"
-                          type="password"
-                          value={password}
-                          placeholder="••••••••"
-                          onChange={() => setPassword(event.target.value)}
-                          required
-                        />
+                        <div className="relative">
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            placeholder="••••••••"
+                            autoComplete="current-password"
+                            onChange={(event) =>
+                              setPassword(event.target.value)
+                            }
+                            required
+                            maxLength={30}
+                            className="pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                          >
+                            {showPassword ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
                       </motion.div>
                     </div>
 

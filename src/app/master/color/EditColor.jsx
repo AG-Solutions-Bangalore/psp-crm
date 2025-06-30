@@ -196,6 +196,7 @@ const EditColor = ({ customdescriptionId }) => {
                       }))
                     }
                     className={hasChanges ? "pr-8 border-blue-200" : ""}
+                    maxLength={50}
                   />
                   {hasChanges && formData.color !== originalData.color && (
                     <div className="absolute right-2 top-1/2 -translate-y-1/2">
