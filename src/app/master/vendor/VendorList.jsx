@@ -107,7 +107,25 @@ const VendorList = () => {
       accessorKey: "vendor_type",
       id: "Vendor Type",
       header: "Vendor Type",
-      cell: ({ row }) => <div>{row.getValue("Vendor Type")}</div>,
+      cell: ({ row }) => {
+        const vendorType = row.getValue("Vendor Type")
+        const vendorTypeArray = vendorType?.toString().split(",") || [];
+
+        const vendorMap = {
+          1: "Vendor",
+          2: "Customer",
+        };
+
+        return (
+         <div className="flex gap-1">
+        {vendorTypeArray.map((type, index) => (
+          <span key={index} className="px-2 py-1 text-xs bg-gray-100 rounded">
+            {vendorMap[type.trim()] || "-"}
+          </span>
+        ))}
+      </div>
+        )
+      },
     },
     {
       accessorKey: "vendor_contact_name",
