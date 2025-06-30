@@ -137,7 +137,7 @@ const AppInitializer = ({ children }) => {
         if (statusRes.data?.message !== "Success") {
           throw new Error("Panel status check failed");
         }
-
+  
         const serverVer = statusRes?.data?.version?.version_panel;
 
         if (token) {

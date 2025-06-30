@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-// eslint-disable-next-line react/prop-types
 export default function Page({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,7 +20,6 @@ export default function Page({ children }) {
     e.preventDefault();
     navigate(-1);
   };
-  console.log(location.pathname);
   return (
     <SidebarProvider>
       <AppSidebar />
