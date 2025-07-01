@@ -12,7 +12,6 @@ const DevToolsDialog = ({ open }) => {
       >
         <div className="flex flex-col items-center gap-4">
           <AlertTriangle className="w-12 h-12 text-yellow-500" />
-          {/* ✅ Required for accessibility */}
           <DialogTitle className="text-2xl font-semibold text-destructive">
             Developer Tools Detected
           </DialogTitle>
