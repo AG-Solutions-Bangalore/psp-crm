@@ -39,6 +39,9 @@ export const useFetchCompanies = () => {
 export const useFetchVendor = () => {
   return useQuery(createQueryConfig(["vendor"], "/api/vendor/vendor"));
 };
+export const useFetchCustomer = () => {
+  return useQuery(createQueryConfig(["customer"], "/api/vendor/customer"));
+};
 export const useFetchItem = () => {
   return useQuery(createQueryConfig(["items"], "/api/item/active"));
 };

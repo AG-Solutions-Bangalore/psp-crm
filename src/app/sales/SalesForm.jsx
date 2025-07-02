@@ -21,7 +21,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchColor, useFetchProduct, useFetchVendor } from "@/hooks/useApi";
+import {
+  useFetchColor,
+  useFetchCustomer,
+  useFetchProduct,
+  useFetchVendor,
+} from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, MinusCircle, PlusCircle, Trash2 } from "lucide-react";
@@ -127,9 +132,8 @@ const SalesForm = () => {
   }, [decryptedId, rawMaterialById]);
 
   const { data: productData, isLoading: loadingproduct } = useFetchProduct();
-  const { data: vendorData, isLoading: loadingvendor } = useFetchVendor();
+  const { data: customerData, isLoading: loadingvendor } = useFetchCustomer();
   const { data: colorData, isLoading: loadingcolor } = useFetchColor();
-  console.log(colorData);
   const addRow = useCallback(() => {
     setInvoiceData((prev) => [
       ...prev,
@@ -428,7 +432,7 @@ const SalesForm = () => {
                       value={formData.sales_vendor_id}
                       onChange={(e) => handleInputChange(e, "sales_vendor_id")}
                       options={
-                        vendorData?.data?.map((vendor) => ({
+                        customerData?.data?.map((vendor) => ({
                           value: vendor.id,
                           label: vendor.vendor_name,
                         })) || []

@@ -107,7 +107,9 @@ const Dashboard = () => {
                     Monthly Production
                   </p>
                   <p className="text-2xl font-bold">
-                    {dashboard?.totalMonthlyProduction || 0} kg
+                    {dashboard?.totalMonthlyProduction || 0}
+
+                    <span className="ml-1 text-[18px]">kg</span>
                   </p>
                 </div>
                 <Factory className="h-8 w-8 text-orange-600" />
@@ -120,10 +122,12 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Total Sales
+                    Total Sales Quantity
                   </p>
                   <p className="text-2xl font-bold">
-                    ₹{(dashboard?.totalMonthlySales || 0).toLocaleString()}
+                    {(dashboard?.totalMonthlySales || 0).toLocaleString()}
+
+                    <span className="ml-1 text-[18px]"> Kgs/Mts</span>
                   </p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-purple-600" />
@@ -207,7 +211,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {dashboard?.recent_production > 0 ? (
+                {dashboard?.recent_production.length > 0 ? (
                   dashboard?.recent_production?.map((production, index) => (
                     <div
                       key={index}
@@ -288,7 +292,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {dashboard?.recentSales > 0 ? (
+                {dashboard?.recentSales.length > 0 ? (
                   dashboard?.recentSales?.map((sale, index) => (
                     <div
                       key={index}
