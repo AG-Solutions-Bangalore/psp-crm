@@ -1,10 +1,8 @@
 import { YARN_TO_FABRIC_PRODUCTION } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import Page from "@/app/page/page";
 import DeleteAlertDialog from "@/components/common/DeleteAlertDialog";
 import {
-  LoaderComponent,
   WithoutErrorComponent,
   WithoutLoaderComponent,
 } from "@/components/LoaderComponent/LoaderComponent";
@@ -142,7 +140,7 @@ const YarnToFabricProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Fabric Production</p>
+                  <p>Edit Yarn Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -160,7 +158,7 @@ const YarnToFabricProductionList = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Delete Fabric Production</p>
+                    <p>Delete Yarn Production</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -173,7 +171,7 @@ const YarnToFabricProductionList = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/fabric-production/${encodeURIComponent(
+                        `/fabric-from-production/${encodeURIComponent(
                           encryptId(id)
                         )}`
                       );
@@ -183,7 +181,7 @@ const YarnToFabricProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Create Fabric</p>
+                  <p>Create Yarn Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -263,13 +261,13 @@ const YarnToFabricProductionList = () => {
     }
   };
   if (isLoading) {
-    return <WithoutLoaderComponent name="Fabric Production" />;
+    return <WithoutLoaderComponent name="Yarn Production" />;
   }
 
   if (isError) {
     return (
       <WithoutErrorComponent
-        message="Error Fetching Fabric Production"
+        message="Error Fetching Yarn Production"
         refetch={refetch}
       />
     );
@@ -282,7 +280,7 @@ const YarnToFabricProductionList = () => {
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Fabric Production..."
+              placeholder="Search Yarn Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -322,7 +320,7 @@ const YarnToFabricProductionList = () => {
               navigate("/yarn-fabric-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Fabric Production
+            <SquarePlus className="h-4 w-4 " /> Yarn Production
           </Button>
         </div>
         {/* table  */}
@@ -382,7 +380,7 @@ const YarnToFabricProductionList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Fabric Production : &nbsp;
+            Total Yarn Production: &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">

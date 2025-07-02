@@ -99,12 +99,6 @@ export function AppSidebar({ ...props }) {
         icon: NotebookText,
         isActive: false,
       },
-      {
-        title: "Sales",
-        url: "/sales",
-        icon: NotebookText,
-        isActive: false,
-      },
 
       // {
       //   title: "Raw Material Production",
@@ -119,11 +113,24 @@ export function AppSidebar({ ...props }) {
       //   isActive: false,
       // },
       {
+        title: "Yarn",
+        url: "/yarn",
+        icon: NotebookText,
+        isActive: false,
+      },
+      {
         title: "Fabric",
         url: "/yarn-fabric-production",
         icon: NotebookText,
         isActive: false,
       },
+      {
+        title: "Sales",
+        url: "/sales",
+        icon: NotebookText,
+        isActive: false,
+      },
+
       // {
       //   title: "Yarn To Fabric Work Production",
       //   url: "/yarn-fabric-work-production",
@@ -136,7 +143,6 @@ export function AppSidebar({ ...props }) {
         isActive: false,
         icon: Settings2,
         items: [
-        
           {
             title: "Purchase",
             url: "#",
@@ -151,7 +157,6 @@ export function AppSidebar({ ...props }) {
                 title: "Granuals",
                 url: "/report/purchase-granuals",
               },
-              
             ],
           },
           {
@@ -168,7 +173,6 @@ export function AppSidebar({ ...props }) {
                 title: "Yarn",
                 url: "/report/sales-yarn",
               },
-              
             ],
           },
           {
@@ -185,7 +189,7 @@ export function AppSidebar({ ...props }) {
                 title: "Granuals",
                 url: "/report/production-granuals",
               },
-           
+
               {
                 title: "Yarn",
                 url: "/report/production-yarn",
@@ -198,7 +202,6 @@ export function AppSidebar({ ...props }) {
                 title: "Fabric Work",
                 url: "/report/production-fabric-work",
               },
-              
             ],
           },
           {
@@ -225,13 +228,6 @@ export function AppSidebar({ ...props }) {
               },
             ],
           },
-
-          // {
-          //   title: "Tax Invoice",
-          //   url: "/report-tax-invoice",
-          //   icon: NotebookText,
-          //   isActive: false,
-          // },
         ],
       },
       {

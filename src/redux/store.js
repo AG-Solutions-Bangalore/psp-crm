@@ -8,7 +8,7 @@ import versionReducer from "./slices/versionSlice";
 import tabReducer from "./slices/rawtabSlice";
 import granualtabReducer from "./slices/granualstabSlice";
 import salestabReducer from "./slices/salestabsSlice";
-import yarntabReducer from "./slices/yarntabSlice";
+import fabrictabReducer from "./slices/fabrictabSlice";
 const secretKey = import.meta.env.VITE_SECRET_KEY;
 
 let transforms = [];
@@ -40,7 +40,7 @@ const rootReducer = combineReducers({
   tab: tabReducer,
   granualtab: granualtabReducer,
   salestab: salestabReducer,
-  yarntab: yarntabReducer,
+  fabrictab: fabrictabReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -359,7 +359,7 @@ const YarnToFabricWorkProductionForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/yarn-fabric-production");
+        navigate("/yarn");
       } else {
         toast({
           title: "Error",
@@ -490,10 +490,10 @@ const YarnToFabricWorkProductionForm = () => {
             <PageHeaders
               title={
                 editId
-                  ? "Update Fabric Work Production"
-                  : "Create Fabric Work Production"
+                  ? "Update Yarn Work Production"
+                  : "Create Yarn Work Production"
               }
-              subtitle="fabric work production"
+              subtitle="yarn work production"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -545,16 +545,16 @@ const YarnToFabricWorkProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Fabric Production"
+                  "Update Yarn Production"
                 ) : (
-                  "Create Fabric Production"
+                  "Create Yarn Production"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/yarn-fabric-production");
+                  navigate("/yarn");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >

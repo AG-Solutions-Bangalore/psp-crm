@@ -15,7 +15,7 @@ function App() {
   return (
     <>
       <ValidationWrapper>
-        <DevToolBlocker/>
+        <DevToolBlocker />
         <DisableRightClick />
         <VersionCheck />
         <Toaster />
