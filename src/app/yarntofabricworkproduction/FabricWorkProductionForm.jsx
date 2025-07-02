@@ -240,7 +240,7 @@ const FabricWorkProductionForm = () => {
           title: "Success",
           description: response.data.message,
         });
-        navigate("/yarn-fabric-production");
+        navigate("/yarn");
       } else {
         toast({
           title: "Error",
@@ -261,7 +261,7 @@ const FabricWorkProductionForm = () => {
   };
 
   if (isFetching || loadingitem) {
-    return <LoaderComponent name="Fabric Work" />;
+    return <LoaderComponent name="Yarn Work" />;
   }
   return (
     <Page>
@@ -269,8 +269,8 @@ const FabricWorkProductionForm = () => {
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
             <PageHeaders
-              title={"Create Fabric Work Production"}
-              subtitle="fabric"
+              title={"Create Yarn Work Production"}
+              subtitle="yarn"
               progress={progress}
             />
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
@@ -482,14 +482,14 @@ const FabricWorkProductionForm = () => {
                     {"Creating..."}
                   </>
                 ) : (
-                  "Create Fabric Work"
+                  "Create Yarn Work"
                 )}{" "}
               </Button>
 
               <Button
                 type="button"
                 onClick={() => {
-                  navigate("/yarn-fabric-production");
+                  navigate("/yarn");
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >

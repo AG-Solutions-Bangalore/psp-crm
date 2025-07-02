@@ -15,8 +15,8 @@ function App() {
   return (
     <>
       <ValidationWrapper>
-        <DevToolBlocker/>
-        <DisableRightClick />
+        {/* <DevToolBlocker />
+        <DisableRightClick /> */}
         <VersionCheck />
         <Toaster />
         <SessionTimeoutTracker expiryTime={time} onLogout={handleLogout} />

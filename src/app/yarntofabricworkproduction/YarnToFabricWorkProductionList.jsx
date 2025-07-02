@@ -143,7 +143,7 @@ const YarnToFabricWorkProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Fabric Work Production</p>
+                  <p>Edit Yarn Work Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -161,7 +161,7 @@ const YarnToFabricWorkProductionList = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Delete Fabric Production</p>
+                    <p>Delete Yarn Production</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -174,7 +174,7 @@ const YarnToFabricWorkProductionList = () => {
                     size="icon"
                     onClick={() => {
                       navigate(
-                        `/fabric-work-production/${encodeURIComponent(
+                        `/fabric-from-work-production/${encodeURIComponent(
                           encryptId(id)
                         )}`
                       );
@@ -184,7 +184,7 @@ const YarnToFabricWorkProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Create Fabric Work</p>
+                  <p>Create Yarn Work Production</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -264,13 +264,13 @@ const YarnToFabricWorkProductionList = () => {
     }
   };
   if (isLoading) {
-    return <WithoutLoaderComponent name="Fabric Work Production" />;
+    return <WithoutLoaderComponent name="Yarn Work Production" />;
   }
 
   if (isError) {
     return (
       <WithoutErrorComponent
-        message="Error Fetching Fabric Work Production"
+        message="Error Fetching Yarn Work Production"
         refetch={refetch}
       />
     );
@@ -283,7 +283,7 @@ const YarnToFabricWorkProductionList = () => {
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Fabric Work Production..."
+              placeholder="Search Yarn Work Production..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -323,7 +323,7 @@ const YarnToFabricWorkProductionList = () => {
               navigate("/yarn-fabric-work-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Fabric Work Production
+            <SquarePlus className="h-4 w-4 " /> Yarn Work Production
           </Button>
         </div>
         {/* table  */}
@@ -383,7 +383,7 @@ const YarnToFabricWorkProductionList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Fabric Work Production : &nbsp;
+            Total Yarn Work Production : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">

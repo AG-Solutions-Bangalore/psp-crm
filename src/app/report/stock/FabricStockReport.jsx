@@ -465,9 +465,6 @@ const FabricStockReport = () => {
                 </th>
 
                 <th className="border border-black px-2 py-2 text-center cursor-pointer">
-                  Period
-                </th>
-                <th className="border border-black px-2 py-2 text-center cursor-pointer">
                   Closing Stock
                 </th>
               </tr>
@@ -502,9 +499,7 @@ const FabricStockReport = () => {
                       <td className="border border-black px-2 py-2 text-right">
                         {raw.sold}
                       </td>
-                      <td className="border border-black px-2 py-2 text-right">
-                        {raw.in_period}
-                      </td>
+               
                       <td className="border border-black px-2 py-2 text-right">
                         {raw.close_stock}
                       </td>
@@ -533,9 +528,7 @@ const FabricStockReport = () => {
                 <td className="border border-black px-2 py-2 text-right">
                   {total.sold.toFixed(2) || ""}
                 </td>
-                <td className="border border-black px-2 py-2 text-right">
-                  {total.in_period.toFixed(2) || ""}
-                </td>
+        
                 <td className="border border-black px-2 py-2 text-right">
                   {total.close_stock.toFixed(2) || ""}
                 </td>

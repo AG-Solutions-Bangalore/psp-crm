@@ -30,7 +30,7 @@ export const MemoizedSelect = React.memo(
         ...base,
         backgroundColor: state.isFocused ? "#1f7a57" : "white",
         borderRadius: "0.7rem",
-        textTransform: "uppercase",
+        textTransform: "capitalize",
         color: state.isFocused ? "white" : "#111827",
         "&:active": {
           backgroundColor: "#1f7a57",

@@ -32,7 +32,7 @@ import SalesView from "@/app/sales/SalesView";
 import { GranualsTabs } from "@/app/Tabs/GranualsTabs/GranualsTabs";
 import { RawMaterialTabs } from "@/app/Tabs/RawMaterialTabs/RawMaterialTabs";
 import { SalesTabs } from "@/app/Tabs/SalesTabs/SalesTabs";
-import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
+import { FabricTabs } from "@/app/Tabs/FabricTabs/FabricTabs";
 import WebsiteEnquiry from "@/app/websiteenquiry/WebsiteEnquiry";
 import FabricProductionForm from "@/app/yarntofabricproduction/FabricProductionForm";
 import YarnToFabricProductionForm from "@/app/yarntofabricproduction/YarnToFabricProductionForm";
@@ -42,6 +42,7 @@ import Maintenance from "@/components/common/Maintenance";
 import { Route, Routes } from "react-router-dom";
 import AuthRoute from "./AuthRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -98,7 +99,8 @@ const AppRoutes = () => {
         />
         <Route path="/yarn-production/:id" element={<YarnProductionForm />} />
         {/* //YARN_TO_FABRIC PRODUCTION_LIST */}
-        <Route path="/yarn-fabric-production" element={<YarnTabs />} />
+        <Route path="/yarn" element={<YarnTabs />} />
+        <Route path="/yarn-fabric-production" element={<FabricTabs />} />
         <Route
           path="/yarn-fabric-production-create"
           element={<YarnToFabricProductionForm />}
@@ -108,7 +110,7 @@ const AppRoutes = () => {
           element={<YarnToFabricProductionForm />}
         />
         <Route
-          path="/fabric-production/:id"
+          path="/fabric-from-production/:id"
           element={<FabricProductionForm />}
         />
         {/* //YARN_TO_FABRIC WORK PRODUCTION_LIST */}
@@ -122,7 +124,7 @@ const AppRoutes = () => {
           element={<YarnToFabricWorkProductionForm />}
         />
         <Route
-          path="/fabric-work-production/:id"
+          path="/fabric-from-work-production/:id"
           element={<FabricWorkProductionForm />}
         />
         {/* //Report */}
