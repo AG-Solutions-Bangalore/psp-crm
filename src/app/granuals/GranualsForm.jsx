@@ -547,9 +547,9 @@ const GranualsForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Granual Purchase"
+                  "Update"
                 ) : (
-                  "Create Granual Purchase"
+                  "Submit"
                 )}{" "}
               </Button>
 

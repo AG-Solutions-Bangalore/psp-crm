@@ -6,16 +6,17 @@ import YarnToFabricProductionList from "@/app/yarntofabricproduction/YarnToFabri
 import YarnToFabricWorkProductionList from "@/app/yarntofabricworkproduction/YarnToFabricWorkProductionList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { setSalesTab } from "@/redux/slices/salestabsSlice";
+import { setYarnTab } from "@/redux/slices/yarntabSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export function YarnTabs() {
   const dispatch = useDispatch();
   const activeTab = useSelector(
-    (state) => state.salestab.salesTab || "yarnstock"
+    (state) => state.yarntab.yarnTab || "yarnstock"
   );
 
   const handleTabChange = (value) => {
-    dispatch(setSalesTab(value));
+    dispatch(setYarnTab(value));
   };
 
   return (
@@ -38,17 +39,17 @@ export function YarnTabs() {
               Stock
             </TabsTrigger>
             <TabsTrigger
-              value="yarnproduction"
+              value="production"
               className="px-4 py-2 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               {" "}
-              Yarn Production
+              Production
             </TabsTrigger>
             <TabsTrigger
-              value="yarnworkproduction"
+              value="jobwork"
               className="px-4 py-2 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-white"
             >
-              Yarn Work Production
+              Job Work
             </TabsTrigger>
           </TabsList>
         </div>
@@ -56,10 +57,10 @@ export function YarnTabs() {
         <TabsContent value="yarnstock" className="mt-4">
           <YarnStockReport />
         </TabsContent>
-        <TabsContent value="yarnproduction" className="mt-4">
+        <TabsContent value="production" className="mt-4">
           <YarnToFabricProductionList />
         </TabsContent>
-        <TabsContent value="yarnworkproduction" className="mt-4">
+        <TabsContent value="jobwork" className="mt-4">
           <YarnToFabricWorkProductionList />
         </TabsContent>
       </Tabs>

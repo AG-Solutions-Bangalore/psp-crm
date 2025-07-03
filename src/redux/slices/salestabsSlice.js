@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  salesTab: "yarnstock", 
+  salesTab: "sales", 
 };
 
 const salestabSlice = createSlice({

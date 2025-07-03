@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
+import { getWasteLevel } from "@/routes/common/WasteLevel";
 import { encryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -100,21 +101,51 @@ const YarnToFabricWorkProductionList = () => {
 
     {
       accessorKey: "total_weight",
-      id: "Total Weight",
-      header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
+      id: "Input",
+      header: "Input",
+      cell: ({ row }) => <div>{row.getValue("Input")}</div>,
     },
     {
-      accessorKey: "totalCount",
-      id: "Fabric Work Total",
-      header: "Fabric Work Total",
-      cell: ({ row }) => <div>{row.getValue("Fabric Work Total")}</div>,
+      accessorKey: "productionWeight",
+      id: "Output",
+      header: "Output",
+      cell: ({ row }) => <div>{row.getValue("Output")}</div>,
     },
+
     {
-      accessorKey: "productionCount",
-      id: "Production Total",
-      header: "Production Total",
-      cell: ({ row }) => <div>{row.getValue("Production Total")}</div>,
+      id: "Wastage",
+      header: "Wastage",
+      cell: ({ row }) => {
+        const input = row.original.total_weight;
+        const output = row.original.productionWeight;
+
+        if (output == 0) {
+          return (
+            <div
+              className={`rounded-full w-fit px-3 py-1 text-sm text-white ${ButtonConfig.wasteLevels.underProduction.bgColor}`}
+            >
+              Under Production
+            </div>
+          );
+        }
+
+        const waste = input - output;
+        const wastePercent = input > 0 ? (waste / input) * 100 : 0;
+        const efficiency = 100 - wastePercent;
+        const level = getWasteLevel(
+          wastePercent < 0 ? -1 : wastePercent,
+          efficiency
+        );
+        const bgColor = ButtonConfig.wasteLevels[level].bgColor;
+
+        return (
+          <div
+            className={`rounded-full w-fit px-3 py-1 text-sm text-white ${bgColor}`}
+          >
+            <span>{waste.toFixed(2)}</span> ({wastePercent.toFixed(0)}%)
+          </div>
+        );
+      },
     },
 
     {
@@ -143,7 +174,7 @@ const YarnToFabricWorkProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Edit Yarn Work Production</p>
+                  <p>Edit Yarn Job Work</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -184,7 +215,7 @@ const YarnToFabricWorkProductionList = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Create Yarn Work Production</p>
+                  <p>Create Yarn Job Work</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>{" "}
@@ -264,13 +295,13 @@ const YarnToFabricWorkProductionList = () => {
     }
   };
   if (isLoading) {
-    return <WithoutLoaderComponent name="Yarn Work Production" />;
+    return <WithoutLoaderComponent name="Yarn Job Work" />;
   }
 
   if (isError) {
     return (
       <WithoutErrorComponent
-        message="Error Fetching Yarn Work Production"
+        message="Error Fetching Yarn Job Work"
         refetch={refetch}
       />
     );
@@ -283,7 +314,7 @@ const YarnToFabricWorkProductionList = () => {
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search Yarn Work Production..."
+              placeholder="Search Yarn Job Work..."
               value={table.getState().globalFilter || ""}
               onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
@@ -323,7 +354,7 @@ const YarnToFabricWorkProductionList = () => {
               navigate("/yarn-fabric-work-production-create");
             }}
           >
-            <SquarePlus className="h-4 w-4 " /> Yarn Work Production
+            <SquarePlus className="h-4 w-4 " /> Yarn Job Work
           </Button>
         </div>
         {/* table  */}
@@ -383,7 +414,7 @@ const YarnToFabricWorkProductionList = () => {
         {/* row slection and pagintaion button  */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Total Yarn Work Production : &nbsp;
+            Total Yarn Job Work : &nbsp;
             {table.getFilteredRowModel().rows.length}
           </div>
           <div className="space-x-2">
@@ -410,7 +441,7 @@ const YarnToFabricWorkProductionList = () => {
       <DeleteAlertDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        description="Yarn To Fabric Work Production"
+        description="Yarn To Fabric Job Work"
         handleDelete={confirmDelete}
       />
     </>

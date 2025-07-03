@@ -526,9 +526,9 @@ const RawMaterialProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Raw Material Production"
+                  "Update"
                 ) : (
-                  "Create Raw Material Production"
+                  "Submit"
                 )}{" "}
               </Button>
 

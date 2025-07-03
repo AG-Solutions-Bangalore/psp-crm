@@ -478,7 +478,7 @@ const YarnProductionForm = () => {
                     {"Creating..."}
                   </>
                 ) : (
-                  "Create Yarn"
+                  "Submit"
                 )}{" "}
               </Button>
 

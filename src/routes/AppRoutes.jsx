@@ -43,6 +43,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthRoute from "./AuthRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
+import SalesSummary from "@/app/salessummary/SalesSummary";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -73,6 +74,9 @@ const AppRoutes = () => {
         <Route path="/sales-create" element={<SalesForm />} />
         <Route path="/sales-update/:id" element={<SalesForm />} />
         <Route path="/sales-view/:id" element={<SalesView />} />
+        {/* //sales SalesSummary */}
+        <Route path="/sales-summary" element={<SalesSummary />} />
+
         {/* //rawmaterialproduction */}
 
         <Route

@@ -12,6 +12,8 @@ import { PlusCircle, Trash2, MinusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
+import { getWasteLevel } from "@/routes/common/WasteLevel";
+import { ButtonConfig } from "@/config/ButtonConfig";
 
 const TabbedTableYarnToFabricWorkProduction = ({
   YarnRows,
@@ -38,13 +40,21 @@ const TabbedTableYarnToFabricWorkProduction = ({
     0
   );
 
-  const estimatedWaste =
-    totalInputWeight > 0
-      ? (
-          ((totalInputWeight - totalOutputWeight) / totalInputWeight) *
-          100
-        ).toFixed(2)
-      : "0.00";
+  let estimatedWaste = "0.00";
+  let level = "optimal";
+
+  if (totalOutputWeight == 0 && totalInputWeight > 0) {
+    level = "underProduction";
+  } else if (totalInputWeight > 0) {
+    const wastePercent =
+      ((totalInputWeight - totalOutputWeight) / totalInputWeight) * 100;
+    estimatedWaste = wastePercent.toFixed(2);
+    const efficiency = 100 - wastePercent;
+
+    level = getWasteLevel(wastePercent < 0 ? -1 : wastePercent, efficiency);
+  }
+
+  const textColor = ButtonConfig.wasteLevels[level].textColor;
   return (
     <>
       <Tabs defaultValue="first" onValueChange={setActiveTab}>
@@ -112,7 +122,7 @@ const TabbedTableYarnToFabricWorkProduction = ({
           Total {isInput ? "Input" : "Output"} Weight:{" "}
           {(isInput ? totalInputWeight : totalOutputWeight).toFixed(2)} kg
         </div>
-        <div
+        {/* <div
           className={`${
             parseFloat(estimatedWaste) < 0 || parseFloat(estimatedWaste) >= 40
               ? "text-red-800"
@@ -122,7 +132,12 @@ const TabbedTableYarnToFabricWorkProduction = ({
           }`}
         >
           Estimated Waste: {`${estimatedWaste}%`}
-        </div>
+        </div> */}
+        <span className={`${textColor}`}>
+          {level == "underProduction"
+            ? "Under Production"
+            : `Estimated Waste: ${estimatedWaste}%`}
+        </span>
       </div>
     </>
   );

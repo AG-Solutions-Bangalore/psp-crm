@@ -196,7 +196,7 @@ const RawMaterialReport = () => {
       const headers = [
         "Item Name",
         "Opening Stock",
-        "Purchase",
+        "Received",
         "Consume",
         "Closing Stock",
       ];
@@ -449,7 +449,7 @@ const RawMaterialReport = () => {
                   Opening Stock
                 </th>
                 <th className="border border-black px-2 py-2 text-center">
-                  Purchase
+                  Received
                 </th>
                 <th className="border border-black px-2 py-2 text-center cursor-pointer">
                   Consume{" "}
@@ -469,7 +469,12 @@ const RawMaterialReport = () => {
                       : true
                   )
                   .map((raw, index) => (
-                    <tr key={raw.item_id || index} className="hover:bg-gray-50">
+                    <tr
+                      key={raw.item_id || index}
+                      className={` ${
+                        raw.closing_stock < 0 ? "bg-red-200" : ""
+                      }`}
+                    >
                       <td className="border border-black px-2 py-2 ">
                         {raw.item_name}
                       </td>

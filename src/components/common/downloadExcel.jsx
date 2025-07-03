@@ -52,7 +52,32 @@ const downloadExcel = async ({
   data.forEach((item) => {
     const rowData = getRowData(item);
     if (!Array.isArray(rowData)) return;
-    worksheet.addRow(rowData);
+    //   worksheet.addRow(rowData);
+
+    //   rowData.forEach((val, i) => {
+    //     if (typeof val === "number") {
+    //       numericTotals[i] += val;
+    //     }
+    //   });
+    // });
+
+    // // const totalLabelIndex = headers.findIndex((h) => /total|amount/i.test(h));
+    //new end
+
+    const row = worksheet.addRow(rowData);
+    const closingStockIndex = headers.findIndex((h) =>
+      /closing stock/i.test(h)
+    );
+    const closingStock = rowData[closingStockIndex];
+    if (typeof closingStock == "number" && closingStock < 0) {
+      row.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFB3B3" },
+        };
+      });
+    }
 
     rowData.forEach((val, i) => {
       if (typeof val === "number") {
@@ -60,8 +85,7 @@ const downloadExcel = async ({
       }
     });
   });
-
-  // const totalLabelIndex = headers.findIndex((h) => /total|amount/i.test(h));
+  //new end
   const totalRowData = headers.map((_, i) =>
     i === 0
       ? "Total"
@@ -69,7 +93,6 @@ const downloadExcel = async ({
       ? numericTotals[i]
       : ""
   );
-
   const totalRow = worksheet.addRow(totalRowData);
   totalRow.eachCell((cell) => {
     cell.font = { bold: true };

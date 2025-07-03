@@ -1,11 +1,17 @@
 import {
   AudioWaveform,
-  Blocks,
+  ChartColumnDecreasing,
   Command,
-  Frame,
+  Factory,
   GalleryVerticalEnd,
+  House,
   NotebookText,
+  Package,
+  Scissors,
   Settings2,
+  Shirt,
+  ShoppingCart,
+  Zap,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -25,7 +31,17 @@ export function AppSidebar({ ...props }) {
   const emailL = useSelector((state) => state.auth.email);
   const companyName = useSelector((state) => state.auth.companyname);
   const userType = useSelector((state) => state.auth.user_type);
+  const firstSpaceIndex = companyName.indexOf(" ");
+  const name =
+    companyName.length > 5
+      ? `${companyName.slice(0, 5)} ${companyName.slice(
+          5,
+          companyName.indexOf(" ")
+        )}`
+      : companyName;
 
+  const plan =
+    firstSpaceIndex !== -1 ? companyName.slice(firstSpaceIndex + 1) : "";
   const initialData = {
     user: {
       name: `${nameL}`,
@@ -34,9 +50,9 @@ export function AppSidebar({ ...props }) {
     },
     teams: [
       {
-        name: `${companyName}`,
-        logo: GalleryVerticalEnd,
-        plan: "",
+        name: `${name}`,
+        logo: Factory,
+        plan: `${plan}`,
       },
       {
         name: "Acme Corp.",
@@ -53,7 +69,7 @@ export function AppSidebar({ ...props }) {
       {
         title: "Dashboard",
         url: "/home",
-        icon: Frame,
+        icon: House,
         isActive: false,
       },
 
@@ -90,13 +106,13 @@ export function AppSidebar({ ...props }) {
       {
         title: "Raw Material",
         url: "/raw-material",
-        icon: Blocks,
+        icon: Package,
         isActive: false,
       },
       {
         title: "Granuals",
         url: "/granuals",
-        icon: NotebookText,
+        icon: Zap,
         isActive: false,
       },
 
@@ -115,19 +131,25 @@ export function AppSidebar({ ...props }) {
       {
         title: "Yarn",
         url: "/yarn",
-        icon: NotebookText,
+        icon: Scissors,
         isActive: false,
       },
       {
         title: "Fabric",
         url: "/yarn-fabric-production",
-        icon: NotebookText,
+        icon: Shirt,
         isActive: false,
       },
       {
         title: "Sales",
         url: "/sales",
-        icon: NotebookText,
+        icon: Package,
+        isActive: false,
+      },
+      {
+        title: "Sales Summary",
+        url: "/sales-summary",
+        icon: Package,
         isActive: false,
       },
 
@@ -141,13 +163,13 @@ export function AppSidebar({ ...props }) {
         title: "Report",
         url: "#",
         isActive: false,
-        icon: Settings2,
+        icon: ChartColumnDecreasing,
         items: [
           {
             title: "Purchase",
             url: "#",
             isActive: false,
-            icon: Settings2,
+            icon: Package,
             items: [
               {
                 title: "Raw Material",
@@ -163,7 +185,7 @@ export function AppSidebar({ ...props }) {
             title: "Sales",
             url: "#",
             isActive: false,
-            icon: Settings2,
+            icon: ShoppingCart,
             items: [
               {
                 title: "Fabric",
@@ -179,7 +201,7 @@ export function AppSidebar({ ...props }) {
             title: "Production",
             url: "#",
             isActive: false,
-            icon: Settings2,
+            icon: Factory,
             items: [
               {
                 title: "Raw Material",
@@ -208,7 +230,7 @@ export function AppSidebar({ ...props }) {
             title: "Stock",
             url: "#",
             isActive: false,
-            icon: Settings2,
+            icon: Package,
             items: [
               {
                 title: "Raw material",
