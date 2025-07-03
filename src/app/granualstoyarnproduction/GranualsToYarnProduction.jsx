@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
+import { getWasteLevel } from "@/routes/common/WasteLevel";
 import { encryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -97,21 +98,50 @@ const GranualsToYarnProduction = () => {
 
     {
       accessorKey: "total_weight",
-      id: "Total Weight",
-      header: "Total Weight",
-      cell: ({ row }) => <div>{row.getValue("Total Weight")}</div>,
+      id: "Input",
+      header: "Input",
+      cell: ({ row }) => <div>{row.getValue("Input")}</div>,
     },
     {
-      accessorKey: "totalCount",
-      id: "Granuals Total",
-      header: "Granuals Total",
-      cell: ({ row }) => <div>{row.getValue("Granuals Total")}</div>,
+      accessorKey: "productionWeight",
+      id: "Output",
+      header: "Output",
+      cell: ({ row }) => <div>{row.getValue("Output")}</div>,
     },
     {
-      accessorKey: "productionCount",
-      id: "Production Total",
-      header: "Production Total",
-      cell: ({ row }) => <div>{row.getValue("Production Total")}</div>,
+      id: "Wastage",
+      header: "Wastage",
+      cell: ({ row }) => {
+        const input = row.original.total_weight;
+        const output = row.original.productionWeight;
+
+        if (output == 0) {
+          return (
+            <div
+              className={`rounded-full w-fit px-3 py-1 text-sm text-white ${ButtonConfig.wasteLevels.underProduction.bgColor}`}
+            >
+              Under Production
+            </div>
+          );
+        }
+
+        const waste = input - output;
+        const wastePercent = input > 0 ? (waste / input) * 100 : 0;
+        const efficiency = 100 - wastePercent;
+        const level = getWasteLevel(
+          wastePercent < 0 ? -1 : wastePercent,
+          efficiency
+        );
+        const bgColor = ButtonConfig.wasteLevels[level].bgColor;
+
+        return (
+          <div
+            className={`rounded-full w-fit px-3 py-1 text-sm text-white ${bgColor}`}
+          >
+            <span>{waste.toFixed(2)}</span> ({wastePercent.toFixed(0)}%)
+          </div>
+        );
+      },
     },
 
     {

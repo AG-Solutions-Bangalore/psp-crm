@@ -510,9 +510,9 @@ const RawMaterialForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Raw Material"
+                  "Update"
                 ) : (
-                  "Create Raw Material"
+                  "Submit"
                 )}{" "}
               </Button>
 

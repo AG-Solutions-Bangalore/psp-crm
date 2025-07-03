@@ -546,9 +546,9 @@ const GranualsToYarnProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Granual Production"
+                  "Update"
                 ) : (
-                  "Create Granual Production"
+                  "Submit"
                 )}{" "}
               </Button>
 

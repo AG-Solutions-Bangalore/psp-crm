@@ -448,7 +448,7 @@ const GranualProductForm = () => {
                     {"Creating..."}
                   </>
                 ) : (
-                  "Create Granuals"
+                  "Submit"
                 )}{" "}
               </Button>
 

@@ -488,12 +488,8 @@ const YarnToFabricWorkProductionForm = () => {
         <div className="">
           <form onSubmit={handleSubmit} className="w-full ">
             <PageHeaders
-              title={
-                editId
-                  ? "Update Yarn Work Production"
-                  : "Create Yarn Work Production"
-              }
-              subtitle="yarn work production"
+              title={editId ? "Update Yarn Job Work" : "Create Yarn Job Work"}
+              subtitle="yarn job work production"
               progress={progress}
               mode={editId ? "edit" : "create"}
             />
@@ -545,9 +541,9 @@ const YarnToFabricWorkProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Update Yarn Production"
+                  "Update"
                 ) : (
-                  "Create Yarn Production"
+                  "Submit"
                 )}{" "}
               </Button>
 
@@ -575,7 +571,7 @@ const YarnToFabricWorkProductionForm = () => {
       <DeleteAlertDialog
         open={deleteConfirmOpen1}
         onOpenChange={setDeleteConfirmOpen1}
-        description="Fabric Work Production Sub"
+        description="Fabric Job Work Sub"
         handleDelete={handleDeleteFabric}
       />
     </Page>

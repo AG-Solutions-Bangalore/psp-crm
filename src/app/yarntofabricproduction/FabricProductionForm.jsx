@@ -478,7 +478,7 @@ const FabricProductionForm = () => {
                     {"Creating..."}
                   </>
                 ) : (
-                  "Create Yarn"
+                  "Submit"
                 )}{" "}
               </Button>
 
@@ -489,7 +489,7 @@ const FabricProductionForm = () => {
                 }}
                 className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center mt-2`}
               >
-                Go Back 
+                Go Back
               </Button>
             </div>
           </form>

@@ -3,8 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { setGranualsTab } from "@/redux/slices/granualstabSlice";
 import { useDispatch, useSelector } from "react-redux";
 import GranualsList from "../../granuals/GranualsList";
-import GranualsToYarnProduction from "../../granualstoyarnproduction/GranualsToYarnProduction";
 import GranualsStockReport from "../../report/stock/GranualsStockReport";
+import GranualsToYarnProduction from "@/app/granualstoyarnproduction/GranualsToYarnProduction";
 
 export function GranualsTabs() {
   const dispatch = useDispatch();

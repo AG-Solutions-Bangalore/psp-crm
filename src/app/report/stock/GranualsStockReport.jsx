@@ -478,7 +478,11 @@ const GranualsStockReport = () => {
                   .map((raw, index) => (
                     <tr
                       key={raw.color_id || index}
-                      className="hover:bg-gray-50"
+                      className={` ${
+                        raw.closing_stock < 0
+                          ? "bg-red-200 "
+                          : ""
+                      }`}
                     >
                       <td className="border border-black px-2 py-2 ">
                         {raw.color_name}
@@ -509,6 +513,59 @@ const GranualsStockReport = () => {
                 </tr>
               )}
             </tbody>
+            {/* <tbody>
+              {granualsData && granualsData.length > 0 ? (
+                granualsData
+                  .filter((raw) =>
+                    formValues.itemName
+                      ? String(raw.color_id) == String(formValues.itemName)
+                      : true
+                  )
+                  .map((raw, index) => {
+                    const isNegative =
+                      raw.opening_stock < 0 ||
+                      raw.received < 0 ||
+                      raw.produced < 0 ||
+                      raw.consumed < 0 ||
+                      raw.closing_stock < 0;
+
+                    return (
+                      <tr
+                        key={raw.color_id || index}
+                        className={`hover:bg-gray-50 ${
+                          isNegative ? "bg-red-200" : ""
+                        }`}
+                      >
+                        <td className="border border-black px-2 py-2">
+                          {raw.color_name}
+                        </td>
+                        <td className="border border-black px-2 py-2 text-right">
+                          {raw.opening_stock}
+                        </td>
+                        <td className="border border-black px-2 py-2 text-right">
+                          {raw.received}
+                        </td>
+                        <td className="border border-black px-2 py-2 text-right">
+                          {raw.produced}
+                        </td>
+                        <td className="border border-black px-2 py-2 text-right">
+                          {raw.consumed}
+                        </td>
+                        <td className="border border-black px-2 py-2 text-right">
+                          {raw.closing_stock}
+                        </td>
+                      </tr>
+                    );
+                  })
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    No data available
+                  </td>
+                </tr>
+              )}
+            </tbody> */}
+
             <tfoot>
               <tr className="bg-gray-200  font-bold">
                 <td className="border border-black px-2 py-2">Total</td>

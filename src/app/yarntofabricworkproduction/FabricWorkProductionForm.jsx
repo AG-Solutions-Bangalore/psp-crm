@@ -482,7 +482,7 @@ const FabricWorkProductionForm = () => {
                     {"Creating..."}
                   </>
                 ) : (
-                  "Create Yarn Work"
+                  "Submit"
                 )}{" "}
               </Button>
 

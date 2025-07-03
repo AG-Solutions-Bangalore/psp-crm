@@ -540,9 +540,9 @@ const YarnToFabricProductionForm = () => {
                     {editId ? "Updating..." : "Creating..."}
                   </>
                 ) : editId ? (
-                  "Yarn Production"
+                  "Update"
                 ) : (
-                  "Yarn Production"
+                  "Submit"
                 )}{" "}
               </Button>
 

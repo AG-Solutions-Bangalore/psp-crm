@@ -481,7 +481,9 @@ const FabricStockReport = () => {
                   .map((raw, index) => (
                     <tr
                       key={raw.color_id || index}
-                      className="hover:bg-gray-50"
+                      className={`${
+                        raw.close_stock < 0 ? "bg-red-200 " : ""
+                      }`}
                     >
                       <td className="border border-black px-2 py-2 ">
                         {raw.color_name}
@@ -499,7 +501,7 @@ const FabricStockReport = () => {
                       <td className="border border-black px-2 py-2 text-right">
                         {raw.sold}
                       </td>
-               
+
                       <td className="border border-black px-2 py-2 text-right">
                         {raw.close_stock}
                       </td>
@@ -528,7 +530,7 @@ const FabricStockReport = () => {
                 <td className="border border-black px-2 py-2 text-right">
                   {total.sold.toFixed(2) || ""}
                 </td>
-        
+
                 <td className="border border-black px-2 py-2 text-right">
                   {total.close_stock.toFixed(2) || ""}
                 </td>
