@@ -147,8 +147,8 @@ export function AppSidebar({ ...props }) {
         isActive: false,
       },
       {
-        title: "Sales Summary",
-        url: "/sales-summary",
+        title: "Stock Summary",
+        url: "/stock-summary",
         icon: Package,
         isActive: false,
       },

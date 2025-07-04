@@ -84,7 +84,7 @@ const SalesSummaryReport = () => {
 
   const handlePrintPdf = useReactToPrint({
     content: () => containerRef.current,
-    documentTitle: "Sales Summary",
+    documentTitle: "Stock Summary",
     pageStyle: `
       @page {
         size: A4 portrait;
@@ -127,7 +127,7 @@ const SalesSummaryReport = () => {
       .from(containerRef.current)
       .set({
         margin: 10,
-        filename: "Sales Summary.pdf",
+        filename: "Stock Summary.pdf",
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -155,9 +155,9 @@ const SalesSummaryReport = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="lg:w-64 xl:w-72 shrink-0">
             <h1 className="text-xl font-bold text-gray-800 truncate">
-              Sales Summary
+              Stock Summary
             </h1>
-            <p className="text-md text-gray-500 truncate">View Sales Summary</p>
+            <p className="text-md text-gray-500 truncate">View Stock Summary</p>
           </div>
 
           <div className="bg-white p-3 rounded-md shadow-xs">
@@ -211,7 +211,7 @@ const SalesSummaryReport = () => {
             pdf ? "flex justify-between" : "hidden"
           } print:flex justify-between`}
         >
-          <h1 className="text-2xl font-semibold">Sales Summary</h1>
+          <h1 className="text-2xl font-semibold">Stock Summary</h1>
           <p>{moment(actualToDate).format("DD-MMM-YYYY")}</p>
         </div>
 
@@ -227,7 +227,7 @@ const SalesSummaryReport = () => {
                     Item
                   </th>
                   <th className="border border-black  py-2 text-center font-normal w-20">
-                    Closing Stock
+                     Stock
                   </th>
                 </tr>
               </thead>
@@ -284,7 +284,7 @@ const SalesSummaryReport = () => {
                     Color
                   </th>
                   <th className="border border-black  py-2 text-center font-normal w-20">
-                    Closing Stock
+                     Stock
                   </th>
                 </tr>
               </thead>
@@ -340,7 +340,7 @@ const SalesSummaryReport = () => {
                     Color
                   </th>
                   <th className="border border-black  py-2 text-center font-normal w-20">
-                    Closing Stock
+                     Stock
                   </th>
                 </tr>
               </thead>
@@ -396,7 +396,7 @@ const SalesSummaryReport = () => {
                     Color
                   </th>
                   <th className="border border-black font-normal w-20 py-2 text-center">
-                    Closing Stock
+                     Stock
                   </th>
                 </tr>
               </thead>
