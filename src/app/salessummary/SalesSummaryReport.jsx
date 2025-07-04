@@ -20,6 +20,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import moment from "moment";
+import UnderProduction from "./UnderProduction";
 const SalesSummaryReport = () => {
   const fromDate = "2025-04-01";
   const token = usetoken();
@@ -227,7 +228,7 @@ const SalesSummaryReport = () => {
                     Item
                   </th>
                   <th className="border border-black  py-2 text-center font-normal w-20">
-                     Stock
+                    Stock
                   </th>
                 </tr>
               </thead>
@@ -284,7 +285,7 @@ const SalesSummaryReport = () => {
                     Color
                   </th>
                   <th className="border border-black  py-2 text-center font-normal w-20">
-                     Stock
+                    Stock
                   </th>
                 </tr>
               </thead>
@@ -340,7 +341,7 @@ const SalesSummaryReport = () => {
                     Color
                   </th>
                   <th className="border border-black  py-2 text-center font-normal w-20">
-                     Stock
+                    Stock
                   </th>
                 </tr>
               </thead>
@@ -396,7 +397,7 @@ const SalesSummaryReport = () => {
                     Color
                   </th>
                   <th className="border border-black font-normal w-20 py-2 text-center">
-                     Stock
+                    Stock
                   </th>
                 </tr>
               </thead>
@@ -443,6 +444,7 @@ const SalesSummaryReport = () => {
             </table>
           </div>
         </div>
+        <UnderProduction />
       </div>
     </div>
   );
