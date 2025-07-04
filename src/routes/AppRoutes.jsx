@@ -75,7 +75,7 @@ const AppRoutes = () => {
         <Route path="/sales-update/:id" element={<SalesForm />} />
         <Route path="/sales-view/:id" element={<SalesView />} />
         {/* //sales SalesSummary */}
-        <Route path="/sales-summary" element={<SalesSummary />} />
+        <Route path="/stock-summary" element={<SalesSummary />} />
 
         {/* //rawmaterialproduction */}
 
