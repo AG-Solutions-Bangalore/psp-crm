@@ -149,6 +149,7 @@ const RawMaterialProduction = () => {
       header: "Action",
       cell: ({ row }) => {
         const id = row.original.id;
+        const output = parseFloat(row.original.productionWeight || 0);
 
         return (
           <div className="flex flex-row">
@@ -193,28 +194,30 @@ const RawMaterialProduction = () => {
                 </Tooltip>
               </TooltipProvider>
             )}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      navigate(
-                        `/granual-production/${encodeURIComponent(
-                          encryptId(id)
-                        )}`
-                      );
-                    }}
-                  >
-                    <SquarePlus />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Create Granuals</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>{" "}
+            {output == 0 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        navigate(
+                          `/granual-production/${encodeURIComponent(
+                            encryptId(id)
+                          )}`
+                        );
+                      }}
+                    >
+                      <SquarePlus />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Create Granuals</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         );
       },

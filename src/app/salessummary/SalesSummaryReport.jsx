@@ -124,26 +124,29 @@ const SalesSummaryReport = () => {
     setPdf(true);
     setPdfLoading(true);
 
-    html2pdf()
-      .from(containerRef.current)
-      .set({
-        margin: 10,
-        filename: "Stock Summary.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      })
-      .save()
-      .then(() => {
-        setPdf(false);
-        setPdfLoading(false);
-      })
-      .catch((error) => {
-        console.error("PDF export error:", error);
-        setPdf(false);
-        setPdfLoading(false);
-      });
+    setTimeout(() => {
+      html2pdf()
+        .from(containerRef.current)
+        .set({
+          margin: 10,
+          filename: "Stock Summary.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        })
+        .save()
+        .then(() => {
+          setPdf(false);
+          setPdfLoading(false);
+        })
+        .catch((error) => {
+          console.error("PDF export error:", error);
+          setPdf(false);
+          setPdfLoading(false);
+        });
+    }, 300);
   };
+
   if (loadingRaw || loadingGranuals || loadingYarn || fabricYarn) {
     return <WithoutLoaderComponent name="Stock Data" />;
   }
@@ -444,7 +447,7 @@ const SalesSummaryReport = () => {
             </table>
           </div>
         </div>
-        <UnderProduction />
+        <UnderProduction pdf={pdf} />
       </div>
     </div>
   );
