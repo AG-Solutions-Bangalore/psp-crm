@@ -6,35 +6,24 @@ import {
 } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ButtonConfig } from "@/config/ButtonConfig";
 import { useQuery } from "@tanstack/react-query";
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Search } from "lucide-react";
 import moment from "moment";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
+import DataTable from "./DataTable";
 
 const fetchProductionData = (url, token) =>
   apiClient
     .get(url, { headers: { Authorization: `Bearer ${token}` } })
     .then((res) => res.data.data);
 
-const UnderProduction = () => {
+const UnderProduction = ({ pdf }) => {
   const token = usetoken();
   const [globalFilter, setGlobalFilter] = useState("");
   const [granualFilter, setGranualFilter] = useState("");
@@ -82,8 +71,7 @@ const UnderProduction = () => {
       (item) => item.productionCount === 0
     );
   }, [yarnToFabricWorkProduction]);
-
-  const yarnColumns = [
+  const rawMaterialColumns = [
     {
       accessorKey: "index",
       id: "Sl No",
@@ -91,14 +79,15 @@ const UnderProduction = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "yarn_to_fabric_p_date",
+      accessorKey: "raw_material_to_p_date",
       header: "Date",
       cell: ({ row }) => (
         <div>
-          {moment(row.original.yarn_to_fabric_p_date).format("DD-MM-YYYY")}
+          {moment(row.original.raw_material_to_p_date).format("DD-MM-YYYY")}
         </div>
       ),
     },
+
     {
       accessorKey: "total_weight",
       header: "Input",
@@ -111,7 +100,7 @@ const UnderProduction = () => {
     },
   ];
 
-  const columns = [
+  const granualsColumns = [
     {
       accessorKey: "index",
       id: "Sl No",
@@ -119,15 +108,69 @@ const UnderProduction = () => {
       cell: ({ row }) => <div>{row.index + 1}</div>,
     },
     {
-      accessorKey: "date",
+      accessorKey: "granuals_to_yp_date",
       header: "Date",
-      cell: ({ row }) => {
-        const date =
-          row.original.raw_material_to_p_date ||
-          row.original.granuals_to_yp_date;
-        return <div>{moment(date).format("DD-MM-YYYY")}</div>;
-      },
+      cell: ({ row }) => (
+        <div>
+          {moment(row.original.granuals_to_yp_date).format("DD-MM-YYYY")}
+        </div>
+      ),
     },
+
+    {
+      accessorKey: "total_weight",
+      header: "Input",
+      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+    },
+    {
+      accessorKey: "productionWeight",
+      header: "Output",
+      cell: ({ row }) => <div>{row.getValue("productionWeight")}</div>,
+    },
+  ];
+
+  const yarnColumns = [
+    {
+      accessorKey: "index",
+      id: "Sl No",
+      header: "Sl No",
+      cell: ({ row }) => <div>{row.index + 1}</div>,
+    },
+    {
+      accessorKey: "yarn_to_fp_date",
+      header: "Date",
+      cell: ({ row }) => (
+        <div>{moment(row.original.yarn_to_fp_date).format("DD-MM-YYYY")}</div>
+      ),
+    },
+
+    {
+      accessorKey: "total_weight",
+      header: "Input",
+      cell: ({ row }) => <div>{row.getValue("total_weight")}</div>,
+    },
+    {
+      accessorKey: "productionWeight",
+      header: "Output",
+      cell: ({ row }) => <div>{row.getValue("productionWeight")}</div>,
+    },
+  ];
+
+  const fabricWorkColumns = [
+    {
+      accessorKey: "index",
+      id: "Sl No",
+      header: "Sl No",
+      cell: ({ row }) => <div>{row.index + 1}</div>,
+    },
+    {
+      accessorKey: "yarn_to_fwp_date",
+      header: "Date",
+      cell: ({ row }) => (
+        <div>{moment(row.original.yarn_to_fwp_date).format("DD-MM-YYYY")}</div>
+      ),
+    },
+
     {
       accessorKey: "total_weight",
       header: "Input",
@@ -142,7 +185,7 @@ const UnderProduction = () => {
 
   const table = useReactTable({
     data: filteredRawMaterial,
-    columns,
+    columns: rawMaterialColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -155,7 +198,7 @@ const UnderProduction = () => {
 
   const tableGranual = useReactTable({
     data: filteredGranual,
-    columns,
+    columns: granualsColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -178,7 +221,7 @@ const UnderProduction = () => {
 
   const tableFabricWork = useReactTable({
     data: filteredFabricWork,
-    columns: yarnColumns,
+    columns: fabricWorkColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -191,208 +234,46 @@ const UnderProduction = () => {
       <div className="flex justify-center mb-4">
         <h2 className="text-lg font-semibold">Under Production Data</h2>
       </div>
-
-      {/* Raw Material Table */}
-      <div className="w-full mb-8">
-        <div className="flex items-center justify-between py-4">
-          <h1 className="text-xl">Raw Material</h1>
-          <div className="relative w-72">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search Production..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className={`${ButtonConfig.tableHeader} ${ButtonConfig.tableLabel}`}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      {/* Granual Table */}
-      <div className="w-full">
-        <div className="flex items-center justify-between py-4">
-          <h1 className="text-xl">Granual</h1>
-          <div className="relative w-72">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search Production..."
-              value={granualFilter}
-              onChange={(e) => setGranualFilter(e.target.value)}
-              className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {tableGranual.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className={`${ButtonConfig.tableHeader} ${ButtonConfig.tableLabel}`}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : tableGranual.getRowModel().rows?.length ? (
-                tableGranual.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-      <div className="w-full mb-8">
-        <div className="flex items-center justify-between py-4">
-          <h1 className="text-xl">Raw Material</h1>
-          <div className="relative w-72">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search Production..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-8 bg-gray-50 border-gray-200 focus:border-gray-300 focus:ring-gray-200"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className={`${ButtonConfig.tableHeader} ${ButtonConfig.tableLabel}`}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+      {filteredRawMaterial.length > 0 && (
+        <DataTable
+          title="Raw Material"
+          filter={globalFilter}
+          setFilter={setGlobalFilter}
+          tableInstance={table}
+          columnCount={rawMaterialColumns.length}
+          pdf={pdf}
+        />
+      )}
+      {filteredGranual.length > 0 && (
+        <DataTable
+          title="Granuals"
+          filter={granualFilter}
+          setFilter={setGranualFilter}
+          tableInstance={tableGranual}
+          columnCount={granualsColumns.length}
+          pdf={pdf}
+        />
+      )}
+      {filteredYarn.length > 0 && (
+        <DataTable
+          title="Yarn"
+          filter={yarnFilter}
+          setFilter={setYarnFilter}
+          tableInstance={tableYarn}
+          columnCount={yarnColumns.length}
+          pdf={pdf}
+        />
+      )}
+      {filteredFabricWork.length > 0 && (
+        <DataTable
+          title="Fabric"
+          filter={fabricWorkFilter}
+          setFilter={setFabricWorkFilter}
+          tableInstance={tableFabricWork}
+          columnCount={fabricWorkColumns.length}
+          pdf={pdf}
+        />
+      )}
     </div>
   );
 };
