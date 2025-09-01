@@ -67,14 +67,12 @@ const VendorList = () => {
     },
   });
 
-  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
 
-  // Define columns for the table
   const columns = [
     {
       accessorKey: "index",
@@ -188,7 +186,6 @@ const VendorList = () => {
     },
   ];
 
-  // Create the table instance
   const table = useReactTable({
     data: vendors || [],
     columns,
@@ -213,12 +210,10 @@ const VendorList = () => {
     },
   });
 
-  // Render loading state
   if (isLoading) {
     return <LoaderComponent name="Vendor Data" />;
   }
 
-  // Render error state
   if (isError) {
     return (
       <ErrorComponent message="Error Fetching Vendor Data" refetch={refetch} />

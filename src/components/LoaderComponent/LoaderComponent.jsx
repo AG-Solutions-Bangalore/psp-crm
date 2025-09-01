@@ -1,21 +1,7 @@
 import Page from "@/app/page/page";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-
-// export const LoaderComponent = ({ name }) => {
-//   return (
-//     <Page>
-//       <div className="flex justify-center items-center h-full">
-//         <Button disabled>
-//           <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-//           Loading {name}
-//         </Button>
-//       </div>
-//     </Page>
-//   );
-// };
 export const LoaderComponent = ({ name = "Loading..." }) => {
   return (
     <Page>
@@ -81,14 +67,6 @@ export const ErrorComponent = ({ message, refetch }) => {
 
 export const WithoutLoaderComponent = ({ name }) => {
   return (
-    // <Page>
-    // <div className="flex justify-center items-center h-96">
-    //   <Button disabled>
-    //     <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-    //     Loading {name}
-    //   </Button>
-    // </div>
-    // </Page>
     <div className="relative h-96 overflow-hidden flex items-center justify-center">
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(100)].map((_, i) => (
@@ -137,7 +115,6 @@ export const WithoutLoaderComponent = ({ name }) => {
 
 export const WithoutErrorComponent = ({ message, refetch }) => {
   return (
-    // <Page>
     <Card className="w-full max-w-md mx-auto mt-10">
       <CardHeader>
         <CardTitle className="text-destructive">{message}</CardTitle>
@@ -148,6 +125,5 @@ export const WithoutErrorComponent = ({ message, refetch }) => {
         </Button>
       </CardContent>
     </Card>
-    // </Page>
   );
 };

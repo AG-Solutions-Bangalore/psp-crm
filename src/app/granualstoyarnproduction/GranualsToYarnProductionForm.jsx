@@ -216,7 +216,6 @@ const GranualsToYarnProductionForm = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target ? e.target.value : e;
-    console.log(value);
     let updatedFormData = { ...formData, [field]: value };
 
     setFormData(updatedFormData);
@@ -302,14 +301,6 @@ const GranualsToYarnProductionForm = () => {
           missingFields.push(`Yarn Row ${index + 1}: Thickness`);
       }
     });
-    // const cleanedInvoiceDataOne = invoiceDataOne.filter((row) => {
-    //   return (
-    //     row.yarn_from_p_color_id?.toString().trim() !== "" ||
-    //     row.yarn_from_p_bags?.toString().trim() !== "" ||
-    //     row.yarn_from_p_weight?.toString().trim() !== "" ||
-    //     row.yarn_from_p_thickness?.toString().trim() !== ""
-    //   );
-    // });
     if (missingFields.length > 0) {
       toast({
         title: "Validation Error",
@@ -369,7 +360,6 @@ const GranualsToYarnProductionForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description:

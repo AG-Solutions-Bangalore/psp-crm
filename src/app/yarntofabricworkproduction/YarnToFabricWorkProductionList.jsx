@@ -74,20 +74,24 @@ const YarnToFabricWorkProductionList = () => {
     setDeleteItemId(productId);
     setDeleteConfirmOpen(true);
   };
-  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
 
-  // Define columns for the table
   const columns = [
     {
       accessorKey: "index",
       id: "Sl No",
       header: "Sl No",
       cell: ({ row }) => <div>{row.index + 1}</div>,
+    },
+    {
+      accessorKey: "vendor_name",
+      id: "Vendor Name",
+      header: "Vendor Name",
+      cell: ({ row }) => <div>{row.getValue("Vendor Name")}</div>,
     },
     {
       accessorKey: "yarn_to_fwp_date",
@@ -198,7 +202,7 @@ const YarnToFabricWorkProductionList = () => {
                 </Tooltip>
               </TooltipProvider>
             )}
-            {output == 0 && (
+            {/* {output == 0 && ( */}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -221,7 +225,7 @@ const YarnToFabricWorkProductionList = () => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            )}
+            {/* )} */}
           </div>
         );
       },

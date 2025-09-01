@@ -21,8 +21,7 @@ const VersionCheck = () => {
   const [retryPopup, setRetryPopup] = useState(false);
   const isDialogOpen = useSelector((state) => state.version.showUpdateDialog);
   const serverVersion = useSelector((state) => state?.version?.version);
-  // console.log(
-
+  // console.log
   //   serverVersion,
   //   "serverVersion in"
   // );

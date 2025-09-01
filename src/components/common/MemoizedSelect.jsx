@@ -16,6 +16,8 @@ export const MemoizedSelect = React.memo(
     const customStyles = {
       control: (base, state) => ({
         ...base,
+        minHeight: "35px", 
+        height: "35px",
         borderRadius: "0.7rem",
         borderWidth: "0.1px",
         cursor: "pointer",

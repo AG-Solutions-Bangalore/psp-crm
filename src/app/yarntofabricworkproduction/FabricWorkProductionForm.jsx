@@ -3,6 +3,7 @@ import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
 import { MemoizedProductSelect } from "@/components/common/MemoizedProductSelect";
+import { MemoizedSelect } from "@/components/common/MemoizedSelect";
 import PageHeaders from "@/components/common/PageHeaders";
 import { LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchColor } from "@/hooks/useApi";
+import { useFetchColor, useFetchVendor } from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, MinusCircle, PlusCircle } from "lucide-react";
@@ -63,19 +64,20 @@ const FabricWorkProductionForm = () => {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
 
-    // Assuming financial year starts in April
     if (month >= 4) {
       return `${year}-${(year + 1).toString().slice(-2)}`;
     } else {
       return `${year - 1}-${year.toString().slice(-2)}`;
     }
   };
+  const { data: vendorData, isLoading: loadingvendor } = useFetchVendor();
 
   const financialYear = getFinancialYear();
   const [formData, setFormData] = useState({
     year: financialYear,
     yarn_to_fwp_date: today,
     yarn_to_fwp_ref: "",
+    fabric_from_wp_vendor_id: "",
   });
   const [invoiceData, setInvoiceData] = useState([
     {
@@ -97,6 +99,7 @@ const FabricWorkProductionForm = () => {
         year: financialYear || "",
         yarn_to_fwp_date: raw.yarn_to_fwp_date || "",
         yarn_to_fwp_ref: raw.yarn_to_fwp_ref || "",
+        fabric_from_wp_vendor_id: raw.yarn_to_fwp_vendor_id || "",
       });
     }
   }, [decryptedId, YarnToFabricWorkById]);
@@ -192,6 +195,7 @@ const FabricWorkProductionForm = () => {
     const missingFields = [];
     if (!formData.year) missingFields.push("Year");
     if (!formData.yarn_to_fwp_date) missingFields.push("Date");
+    if (!formData.fabric_from_wp_vendor_id) missingFields.push("Vendor");
     if (!formData.yarn_to_fwp_ref) missingFields.push("Ref");
 
     invoiceData.forEach((row, index) => {
@@ -202,7 +206,7 @@ const FabricWorkProductionForm = () => {
       if (!row.fabric_from_wp_weight)
         missingFields.push(`Row ${index + 1}: Weight`);
       if (!row.fabric_from_wp_thickness)
-        missingFields.push(`Row ${index + 1}: Thickness`);
+        missingFields.push(`Row ${index + 1}: Mess`);
     });
 
     if (missingFields.length > 0) {
@@ -249,7 +253,6 @@ const FabricWorkProductionForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description: error?.response?.data?.message || "Failed to save granual",
@@ -260,7 +263,7 @@ const FabricWorkProductionForm = () => {
     }
   };
 
-  if (isFetching || loadingitem) {
+  if (isFetching || loadingitem || loadingvendor) {
     return <LoaderComponent name="Yarn Work" />;
   }
   return (
@@ -275,7 +278,7 @@ const FabricWorkProductionForm = () => {
             />
             <Card className={`mb-6 ${ButtonConfig.cardColor}`}>
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2  gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-3  gap-2">
                   <div>
                     <div>
                       <label
@@ -304,6 +307,29 @@ const FabricWorkProductionForm = () => {
                         handleInputChange(e, "raw_material_to_p_ref")
                       }
                       disabled
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <label
+                        className={`text-sm font-medium ${ButtonConfig.cardLabel}`}
+                      >
+                        Vendor <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+
+                    <MemoizedSelect
+                      value={formData.fabric_from_wp_vendor_id}
+                      onChange={(e) =>
+                        handleInputChange(e, "fabric_from_wp_vendor_id")
+                      }
+                      options={
+                        vendorData?.data?.map((vendor) => ({
+                          value: vendor.id,
+                          label: vendor.vendor_name,
+                        })) || []
+                      }
+                      placeholder="Select Vendor"
                     />
                   </div>
                 </div>
@@ -345,7 +371,7 @@ const FabricWorkProductionForm = () => {
                         <TableHead className="text-sm font-semibold text-gray-600 px-4 py-3  w-[20%]">
                           <div className="flex items-center justify-between">
                             <span>
-                              Thickness
+                              Mess
                               <span className="text-red-500 ml-1 text-xs">
                                 *
                               </span>
@@ -394,12 +420,32 @@ const FabricWorkProductionForm = () => {
                           <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-col gap-1">
                               <Input
+                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
+                                value={
+                                  invoiceData[rowIndex]
+                                    ?.fabric_from_wp_thickness || ""
+                                }
+                                placeholder="Enter Mess"
+                                onChange={(e) =>
+                                  handlePaymentChange(
+                                    e,
+                                    rowIndex,
+                                    "fabric_from_wp_thickness"
+                                  )
+                                }
+                                maxLength={10}
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 align-top">
+                            <div className="flex flex-col gap-1">
+                              <Input
                                 className="bg-white border border-gray-300 rounded-lg  "
                                 value={
                                   invoiceData[rowIndex]?.fabric_from_wp_mtr ||
                                   ""
                                 }
-                                placeholder="Enter Bags"
+                                placeholder="Enter Meter"
                                 onChange={(e) =>
                                   handlePaymentChange(
                                     e,
@@ -425,26 +471,6 @@ const FabricWorkProductionForm = () => {
                                     e,
                                     rowIndex,
                                     "fabric_from_wp_weight"
-                                  )
-                                }
-                                maxLength={10}
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell className="px-4 py-3 align-top">
-                            <div className="flex flex-col gap-1">
-                              <Input
-                                className="bg-white border border-gray-300 rounded-lg  focus:ring-2 "
-                                value={
-                                  invoiceData[rowIndex]
-                                    ?.fabric_from_wp_thickness || ""
-                                }
-                                placeholder="Enter Weight"
-                                onChange={(e) =>
-                                  handlePaymentChange(
-                                    e,
-                                    rowIndex,
-                                    "fabric_from_wp_thickness"
                                   )
                                 }
                                 maxLength={10}

@@ -150,7 +150,6 @@ const RawMaterialForm = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target ? e.target.value : e;
-    console.log(value);
     let updatedFormData = { ...formData, [field]: value };
 
     setFormData(updatedFormData);
@@ -247,7 +246,6 @@ const RawMaterialForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description:

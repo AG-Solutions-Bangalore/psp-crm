@@ -56,7 +56,6 @@ const vendorFormSchema = z.object({
   status: z.string().min(1, "Status is required"),
 });
 
-// Header Component
 const VendorHeader = ({ vendorDetails }) => {
   return (
     <div
@@ -168,7 +167,6 @@ const VendorEdit = () => {
     }
   }, [vendorDetails]);
 
-  // Update vendor mutation
   const updateVendorMutation = useMutation({
     mutationFn: ({ data, id, token }) => updateVendor(data, id, token),
 

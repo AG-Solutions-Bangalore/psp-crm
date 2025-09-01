@@ -176,7 +176,7 @@ const ProductionYarnReport = () => {
         "Thickness"
       ];
 
-      // Calculate totals
+    
       const totals = calculateTotals(data);
 
       const getRowData = (item) => [
@@ -187,9 +187,8 @@ const ProductionYarnReport = () => {
         Number(item.yarn_from_p_thickness || 0).toFixed(2)
       ];
 
-      // Prepare data with total row
       const excelData = [
-        { values: headers }, // Header row
+        { values: headers }, 
         ...data.map(item => ({ values: getRowData(item) })),
         { 
           isFooter: true,
@@ -279,10 +278,10 @@ const ProductionYarnReport = () => {
         ]
       });
 
-      allData.push({ values: [] }); // Empty row between months
+      allData.push({ values: [] }); 
     });
 
-    // Add Grand Total at the end
+
     if (Object.keys(monthlyData).length > 0) {
       allData.push({
         isFooter: true,
@@ -381,10 +380,10 @@ const ProductionYarnReport = () => {
         ]
       });
 
-      allData.push({ values: [] }); // Empty row between colors
+      allData.push({ values: [] }); 
     });
 
-    // Add Grand Total at the end
+
     if (Object.keys(colorData).length > 0) {
       allData.push({
         isFooter: true,

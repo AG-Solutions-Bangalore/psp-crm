@@ -172,7 +172,7 @@ const downloadAllCSV = async (data, toast, setExcelLoading) => {
       "Weight"
     ];
 
-    // Calculate total weight
+   
     const totalWeight = data.reduce((sum, item) => {
       return sum + Number(item.raw_material_sub_to_p_weight || 0);
     }, 0);
@@ -183,9 +183,9 @@ const downloadAllCSV = async (data, toast, setExcelLoading) => {
       Number(item.raw_material_sub_to_p_weight || 0).toFixed(2)
     ];
 
-    // Prepare data with total row
+   
     const excelData = [
-      { values: headers }, // Header row
+      { values: headers }, 
       ...data.map(item => ({ values: getRowData(item) })),
       { 
         isFooter: true,
@@ -202,7 +202,7 @@ const downloadAllCSV = async (data, toast, setExcelLoading) => {
       sheetName: "Raw Material Production Report",
       fileNamePrefix: "raw_material_production_report",
       toast,
-      customFormat: true, // Enable custom formatting for footer
+      customFormat: true,
       emptyDataCallback: () => ({
         title: "No Data",
         description: "No data available to export",
@@ -263,10 +263,10 @@ const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading) => {
       ]
     });
 
-    allData.push({ values: [] }); // Empty row between months
+    allData.push({ values: [] });
   });
 
-  // Add Grand Total at the end
+
   if (Object.keys(monthlyData).length > 0) {
     allData.push({
       isFooter: true,
@@ -353,10 +353,8 @@ const downloadItemwiseCSV = async (itemData, toast, setExcelLoading) => {
       ]
     });
 
-    allData.push({ values: [] }); // Empty row between items
+    allData.push({ values: [] });
   });
-
-  // Add Grand Total at the end
   if (Object.keys(itemData).length > 0) {
     allData.push({
       isFooter: true,

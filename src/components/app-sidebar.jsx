@@ -115,19 +115,6 @@ export function AppSidebar({ ...props }) {
         icon: Zap,
         isActive: false,
       },
-
-      // {
-      //   title: "Raw Material Production",
-      //   url: "/raw-material-production",
-      //   icon: NotebookText,
-      //   isActive: false,
-      // },
-      // {
-      //   title: "Granuals To Yarn Production",
-      //   url: "/granual-yarn-production",
-      //   icon: NotebookText,
-      //   isActive: false,
-      // },
       {
         title: "Yarn",
         url: "/yarn",
@@ -152,13 +139,6 @@ export function AppSidebar({ ...props }) {
         icon: Package,
         isActive: false,
       },
-
-      // {
-      //   title: "Yarn To Fabric Work Production",
-      //   url: "/yarn-fabric-work-production",
-      //   icon: NotebookText,
-      //   isActive: false,
-      // },
       {
         title: "Report",
         url: "#",
@@ -223,6 +203,10 @@ export function AppSidebar({ ...props }) {
               {
                 title: "Fabric Work",
                 url: "/report/production-fabric-work",
+              },
+              {
+                title: "Vendor Production",
+                url: "/report/vendor-production",
               },
             ],
           },
