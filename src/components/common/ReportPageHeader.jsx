@@ -14,7 +14,12 @@ export function ReportPageHeader({
     >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div className="lg:w-64 xl:w-72 shrink-0">
-          <h1 className="text-xl font-bold text-gray-800 truncate">{title}</h1>
+          <h1
+            className="text-xl font-bold text-gray-800"
+            style={{ fontFamily: "sans-serif" }}
+          >
+            {title}
+          </h1>
           <p className="text-md text-gray-500 truncate">{subtitle}</p>
         </div>
 

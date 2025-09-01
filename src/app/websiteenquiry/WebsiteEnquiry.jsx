@@ -55,14 +55,12 @@ const WebsiteEnquiry = () => {
     },
   });
 
-  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
 
-  // Define columns for the table
   const columns = [
     {
       accessorKey: "index",
@@ -129,7 +127,6 @@ const WebsiteEnquiry = () => {
     },
   });
 
-  // Render loading state
   if (isLoading) {
     return <LoaderComponent name="Website Enquiry Data" />;
   }

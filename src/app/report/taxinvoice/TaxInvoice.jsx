@@ -2,8 +2,6 @@ import html2pdf from "html2pdf.js";
 import { Loader, Printer } from "lucide-react";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-// import logo from "../../../public/v3.png";
-// import stamplogo from "../../../public/stamplogo.png";
 import Page from "@/app/page/page";
 import { Button } from "@/components/ui/button";
 import { ButtonConfig } from "@/config/ButtonConfig";

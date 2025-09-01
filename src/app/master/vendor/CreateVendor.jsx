@@ -29,7 +29,6 @@ const DropdownIndicator = () => (
     <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400" />
   </div>
 );
-// Validation Schema
 const branchFormSchema = z.object({
   vendor_name: z.string().min(1, "Name is required"),
   vendor_email: z.string().email("Invalid email format"),
@@ -90,7 +89,6 @@ const CreateVendor = () => {
   const createBranchMutation = useMutation({
     mutationFn: ({ data, token }) => createBranch(data, token),
     onSuccess: (response) => {
-      console.log(response);
       if (response.code == 201) {
         toast({
           title: "Success",
@@ -189,7 +187,6 @@ const handleInputChange = (e, field) => {
       });
     }
   };
-  console.log(formData.vendor_roles);
   return (
     <Page>
       <form onSubmit={handleSubmit} className="w-full p-0">
@@ -332,7 +329,6 @@ const handleInputChange = (e, field) => {
                 <Input
                   className="bg-white"
                   value={formData.vendor_state_code}
-                  // onChange={(e) => handleInputChange(e, "vendor_state_code")}
                   placeholder="Enter state code"
                   disabled
                 />

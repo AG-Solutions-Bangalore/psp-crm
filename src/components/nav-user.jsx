@@ -101,7 +101,7 @@ export function NavUser({ user }) {
                       </span>
                     </span>
                     <span className="flex items-center gap-1 font-semibold">
-                      Updated on :05/07/2025
+                      Updated on :01/09/2025
                     </span>
                   </div>
                 </div>
@@ -153,10 +153,7 @@ export function NavUser({ user }) {
       </SidebarMenu>
       <ChangePassword setOpen={setOpen} open={open} />
       <Profile setOpen={setOpenProfile} open={openprofile} />
-      {/* <VersionCheck
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
-      /> */}
+
     </>
   );
 }

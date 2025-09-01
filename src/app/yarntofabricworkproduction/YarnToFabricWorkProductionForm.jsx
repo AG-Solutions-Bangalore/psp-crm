@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ButtonConfig } from "@/config/ButtonConfig";
 import { useToast } from "@/hooks/use-toast";
-import { useFetchColor } from "@/hooks/useApi";
+import { useFetchColor, useFetchVendor } from "@/hooks/useApi";
 import { decryptId } from "@/utils/encyrption/Encyrption";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -18,6 +18,7 @@ import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TabbedTableYarnToFabricWorkProduction from "./TabbedTableYarnToFabricWorkProduction";
+import { MemoizedSelect } from "@/components/common/MemoizedSelect";
 const fetchYarnToFabricWork = async (id, token) => {
   const response = await apiClient.get(
     `${YARN_TO_FABRIC_WORK_PRODUCTION}/${id}`,
@@ -43,6 +44,7 @@ const YarnToFabricWorkProductionForm = () => {
       console.error("Failed to decrypt ID:", err.message);
     }
   }
+  const { data: vendorData, isLoading: loadingvendor } = useFetchVendor();
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
@@ -60,6 +62,7 @@ const YarnToFabricWorkProductionForm = () => {
 
   const [formData, setFormData] = useState({
     yarn_to_fwp_date: today,
+    yarn_to_fwp_vendor_id: "",
   });
 
   const [invoiceData, setInvoiceData] = useState([
@@ -90,6 +93,7 @@ const YarnToFabricWorkProductionForm = () => {
       const raw = YarnToWork.data;
       setFormData({
         yarn_to_fwp_date: raw.yarn_to_fwp_date || "",
+        yarn_to_fwp_vendor_id: raw.yarn_to_fwp_vendor_id || "",
       });
 
       const subItems = Array.isArray(YarnToWork?.data?.subs)
@@ -220,7 +224,6 @@ const YarnToFabricWorkProductionForm = () => {
 
   const handleInputChange = (e, field) => {
     const value = e.target ? e.target.value : e;
-    console.log(value);
     let updatedFormData = { ...formData, [field]: value };
 
     setFormData(updatedFormData);
@@ -271,6 +274,7 @@ const YarnToFabricWorkProductionForm = () => {
 
     const missingFields = [];
     if (!formData.yarn_to_fwp_date) missingFields.push("Date");
+    if (!formData.yarn_to_fwp_vendor_id) missingFields.push("Vendor");
 
     invoiceData.forEach((row, index) => {
       if (!row.yarn_to_fwp_thickness)
@@ -298,12 +302,12 @@ const YarnToFabricWorkProductionForm = () => {
       if (isAnyFieldFilled) {
         if (!fabric_from_wp_color_id)
           missingFields.push(`Fabric Row ${index + 1}: Color`);
+        if (!fabric_from_wp_thickness)
+          missingFields.push(`Fabric Row ${index + 1}: Mess`);
         if (!fabric_from_wp_mtr)
           missingFields.push(`Fabric Row ${index + 1}: Meter`);
         if (!fabric_from_wp_weight)
           missingFields.push(`Fabric Row ${index + 1}: Weight`);
-        if (!fabric_from_wp_thickness)
-          missingFields.push(`Fabric Row ${index + 1}: Thickness`);
       }
     });
 
@@ -368,7 +372,6 @@ const YarnToFabricWorkProductionForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description:
@@ -479,7 +482,7 @@ const YarnToFabricWorkProductionForm = () => {
       setDeleteItemId1(null);
     }
   };
-  if (isFetching || loadingcolor) {
+  if (isFetching || loadingcolor || loadingvendor) {
     return <LoaderComponent name="Yarn To Fabric Production" />;
   }
   return (
@@ -497,21 +500,41 @@ const YarnToFabricWorkProductionForm = () => {
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   <div>
-                    <div>
+                    <label
+                      className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                    >
+                      Date <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      className="bg-white"
+                      value={formData.yarn_to_fwp_date}
+                      onChange={(e) => handleInputChange(e, "yarn_to_fwp_date")}
+                      type="date"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
                       <label
-                        className={`block  ${ButtonConfig.cardLabel} text-sm mb-2 font-medium `}
+                        className={`text-sm font-medium ${ButtonConfig.cardLabel}`}
                       >
-                        Date <span className="text-red-500">*</span>
+                        Vendor <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        className="bg-white"
-                        value={formData.yarn_to_fwp_date}
-                        onChange={(e) =>
-                          handleInputChange(e, "yarn_to_fwp_date")
-                        }
-                        type="date"
-                      />
                     </div>
+
+                    <MemoizedSelect
+                      value={formData.yarn_to_fwp_vendor_id}
+                      onChange={(e) =>
+                        handleInputChange(e, "yarn_to_fwp_vendor_id")
+                      }
+                      options={
+                        vendorData?.data?.map((vendor) => ({
+                          value: vendor.id,
+                          label: vendor.vendor_name,
+                        })) || []
+                      }
+                      placeholder="Select Vendor"
+                    />
                   </div>
                 </div>
 

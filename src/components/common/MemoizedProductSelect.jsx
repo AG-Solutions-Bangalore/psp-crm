@@ -16,6 +16,8 @@ export const MemoizedProductSelect = React.memo(
     const customStyles = {
       control: (base, state) => ({
         ...base,
+        minHeight: "35px",
+        height: "35px",
         borderRadius: "0.7rem",
         borderWidth: "0.1px",
         cursor: "pointer",
@@ -71,9 +73,7 @@ export const MemoizedProductSelect = React.memo(
     return (
       <ReactSelect
         value={selectedOption}
-        // onChange={(selected) => onChange(selected ? selected.value : "")}
         onChange={(selected) => {
-          console.log("Selected value:", selected?.value);
           onChange(selected?.value);
         }}
         options={selectOptions}

@@ -14,11 +14,6 @@ const useLogout = () => {
   const token = usetoken();
   const handleLogout = async () => {
     try {
-      // await apiClient.post(`${PANEL_LOGOUT}`, null, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
 
       await persistor.flush();
       localStorage.clear();

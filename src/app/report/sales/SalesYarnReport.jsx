@@ -1,10 +1,7 @@
-/* eslint-disable no-unused-vars */
 import { SALES_FABRIC_REPORT } from "@/api";
 import apiClient from "@/api/axios";
 import usetoken from "@/api/usetoken";
 import Page from "@/app/page/page";
-
-// import { ErrorComponent, LoaderComponent } from "@/components/LoaderComponent/LoaderComponent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +23,6 @@ const SalesYarnReport = () => {
   const token = usetoken();
   const { toast } = useToast();
   const companyStateName = useSelector((state) => state.auth.companystatename);
-  console.log("state",companyStateName)  // TAMIL NADU
   const formatDate = (date) => {
     const dd = String(date.getDate()).padStart(2, "0");
     const mm = String(date.getMonth() + 1).padStart(2, "0");
@@ -128,11 +124,9 @@ const SalesYarnReport = () => {
     let igst = 0;
   
     if (isSameState) {
-      // If same state, show CGST and SGST, IGST = 0
       cgst = (amount * Number(item.sales_cgst || 0)) / 100;
       sgst = (amount * Number(item.sales_sgst || 0)) / 100;
     } else {
-      // If different state, show IGST, CGST and SGST = 0
       igst = (amount * Number(item.sales_igst || 0)) / 100;
     }
   
@@ -858,7 +852,7 @@ onClick={() => downloadVendorwiseCSV(vendorData, toast, setExcelLoading, company
     {Object.keys(vendorData).length > 0 ? (
       Object.entries(vendorData).map(([vendor, items]) => {
         const vendorTotals = calculateTotals(items);
-        const vendorGst = items[0]?.vendor_gst || ''; // Get GST from first item
+        const vendorGst = items[0]?.vendor_gst || ''; 
         return (
           <div key={vendor} className="mb-6 border-t mt-6 border-l border-r border-black">
             <h2 className="p-2 bg-gray-200 font-bold">
