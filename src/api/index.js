@@ -84,3 +84,5 @@ export const YARN_PRODUCTION_REPORT = `/api/yarnsproductionreport`;
 export const FABRIC_PRODUCTION_REPORT = `/api/fabricproductionreport`;
 //FABRIC_WORK_PRODUCTION_REPORT
 export const FABRIC_WORK_PRODUCTION_REPORT = `/api/fabricworkproductionreport`;
+//FABRIC_WORK_PRODUCTION_REPORT
+export const VENDOR_WORK_PRODUCTION_REPORT = `/api/vendorproductionreport`;

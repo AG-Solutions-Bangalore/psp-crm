@@ -57,13 +57,11 @@ const TeamList = () => {
     },
   });
 
-  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  // Define columns for the table
   const columns = [
     {
       accessorKey: "id",
@@ -125,7 +123,6 @@ const TeamList = () => {
     },
   ];
 
-  // Create the table instance
   const table = useReactTable({
     data: teams || [],
     columns,
@@ -150,12 +147,10 @@ const TeamList = () => {
     },
   });
 
-  // Render loading state
   if (isLoading) {
     return <LoaderComponent name="Team Data" />;
   }
 
-  // Render error state
   if (isError) {
     return <ErrorComponent message="Error Team Data" refetch={refetch} />;
   }

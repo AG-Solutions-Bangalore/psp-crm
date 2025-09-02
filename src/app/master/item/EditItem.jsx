@@ -41,9 +41,6 @@ const EditItem = ({ customdescriptionId }) => {
     status: "",
   });
   const [originalData, setOriginalData] = useState(null);
-  console.log(originalData, "originalData");
-  console.log(formData, "formData");
-  // Fetch state data
   const fetchStateData = async () => {
     setIsFetching(true);
     try {
@@ -80,7 +77,6 @@ const EditItem = ({ customdescriptionId }) => {
     }
   }, [open]);
 
-  // Handle form submission
   const handleSubmit = async () => {
     if (!formData.item_name.trim()) {
       toast({
@@ -127,7 +123,6 @@ const EditItem = ({ customdescriptionId }) => {
     }
   };
 
-  // Check if there are changes
   const hasChanges =
     originalData &&
     (formData.item_name !== originalData.item_name ||

@@ -59,8 +59,6 @@ export default function ForgotPassword({ setForgot }) {
     formData.append("username", username);
 
     try {
-      console.log("Submitting forgot password request...");
-
       const res = await apiClient.post(`${PANEL_SEND_PASSWORD}`, formData);
 
       if (res.status === 200) {
@@ -107,9 +105,6 @@ export default function ForgotPassword({ setForgot }) {
       <Card className="bg-white backdrops-blur-lg rounded-lg shadow-lg  md:p-6">
         <CardHeader className="text-center space-y-2 p-3">
           <Logo />
-          {/* <CardTitle className="text-xl font-bold text-start">
-                    Forgot Password
-                  </CardTitle> */}
           <CardDescription className="text-sm text-gray-600">
             Enter your email to receive a reset link
           </CardDescription>
@@ -173,7 +168,5 @@ export default function ForgotPassword({ setForgot }) {
         </CardContent>
       </Card>
     </>
-    //   </motion.div>
-    // </motion.div>
   );
 }

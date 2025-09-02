@@ -29,10 +29,12 @@ import YarnStockReport from "@/app/report/stock/YarnStockReport";
 import TaxInvoice from "@/app/report/taxinvoice/TaxInvoice";
 import SalesForm from "@/app/sales/SalesForm";
 import SalesView from "@/app/sales/SalesView";
+import SalesSummary from "@/app/salessummary/SalesSummary";
+import { FabricTabs } from "@/app/Tabs/FabricTabs/FabricTabs";
 import { GranualsTabs } from "@/app/Tabs/GranualsTabs/GranualsTabs";
 import { RawMaterialTabs } from "@/app/Tabs/RawMaterialTabs/RawMaterialTabs";
 import { SalesTabs } from "@/app/Tabs/SalesTabs/SalesTabs";
-import { FabricTabs } from "@/app/Tabs/FabricTabs/FabricTabs";
+import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
 import WebsiteEnquiry from "@/app/websiteenquiry/WebsiteEnquiry";
 import FabricProductionForm from "@/app/yarntofabricproduction/FabricProductionForm";
 import YarnToFabricProductionForm from "@/app/yarntofabricproduction/YarnToFabricProductionForm";
@@ -42,8 +44,7 @@ import Maintenance from "@/components/common/Maintenance";
 import { Route, Routes } from "react-router-dom";
 import AuthRoute from "./AuthRoute";
 import ProtectedRoute from "./ProtectedRoute";
-import { YarnTabs } from "@/app/Tabs/YarnTabs/YarnTabs";
-import SalesSummary from "@/app/salessummary/SalesSummary";
+import VendorProductionReport from "@/app/report/production/VendorProductionReport";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -162,10 +163,16 @@ const AppRoutes = () => {
           path="/report/production-fabric"
           element={<ProductionFabricReport />}
         />
+
         <Route
           path="/report/production-fabric-work"
           element={<ProductionFabricWorkReport />}
         />
+        <Route
+          path="/report/vendor-production"
+          element={<VendorProductionReport />}
+        />
+
         {/* //Website enquiryt */}
         <Route path="/website-enquiry" element={<WebsiteEnquiry />} />
         <Route path="/report-tax-invoice" element={<TaxInvoice />} />

@@ -43,7 +43,6 @@ const EditColor = ({ customdescriptionId }) => {
   });
   const [originalData, setOriginalData] = useState(null);
 
-  // Fetch state data
   const fetchStateData = async () => {
     setIsFetching(true);
     try {
@@ -80,7 +79,6 @@ const EditColor = ({ customdescriptionId }) => {
     }
   }, [open]);
 
-  // Handle form submission
   const handleSubmit = async () => {
     if (!formData.color.trim()) {
       toast({
@@ -129,7 +127,6 @@ const EditColor = ({ customdescriptionId }) => {
     }
   };
 
-  // Check if there are changes
   const hasChanges =
     originalData &&
     (formData.color !== originalData.color ||

@@ -59,14 +59,12 @@ const ColorList = () => {
     },
   });
 
-  // State for table management
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
 
-  // Define columns for the table
   const columns = [
     {
       accessorKey: "index",
@@ -127,7 +125,6 @@ const ColorList = () => {
       : []),
   ];
 
-  // Create the table instance
   const table = useReactTable({
     data: color || [],
     columns,

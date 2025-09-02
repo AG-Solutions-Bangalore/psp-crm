@@ -38,7 +38,6 @@ const DisableRightClick = () => {
       }
     };
 
-    // Add event listeners
     document.addEventListener("contextmenu", handleRightClick);
     document.addEventListener("keydown", handleKeyDown);
     document.onkeydown = handleKeyDown;

@@ -10,7 +10,6 @@ const ToastProvider = ToastPrimitives.Provider;
 const ToastViewport = React.forwardRef(({ className, ...props }, ref) => (
   <ToastPrimitives.Viewport
     ref={ref}
-    //removed -sm:bottom-0
     className={cn(
       "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4  sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
       className
@@ -26,26 +25,19 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: "border bg-background text-foreground",
-        // destructive:
-        //   "destructive group border-destructive bg-destructive text-destructive-foreground",
         destructive:
           "destructive group bg-gradient-to-r from-[#842029] to-[#d9534f] text-white border-none",
-
-        //extra
         success:
           "bg-gradient-to-r from-[#1f7a57] to-[#82b8a4] text-black border-none",
       },
     },
     defaultVariants: {
-      // variant: "default",
-      //extra
       variant: "success",
     },
   }
 );
 
 const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
-  // console.log(variant);
   return (
     <ToastPrimitives.Root
       ref={ref}
@@ -55,18 +47,6 @@ const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
   );
 });
 Toast.displayName = ToastPrimitives.Root.displayName;
-
-// const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
-//   <ToastPrimitives.Action
-//     ref={ref}
-//     className={cn(
-//       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium transition-colors hover:bg-secondary focus:outline-none focus:ring-1 focus:ring-ring disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
-//       className
-//     )}
-//     {...props}
-//   />
-// ));
-// ToastAction.displayName = ToastPrimitives.Action.displayName;
 const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
   <ToastPrimitives.Action
     ref={ref}
@@ -77,21 +57,6 @@ const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
     {...props}
   />
 ));
-
-// const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
-//   <ToastPrimitives.Close
-//     ref={ref}
-//     className={cn(
-//       "absolute right-1 top-1 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
-//       className
-//     )}
-//     toast-close=""
-//     {...props}
-//   >
-//     <Cross2Icon className="h-4 w-4" />
-//   </ToastPrimitives.Close>
-// ));
-// ToastClose.displayName = ToastPrimitives.Close.displayName;
 const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
   <ToastPrimitives.Close
     ref={ref}

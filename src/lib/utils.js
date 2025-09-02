@@ -4,17 +4,6 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
-
-
-
-
-// export interface Star {
-//   position: string;
-//   size: string;
-//   blur: string;
-//   color: string;
-// }
-
 export const createStars = (count, color) => {
   const stars = [];
   for (let i = 0; i < count; i++) {

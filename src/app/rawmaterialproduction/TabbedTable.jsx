@@ -31,31 +31,6 @@ const TabbedTable = ({
   const [activeTab, setActiveTab] = useState("first");
   const isInput = activeTab === "first";
 
-  // const totalInputWeight = rawMaterialRows.reduce(
-  //   (acc, row) => acc + (parseFloat(row.raw_material_sub_to_p_weight) || 0),
-  //   0
-  // );
-
-  // const totalOutputWeight = granualsRows.reduce(
-  //   (acc, row) => acc + (parseFloat(row.granuals_from_p_weight) || 0),
-  //   0
-  // );
-
-  // const estimatedWaste =
-  //   totalInputWeight > 0
-  //     ? (
-  //         ((totalInputWeight - totalOutputWeight) / totalInputWeight) *
-  //         100
-  //       ).toFixed(2)
-  //     : "0.00";
-
-  // const estimatedWasteNum = parseFloat(estimatedWaste);
-  // const efficiency = 100 - estimatedWasteNum;
-  // const level = getWasteLevel(
-  //   estimatedWasteNum < 0 ? -1 : estimatedWasteNum,
-  //   efficiency
-  // );
-  // const textColor = ButtonConfig.wasteLevels[level].textColor;
   const totalInputWeight = rawMaterialRows.reduce(
     (acc, row) => acc + (parseFloat(row.raw_material_sub_to_p_weight) || 0),
     0
@@ -240,7 +215,6 @@ const TableSection = ({
                     <Button
                       variant="ghost"
                       onClick={() => {
-                        console.log("Deleting row with ID:", row.id);
                         deleteRow(row.id);
                       }}
                       className="text-red-500"

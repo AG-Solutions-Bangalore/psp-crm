@@ -53,7 +53,6 @@ const downloadExcelMultiRow = async ({
       } else if (row.values && row.values.length > 0) {
         const dataRow = worksheet.addRow(row.values);
         if (!headers.length && dataRow.number === 1) {
-          // Auto-detect headers if not provided
           dataRow.eachCell((cell) => {
             cell.font = { bold: true };
             cell.fill = {

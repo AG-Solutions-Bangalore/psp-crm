@@ -59,13 +59,17 @@ const Dashboard = () => {
     <Page>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold">Production Dashboard</h2>
+          <h2
+            style={{ fontFamily: "sans-serif" }}
+            className="text-2xl font-bold"
+          >
+            Production Dashboard
+          </h2>
           <p className="text-muted-foreground">
             Overview of your manufacturing operations
           </p>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-6">
@@ -140,7 +144,9 @@ const Dashboard = () => {
           {/* Monthly Production and Monthly sales */}
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Production and Sales</CardTitle>
+              <CardTitle style={{ fontFamily: "sans-serif" }}>
+                Monthly Production and Sales
+              </CardTitle>
               <CardDescription>
                 Current month production and sales breakdown
               </CardDescription>
@@ -206,7 +212,9 @@ const Dashboard = () => {
           {/* Recent Production */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Production</CardTitle>
+              <CardTitle style={{ fontFamily: "sans-serif" }}>
+                Recent Production
+              </CardTitle>
               <CardDescription>Latest production batches</CardDescription>
             </CardHeader>
             <CardContent>
@@ -243,7 +251,9 @@ const Dashboard = () => {
           {/* Waste Tracking */}
           <Card>
             <CardHeader>
-              <CardTitle>Waste Management</CardTitle>
+              <CardTitle style={{ fontFamily: "sans-serif" }}>
+                Waste Management
+              </CardTitle>
               <CardDescription>
                 Production efficiency and waste tracking
               </CardDescription>
@@ -285,7 +295,9 @@ const Dashboard = () => {
           {/* Recent Sales */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
+              <CardTitle style={{ fontFamily: "sans-serif" }}>
+                Recent Sales
+              </CardTitle>
               <CardDescription>
                 Latest customer orders and revenue
               </CardDescription>

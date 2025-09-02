@@ -217,7 +217,6 @@ const TableSection = ({
                     <Button
                       variant="ghost"
                       onClick={() => {
-                        console.log("Deleting row with ID:", row.id);
                         deleteRow(row.id);
                       }}
                       className="text-red-500"

@@ -63,16 +63,13 @@ const SessionTimeoutTracker = ({ expiryTime, onLogout }) => {
       }
     };
 
-    // Set up intervals for ongoing checks
     const checkInterval = setInterval(checkExpiry, 1000);
     const countdownInterval = setInterval(countdownTimer, 1000);
 
     intervalIds.push(checkInterval, countdownInterval);
 
-    // Also set up a listener for storage events to catch manual logouts
     const handleStorageChange = (e) => {
       if (e.key === "token" && !e.newValue) {
-        // Token was removed
         setShowBanner(false);
         hasLoggedOut.current = true;
         intervalIds.forEach((id) => clearInterval(id));

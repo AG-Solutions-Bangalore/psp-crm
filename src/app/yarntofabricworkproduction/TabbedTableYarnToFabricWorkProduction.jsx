@@ -107,12 +107,12 @@ const TabbedTableYarnToFabricWorkProduction = ({
               "fabric_from_wp_weight",
               "fabric_from_wp_thickness",
             ]}
-            labels={["Color", "Meter", "Weight", "Thickness"]}
+            labels={["Color", "Mess", "Meter", "Weight"]}
             placeholders={[
               "Select Color",
+              "Enter Mess",
               "Enter Meter",
               "Enter Weight",
-              "Enter Thickness",
             ]}
           />
         </TabsContent>
@@ -217,7 +217,6 @@ const TableSection = ({
                     <Button
                       variant="ghost"
                       onClick={() => {
-                        console.log("Deleting row with ID:", row.id);
                         deleteRow(row.id);
                       }}
                       className="text-red-500"

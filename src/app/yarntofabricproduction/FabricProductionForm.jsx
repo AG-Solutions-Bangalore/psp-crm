@@ -59,8 +59,6 @@ const FabricProductionForm = () => {
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
-
-    // Assuming financial year starts in April
     if (month >= 4) {
       return `${year}-${(year + 1).toString().slice(-2)}`;
     } else {
@@ -74,7 +72,6 @@ const FabricProductionForm = () => {
     yarn_to_fp_date: today,
     yarn_to_fp_ref: "",
   });
-  console.log(formData);
   const [invoiceData, setInvoiceData] = useState([
     {
       fabric_from_p_color_id: "",
@@ -246,7 +243,6 @@ const FabricProductionForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description: error?.response?.data?.message || "Failed to save granual",

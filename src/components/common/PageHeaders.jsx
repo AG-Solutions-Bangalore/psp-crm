@@ -11,7 +11,12 @@ const PageHeaders = ({ progress, title, subtitle, mode = "create" }) => {
       className={`flex sticky top-0 z-10 border border-gray-200 rounded-lg justify-between items-start gap-8 mb-2 ${ButtonConfig.cardheaderColor} p-4 shadow-sm`}
     >
       <div className="flex-1">
-        <h1 className="text-2xl font-bold text-gray-800">{title || ""}</h1>
+        <h1
+          className="text-2xl font-bold text-gray-800"
+          style={{ fontFamily: "sans-serif" }}
+        >
+          {title || ""}
+        </h1>
         <p className="text-gray-600 mt-2">{actionText}</p>
       </div>
 

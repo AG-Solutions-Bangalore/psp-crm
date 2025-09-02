@@ -63,7 +63,6 @@ const GranualProductForm = () => {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
 
-    // Assuming financial year starts in April
     if (month >= 4) {
       return `${year}-${(year + 1).toString().slice(-2)}`;
     } else {
@@ -77,7 +76,6 @@ const GranualProductForm = () => {
     raw_material_to_p_date: today,
     raw_material_to_p_ref: "",
   });
-  console.log(formData);
   const [invoiceData, setInvoiceData] = useState([
     {
       granuals_from_p_color_id: "",
@@ -245,7 +243,6 @@ const GranualProductForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description: error?.response?.data?.message || "Failed to save granual",
