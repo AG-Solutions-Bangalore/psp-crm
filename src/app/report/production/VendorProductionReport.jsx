@@ -37,7 +37,7 @@ const VendorProductionReport = () => {
     toDate: formatDate(today),
     vendor_id: "",
   });
-  const { data: vendorData } = useFetchVendor();
+  const { data: vendorDatas } = useFetchVendor();
   const [activeTab, setActiveTab] = useState("all");
   const [printloading, setPrintLoading] = useState(false);
   const [excelloading, setExcelLoading] = useState(false);
@@ -106,22 +106,17 @@ const VendorProductionReport = () => {
     setSearchParams(formValues);
   };
 
-  const fabricWorkProductionData = fabricWorkData?.data?.data || [];
+  const fabricWorkProductionData = fabricWorkData?.data || [];
 
-  console.log(fabricWorkProductionData, "fabricWorkProductionData");
   const groupByMonth = () => {
     const grouped = {};
 
     if (!Array.isArray(fabricWorkProductionData)) {
-      // console.warn(
-      //   "fabricWorkProductionData is not an array",
-      //   fabricWorkProductionData
-      // );
       return grouped;
     }
 
     fabricWorkProductionData.forEach((item) => {
-      const date = new Date(item.yarn_to_fwp_date);
+      const date = new Date(item.date);
       const monthYear = `${date.getFullYear()}-${String(
         date.getMonth() + 1
       ).padStart(2, "0")}`;
@@ -135,34 +130,33 @@ const VendorProductionReport = () => {
     return grouped;
   };
 
-  const groupByColor = () => {
+  const groupByVendor = () => {
     const grouped = {};
     if (!Array.isArray(fabricWorkProductionData)) {
       return grouped; // return empty object if data is not array
     }
     fabricWorkProductionData.forEach((item) => {
-      const color = item.color || "Unknown Color";
-      if (!grouped[color]) {
-        grouped[color] = [];
+      const vendor = item.vendor_name || "Unknown Vendor";
+      if (!grouped[vendor]) {
+        grouped[vendor] = [];
       }
-      grouped[color].push(item);
+      grouped[vendor].push(item);
     });
     return grouped;
   };
 
   const calculateTotals = (data) => {
     if (!Array.isArray(data)) {
-      return { totalMeters: 0, totalWeight: 0, totalThickness: 0 };
+      return { totalInward: 0, totalOutward: 0 };
     }
 
     return data.reduce(
       (acc, item) => {
-        acc.totalMeters += Number(item.fabric_from_wp_mtr || 0);
-        acc.totalWeight += Number(item.fabric_from_wp_weight || 0);
-        acc.totalThickness += Number(item.fabric_from_wp_thickness || 0);
+        acc.totalInward += Number(item.total_inword_weight || 0);
+        acc.totalOutward += Number(item.total_outword_weight || 0);
         return acc;
       },
-      { totalMeters: 0, totalWeight: 0, totalThickness: 0 }
+      { totalInward: 0, totalOutward: 0 }
     );
   };
 
@@ -212,22 +206,16 @@ const VendorProductionReport = () => {
     setExcelLoading(true);
 
     try {
-      const headers = [
-        "Production Date",
-        "Color",
-        "Meters",
-        "Weight",
-        "Thickness",
-      ];
+      const headers = ["Date", "Ref", "Vendor Name", "Inward", "Outward"];
 
       const totals = calculateTotals(data);
 
       const getRowData = (item) => [
-        moment(item.yarn_to_fwp_date).format("DD-MM-YYYY"),
-        item.color || "",
-        Number(item.fabric_from_wp_mtr || 0).toFixed(2),
-        Number(item.fabric_from_wp_weight || 0).toFixed(2),
-        Number(item.fabric_from_wp_thickness || 0).toFixed(2),
+        moment(item.date).format("DD-MM-YYYY"),
+        item.ref,
+        item.vendor_name,
+        Number(item.total_inword_weight || 0).toFixed(2),
+        Number(item.total_outword_weight || 0).toFixed(2),
       ];
 
       const excelData = [
@@ -238,9 +226,9 @@ const VendorProductionReport = () => {
           values: [
             "TOTAL",
             "",
-            totals.totalMeters.toFixed(2),
-            totals.totalWeight.toFixed(2),
-            totals.totalThickness.toFixed(2),
+            "",
+            totals.totalInward.toFixed(2),
+            totals.totalOutward.toFixed(2),
           ],
         },
       ];
@@ -273,9 +261,8 @@ const VendorProductionReport = () => {
 
   const downloadMonthwiseCSV = async (monthlyData, toast, setExcelLoading) => {
     const allData = [];
-    let grandTotalMeters = 0;
-    let grandTotalWeight = 0;
-    let grandTotalThickness = 0;
+    let grandTotalInward = 0;
+    let grandTotalOutWard = 0;
 
     Object.entries(monthlyData).forEach(([month, items]) => {
       allData.push({
@@ -289,34 +276,33 @@ const VendorProductionReport = () => {
       });
 
       allData.push({
-        values: ["Production Date", "Color", "Meters", "Weight", "Thickness"],
+        values: ["Date", "Ref", "Vendor Name", "Inward", "Outward"],
       });
 
       items.forEach((item) => {
         allData.push({
           values: [
-            moment(item.yarn_to_fwp_date).format("DD-MM-YYYY"),
-            item.color || "",
-            Number(item.fabric_from_wp_mtr || 0).toFixed(2),
-            Number(item.fabric_from_wp_weight || 0).toFixed(2),
-            Number(item.fabric_from_wp_thickness || 0).toFixed(2),
+            moment(item.date).format("DD-MM-YYYY"),
+            item.ref,
+            item.vendor_name,
+            Number(item.total_inword_weight || 0).toFixed(2),
+            Number(item.total_outword_weight || 0).toFixed(2),
           ],
         });
       });
 
       const monthTotals = calculateTotals(items);
-      grandTotalMeters += monthTotals.totalMeters;
-      grandTotalWeight += monthTotals.totalWeight;
-      grandTotalThickness += monthTotals.totalThickness;
+      grandTotalInward += monthTotals.totalInward;
+      grandTotalOutWard += monthTotals.totalOutward;
 
       allData.push({
         isFooter: true,
         values: [
           "Monthly Total",
           "",
-          monthTotals.totalMeters.toFixed(2),
-          monthTotals.totalWeight.toFixed(2),
-          monthTotals.totalThickness.toFixed(2),
+          "",
+          monthTotals.totalInward.toFixed(2),
+          monthTotals.totalOutward.toFixed(2),
         ],
       });
 
@@ -328,9 +314,9 @@ const VendorProductionReport = () => {
         values: [
           "GRAND TOTAL",
           "",
-          grandTotalMeters.toFixed(2),
-          grandTotalWeight.toFixed(2),
-          grandTotalThickness.toFixed(2),
+          "",
+          grandTotalInward.toFixed(2),
+          grandTotalOutWard.toFixed(2),
         ],
       });
     }
@@ -373,59 +359,59 @@ const VendorProductionReport = () => {
     }
   };
 
-  const downloadColorwiseCSV = async (colorData, toast, setExcelLoading) => {
+  const downloadVendorwiseCSV = async (vendorData, toast, setExcelLoading) => {
     const allData = [];
-    let grandTotalMeters = 0;
-    let grandTotalWeight = 0;
-    let grandTotalThickness = 0;
+    let grandTotalInward = 0;
+    let grandTotalOutWard = 0;
 
-    Object.entries(colorData).forEach(([color, items]) => {
+    Object.entries(vendorData).forEach(([color, items]) => {
       allData.push({
         isHeader: true,
         values: [color],
       });
 
       allData.push({
-        values: ["Production Date", "Meters", "Weight", "Thickness"],
+        values: ["Date", "Ref", "Vendor Name", "Inward", "Outward"],
       });
 
       items.forEach((item) => {
         allData.push({
           values: [
-            moment(item.yarn_to_fwp_date).format("DD-MM-YYYY"),
-            Number(item.fabric_from_wp_mtr || 0).toFixed(2),
-            Number(item.fabric_from_wp_weight || 0).toFixed(2),
-            Number(item.fabric_from_wp_thickness || 0).toFixed(2),
+            moment(item.date).format("DD-MM-YYYY"),
+            item.ref,
+            item.vendor_name,
+            Number(item.total_inword_weight || 0).toFixed(2),
+            Number(item.total_outword_weight || 0).toFixed(2),
           ],
         });
       });
-
-      const colorTotals = calculateTotals(items);
-      grandTotalMeters += colorTotals.totalMeters;
-      grandTotalWeight += colorTotals.totalWeight;
-      grandTotalThickness += colorTotals.totalThickness;
+      const vendorTotals = calculateTotals(items);
+      grandTotalInward += vendorTotals.totalInward;
+      grandTotalOutWard += vendorTotals.totalOutward;
 
       allData.push({
         isFooter: true,
         values: [
-          "Color Total",
-          colorTotals.totalMeters.toFixed(2),
-          colorTotals.totalWeight.toFixed(2),
-          colorTotals.totalThickness.toFixed(2),
+          "Vendor Total",
+          "",
+          "",
+          vendorTotals.totalInward.toFixed(2),
+          vendorTotals.totalOutward.toFixed(2),
         ],
       });
 
       allData.push({ values: [] });
     });
 
-    if (Object.keys(colorData).length > 0) {
+    if (Object.keys(vendorData).length > 0) {
       allData.push({
         isFooter: true,
         values: [
           "GRAND TOTAL",
-          grandTotalMeters.toFixed(2),
-          grandTotalWeight.toFixed(2),
-          grandTotalThickness.toFixed(2),
+          "",
+          "",
+          grandTotalInward.toFixed(2),
+          grandTotalOutWard.toFixed(2),
         ],
       });
     }
@@ -444,8 +430,8 @@ const VendorProductionReport = () => {
     try {
       await downloadExcelMultiRow({
         data: allData,
-        sheetName: "Colorwise Fabric Work Production",
-        fileNamePrefix: "colorwise_fabric_work_production",
+        sheetName: "Vendor Fabric Work Production",
+        fileNamePrefix: "vendorwise_fabric_work_production",
         toast,
         customFormat: true,
         emptyDataCallback: () => ({
@@ -469,7 +455,7 @@ const VendorProductionReport = () => {
   };
 
   const monthlyData = groupByMonth();
-  const colorData = groupByColor();
+  const vendorData = groupByVendor();
   const allTotals = calculateTotals(fabricWorkProductionData);
 
   return (
@@ -543,7 +529,7 @@ const VendorProductionReport = () => {
                       value={formValues.vendor_id}
                       onChange={(e) => handleInputChange("vendor_id", e)}
                       options={
-                        vendorData?.data?.map((vendor) => ({
+                        vendorDatas?.data?.map((vendor) => ({
                           value: vendor.id,
                           label: vendor.vendor_name,
                         })) || []
@@ -585,7 +571,7 @@ const VendorProductionReport = () => {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="monthwise">Monthwise</TabsTrigger>
-              <TabsTrigger value="colorwise">Colorwise</TabsTrigger>
+              <TabsTrigger value="vendorwise">VendorWise</TabsTrigger>
             </TabsList>
 
             <TabsContent value="all">
@@ -641,19 +627,19 @@ const VendorProductionReport = () => {
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="border border-black px-2 py-2 text-center">
-                        Production Date
+                        Date
                       </th>
                       <th className="border border-black px-2 py-2 text-center">
-                        Color
+                        Ref
                       </th>
                       <th className="border border-black px-2 py-2 text-center">
-                        Meters
+                        Vendor Name
                       </th>
                       <th className="border border-black px-2 py-2 text-center">
-                        Weight
+                        Inward Weight
                       </th>
                       <th className="border border-black px-2 py-2 text-center">
-                        Thickness
+                        Outward Weight
                       </th>
                     </tr>
                   </thead>
@@ -662,21 +648,19 @@ const VendorProductionReport = () => {
                       fabricWorkProductionData.map((item, index) => (
                         <tr key={index} className="hover:bg-gray-50">
                           <td className="border border-black px-2 py-2">
-                            {moment(item.yarn_to_fwp_date).format("DD-MM-YYYY")}
+                            {moment(item.date).format("DD-MM-YYYY")}
                           </td>
                           <td className="border border-black px-2 py-2">
-                            {item.color}
+                            {item.ref}
                           </td>
                           <td className="border border-black px-2 py-2 text-right">
-                            {Number(item.fabric_from_wp_mtr || 0).toFixed(2)}
+                            {item.vendor_name || ""}
                           </td>
                           <td className="border border-black px-2 py-2 text-right">
-                            {Number(item.fabric_from_wp_weight || 0).toFixed(2)}
+                            {Number(item.total_inword_weight || 0).toFixed(2)}
                           </td>
                           <td className="border border-black px-2 py-2 text-right">
-                            {Number(item.fabric_from_wp_thickness || 0).toFixed(
-                              2
-                            )}
+                            {Number(item.total_outword_weight || 0).toFixed(2)}
                           </td>
                         </tr>
                       ))
@@ -690,17 +674,15 @@ const VendorProductionReport = () => {
                   </tbody>
                   <tfoot>
                     <tr className="bg-gray-200 font-bold">
-                      <td className="border border-black px-2 py-2" colSpan="2">
+                      <td className="border border-black px-2 py-2" colSpan="3">
                         Total
                       </td>
+
                       <td className="border border-black px-2 py-2 text-right">
-                        {allTotals.totalMeters.toFixed(2)}
+                        {allTotals.totalInward.toFixed(2)}
                       </td>
                       <td className="border border-black px-2 py-2 text-right">
-                        {allTotals.totalWeight.toFixed(2)}
-                      </td>
-                      <td className="border border-black px-2 py-2 text-right">
-                        {allTotals.totalThickness.toFixed(2)}
+                        {allTotals.totalOutward.toFixed(2)}
                       </td>
                     </tr>
                   </tfoot>
@@ -770,19 +752,19 @@ const VendorProductionReport = () => {
                           <thead className="bg-gray-100">
                             <tr>
                               <th className="border border-black px-2 py-2 text-center">
-                                Production Date
+                                Date
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Color
+                                Ref
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Meters
+                                Vendor Name
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Weight
+                                Inward Weight
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Thickness
+                                Outward Weight
                               </th>
                             </tr>
                           </thead>
@@ -793,26 +775,22 @@ const VendorProductionReport = () => {
                                 className="hover:bg-gray-50"
                               >
                                 <td className="border border-black px-2 py-2">
-                                  {moment(item.yarn_to_fwp_date).format(
-                                    "DD-MM-YYYY"
-                                  )}
+                                  {moment(item.date).format("DD-MM-YYYY")}
                                 </td>
                                 <td className="border border-black px-2 py-2">
-                                  {item.color}
+                                  {item.ref}
                                 </td>
                                 <td className="border border-black px-2 py-2 text-right">
-                                  {Number(item.fabric_from_wp_mtr || 0).toFixed(
-                                    2
-                                  )}
+                                  {item.vendor_name || ""}
                                 </td>
                                 <td className="border border-black px-2 py-2 text-right">
                                   {Number(
-                                    item.fabric_from_wp_weight || 0
+                                    item.total_inword_weight || 0
                                   ).toFixed(2)}
                                 </td>
                                 <td className="border border-black px-2 py-2 text-right">
                                   {Number(
-                                    item.fabric_from_wp_thickness || 0
+                                    item.total_outword_weight || 0
                                   ).toFixed(2)}
                                 </td>
                               </tr>
@@ -822,18 +800,16 @@ const VendorProductionReport = () => {
                             <tr className="bg-gray-100 font-bold">
                               <td
                                 className="border border-black px-2 py-2"
-                                colSpan="2"
+                                colSpan="3"
                               >
                                 Monthly Total
                               </td>
+
                               <td className="border border-black px-2 py-2 text-right">
-                                {monthTotals.totalMeters.toFixed(2)}
+                                {monthTotals.totalInward.toFixed(2)}
                               </td>
                               <td className="border border-black px-2 py-2 text-right">
-                                {monthTotals.totalWeight.toFixed(2)}
-                              </td>
-                              <td className="border border-black px-2 py-2 text-right">
-                                {monthTotals.totalThickness.toFixed(2)}
+                                {monthTotals.totalOutward.toFixed(2)}
                               </td>
                             </tr>
                           </tfoot>
@@ -851,18 +827,15 @@ const VendorProductionReport = () => {
                       <tr className="bg-gray-200 font-bold">
                         <td
                           className="border border-black px-2 py-2"
-                          colSpan="2"
+                          colSpan="3"
                         >
                           Grand Total
                         </td>
                         <td className="border border-black px-2 py-2 text-right">
-                          {allTotals.totalMeters.toFixed(2)}
+                          {allTotals.totalInward.toFixed(2)}
                         </td>
                         <td className="border border-black px-2 py-2 text-right">
-                          {allTotals.totalWeight.toFixed(2)}
-                        </td>
-                        <td className="border border-black px-2 py-2 text-right">
-                          {allTotals.totalThickness.toFixed(2)}
+                          {allTotals.totalOutward.toFixed(2)}
                         </td>
                       </tr>
                     </tfoot>
@@ -871,7 +844,7 @@ const VendorProductionReport = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="colorwise">
+            <TabsContent value="vendorwise">
               <div className="flex justify-end gap-2 mb-2">
                 <Button
                   type="button"
@@ -895,7 +868,7 @@ const VendorProductionReport = () => {
                   disabled={excelloading}
                   className={`${ButtonConfig.backgroundColor} ${ButtonConfig.hoverBackgroundColor} ${ButtonConfig.textColor} flex items-center`}
                   onClick={() =>
-                    downloadColorwiseCSV(colorData, toast, setExcelLoading)
+                    downloadVendorwiseCSV(vendorData, toast, setExcelLoading)
                   }
                 >
                   {excelloading ? (
@@ -913,11 +886,11 @@ const VendorProductionReport = () => {
                 <h1
                   className={`text-center text-2xl font-semibold mb-3 print:block`}
                 >
-                  Vendor Work Production Report (Colorwise)
+                  Vendor Work Production Report (Vendorwise)
                 </h1>
-                {Object.keys(colorData).length > 0 ? (
-                  Object.entries(colorData).map(([color, items]) => {
-                    const colorTotals = calculateTotals(items);
+                {Object.keys(vendorData).length > 0 ? (
+                  Object.entries(vendorData).map(([color, items]) => {
+                    const vendorTotals = calculateTotals(items);
                     return (
                       <div
                         key={color}
@@ -928,16 +901,19 @@ const VendorProductionReport = () => {
                           <thead className="bg-gray-100">
                             <tr>
                               <th className="border border-black px-2 py-2 text-center">
-                                Production Date
+                                Date
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Meters
+                                Ref
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Weight
+                                Vendor Name
                               </th>
                               <th className="border border-black px-2 py-2 text-center">
-                                Thickness
+                                Inward Weight
+                              </th>
+                              <th className="border border-black px-2 py-2 text-center">
+                                Outward Weight
                               </th>
                             </tr>
                           </thead>
@@ -948,23 +924,22 @@ const VendorProductionReport = () => {
                                 className="hover:bg-gray-50"
                               >
                                 <td className="border border-black px-2 py-2">
-                                  {moment(item.yarn_to_fwp_date).format(
-                                    "DD-MM-YYYY"
-                                  )}
+                                  {moment(item.date).format("DD-MM-YYYY")}
+                                </td>
+                                <td className="border border-black px-2 py-2">
+                                  {item.ref}
                                 </td>
                                 <td className="border border-black px-2 py-2 text-right">
-                                  {Number(item.fabric_from_wp_mtr || 0).toFixed(
-                                    2
-                                  )}
+                                  {item.vendor_name || ""}
                                 </td>
                                 <td className="border border-black px-2 py-2 text-right">
                                   {Number(
-                                    item.fabric_from_wp_weight || 0
+                                    item.total_inword_weight || 0
                                   ).toFixed(2)}
                                 </td>
                                 <td className="border border-black px-2 py-2 text-right">
                                   {Number(
-                                    item.fabric_from_wp_thickness || 0
+                                    item.total_outword_weight || 0
                                   ).toFixed(2)}
                                 </td>
                               </tr>
@@ -972,17 +947,18 @@ const VendorProductionReport = () => {
                           </tbody>
                           <tfoot>
                             <tr className="bg-gray-100 font-bold">
-                              <td className="border border-black px-2 py-2">
-                                Color Total
+                              <td
+                                className="border border-black px-2 py-2"
+                                colSpan="3"
+                              >
+                                Vendor Total
+                              </td>
+
+                              <td className="border border-black px-2 py-2 text-right">
+                                {vendorTotals.totalInward.toFixed(2)}
                               </td>
                               <td className="border border-black px-2 py-2 text-right">
-                                {colorTotals.totalMeters.toFixed(2)}
-                              </td>
-                              <td className="border border-black px-2 py-2 text-right">
-                                {colorTotals.totalWeight.toFixed(2)}
-                              </td>
-                              <td className="border border-black px-2 py-2 text-right">
-                                {colorTotals.totalThickness.toFixed(2)}
+                                {vendorTotals.totalOutward.toFixed(2)}
                               </td>
                             </tr>
                           </tfoot>
@@ -994,21 +970,19 @@ const VendorProductionReport = () => {
                   <div className="text-center py-4">No data available</div>
                 )}
                 {/* Grand Total */}
-                {Object.keys(colorData).length > 0 && (
+                {Object.keys(vendorData).length > 0 && (
                   <table className="w-full border-collapse border border-black mt-4">
                     <tfoot>
                       <tr className="bg-gray-200 font-bold">
                         <td className="border border-black px-2 py-2">
                           Grand Total
                         </td>
+
                         <td className="border border-black px-2 py-2 text-right">
-                          {allTotals.totalMeters.toFixed(2)}
+                          {allTotals.totalInward.toFixed(2)}
                         </td>
                         <td className="border border-black px-2 py-2 text-right">
-                          {allTotals.totalWeight.toFixed(2)}
-                        </td>
-                        <td className="border border-black px-2 py-2 text-right">
-                          {allTotals.totalThickness.toFixed(2)}
+                          {allTotals.totalOutward.toFixed(2)}
                         </td>
                       </tr>
                     </tfoot>
